@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="פלייגראונד">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-512.png"><link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap">
 <style>*{box-sizing:border-box}html,body{margin:0}
 /* Layout: Playground-branded phone app. Mor: Today (day strip, summary, 5 meal cards with option sheets, daily habits, note) / Menu (her full plan) / Measures (weekly weigh-in, circumferences, weekly check-in). Tal (owner only): live coach dashboard. Single committed navy look from the logo. */
 :root{
@@ -321,6 +321,107 @@ td:first-child,th:first-child{text-align:right}
 .pvbar span{font-size:12.5px;opacity:.8}
 .pvbar button{margin-inline-start:auto;background:var(--navy);color:var(--ink);border-radius:12px;padding:8px 12px;font-weight:700}
 .pvbar[hidden]{display:none!important}
+
+/* ===== "Night pool" — clean, quiet, premium. One warm accent, champagne for rewards, serif for moments that matter ===== */
+:root{
+  --bg:#0a1322; --navy:#0a1322; --s1:#101b2d; --s2:#16233a; --s3:#22324d; --line:#ffffff12;
+  --ink:#eee9e0; --muted:#8e98a9; --dim:#5d687b;
+  --hot:#ff6b4a; --gold:#d9bf8c;
+  --food:#a9c7b8; --habit:#d9bf8c; --mes:#9fb8d6; --wk:#b9b1dc;
+  --ok:#7fc8a4; --warn:#e2b86b; --bad:#f07a6a;
+  --font:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Frank Ruhl Libre","Times New Roman",serif;
+}
+body{font-size:16.5px;letter-spacing:.005em}
+.app::before{background:radial-gradient(closest-side,#1b2f5233,transparent 70%);height:420px}
+.view{gap:22px}
+
+/* type */
+.hello b,.sh h2,.wo-hero h2,.welcome h1,.authin h1,.ring .in b,.kpi b,.streak b,.stage h2{font-family:var(--serif);font-weight:500;letter-spacing:0}
+.hello b{font-size:30px;line-height:1.1}
+.hello small{font-size:14px;color:var(--muted)}
+.sh{padding-top:6px;border-top:1px solid var(--line)}
+.sh h2{font-size:22px}
+.sh span{font-size:13px}
+.brand b{font-weight:600;letter-spacing:.3em;font-size:11px;color:var(--muted)}
+
+/* quieter surfaces: one hairline, no gradients */
+.card,.meal,.blk,.trc,.kpi,.dy,.past button{background:var(--s1);border:1px solid var(--line);box-shadow:none}
+.avatar{background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--serif);font-weight:500;width:50px;height:50px;font-size:22px}
+
+/* day strip: numerals, not tiles */
+.strip{gap:4px}
+.dy{background:transparent;border-color:transparent;border-radius:999px;padding:8px 0 6px}
+.dy b{font-family:var(--serif);font-size:18px;font-weight:500}
+.dy.has i{background:var(--gold)}
+.dy[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* the hero: ring + streak */
+.sum{background:var(--s1);border:1px solid var(--line);border-radius:28px;padding:22px 20px;grid-template-columns:auto 1fr}
+.sum .wm{opacity:.035}
+.ring{width:118px;height:118px}
+.ring .tr{stroke:#ffffff0d;stroke-width:6}
+.ring .br{stroke:var(--hot);stroke-width:6}
+.ring .in b{font-size:32px}
+.fact{font-size:15px}
+.fact i{width:6px;height:6px}
+.streak{grid-column:1/-1;display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:14px;color:var(--dim)}
+.streak svg{width:20px;height:20px;fill:currentColor}
+.streak b{font-size:26px;line-height:1;color:inherit}
+.streak span{font-size:14px}
+.streak.on{color:var(--gold)}
+
+/* meals and rows: monochrome hairline icons */
+.meal{border-radius:22px;padding:14px}
+.meal .ic{background:transparent;border:1px solid var(--line);border-radius:50%}
+.meal .ic svg{stroke:var(--ink);stroke-width:1.6}
+.meal.done{border-color:#7fc8a440}
+.meal .st{border-width:1.5px}
+
+/* buttons */
+.cta,.big,.go-btn{background:var(--ink);color:var(--bg);font-weight:700}
+.go-btn{background:var(--hot);color:#1a0f0b}
+
+/* weekly bars */
+.wkbars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:150px;padding-top:6px}
+.wb{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.wb .col{flex:1;width:14px;border-radius:999px;background:#ffffff0a;display:flex;align-items:flex-end;overflow:hidden}
+.wb .col i{display:block;width:100%;border-radius:999px;background:var(--ink);transition:height .5s}
+.wb.now .col i{background:var(--hot)}
+.wb .mk{display:flex;gap:3px;height:6px}
+.wb .mk b,.wklegend i{display:inline-block;width:6px;height:6px;border-radius:50%}
+.wb .mk .o,.wklegend .o{background:var(--hot)}
+.wb .mk .d,.wklegend .d{background:var(--mes)}
+.wklegend .bar{width:10px;border-radius:3px;background:var(--ink)}
+.wb small{font-size:12px;color:var(--muted)}
+.wklegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.wklegend span{display:flex;align-items:center;gap:6px}
+
+/* badges */
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:14px 6px 12px;border-radius:20px;border:1px solid var(--line);color:var(--dim)}
+.bdg .md{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);margin-bottom:4px}
+.bdg .md svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5}
+.bdg b{font-size:13.5px;font-weight:600;line-height:1.2}
+.bdg small{font-size:11.5px;line-height:1.25}
+.bdg.ok{color:var(--ink);border-color:#d9bf8c40;background:linear-gradient(180deg,#d9bf8c12,transparent)}
+.bdg.ok .md{border-color:var(--gold);color:var(--gold)}
+.bdg.ok .md svg{fill:var(--gold);stroke:var(--gold)}
+.bdg.ok small{color:var(--muted)}
+
+/* progress photos */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cmp figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.cmp img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+.cmp figcaption{font-size:12.5px;color:var(--muted);text-align:center}
+.photo-in{display:flex;align-items:center;justify-content:center;border-radius:16px;padding:13px;cursor:pointer;margin-top:4px}
+
+/* celebration */
+.confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:200}
+
+/* nav */
+.nav .navin{background:#101b2deb;border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.nb[aria-current="page"]{background:var(--ink);color:var(--bg)}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -495,7 +596,7 @@ const FEEL=["","קל מדי","קל","בדיוק","קשה","קשה מאוד"];
 
 /* ===== state ===== */
 let db=null,user=null,isOwner=false,uid=null,prof=null,readOnly=false,booted=false,preview=null,ownerUid=null;
-const W={},MSG={},days={},weigh={},weekly={},wlog={},photos={};
+const W={},MSG={},days={},weigh={},weekly={},wlog={},photos={},body={};
 let tab="today",sel=TODAY,woSel=null;
 const tp=(c,id)=>`t/${uid}/${c}${id?"/"+id:""}`;
 const meals=()=>((prof&&prof.menu&&prof.menu.meals)||[]);
@@ -540,6 +641,37 @@ document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())ren
 function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
   $("v-today").innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>ברוכים הבאים לפלייגראונד</h1><p>${uid?"קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין."}</p></div>`}
 
+/* ===== progress & rewards ===== */
+const FLAME='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.5-5 .2 1.8 1 2.8 2 3 0-3.5-.5-6 .5-9z"/></svg>';
+const woneOn=(k,src=wlog)=>Object.values(src).some(l=>l&&l.date===k&&l.done);
+const active=(k,D=days,L=wlog)=>hasData(D[k])||woneOn(k,L);
+function streakOf(D=days,L=wlog){let k=TODAY,n=0;if(!active(k,D,L))k=addDays(k,-1);while(active(k,D,L)&&n<400){n++;k=addDays(k,-1)}return n}
+function bestStreak(D=days,L=wlog){const ks=[...new Set(Object.keys(D).concat(Object.values(L).filter(l=>l&&l.done).map(l=>l.date)))].filter(k=>active(k,D,L)).sort();let b=0,c=0,prev=null;
+  ks.forEach(k=>{c=prev&&daysBetween(prev,k)===1?c+1:1;b=Math.max(b,c);prev=k});return b}
+function dayPct(k,D=days){const rq=reqMeals();if(!rq.length)return woneOn(k)?1:0;const d=D[k]?getDay(k,D):null;return d?mealsCount(d)/rq.length:0}
+function waterHit(k){const h=habits().find(x=>x.type==="cups");if(!h)return false;const v=(days[k]&&days[k].h||{})[h.id]||0;return v>=(h.target||h.max)}
+function badges(){const best=bestStreak(),wdone=Object.values(wlog).filter(l=>l&&l.done).length,nW=Object.keys(weigh).length,nB=Object.keys(body).length;
+  const ks=Object.keys(days),perfect=reqMeals().length?ks.filter(k=>dayPct(k)>=1).length:0,water=habits().some(x=>x.type==="cups");
+  let wRun=0,wBest=0;if(water){ks.sort().forEach((k,i)=>{wRun=waterHit(k)&&(i===0||daysBetween(ks[i-1],k)===1)?wRun+1:waterHit(k)?1:0;wBest=Math.max(wBest,wRun)})}
+  const L=[["start","יום ראשון","הדיווח הראשון שלך",best>=1],["s3","3 ימים ברצף","שלושה ימים בלי לפספס",best>=3],["s7","שבוע שלם","7 ימים ברצף",best>=7],["s21","21 ימים","הרגל נבנה",best>=21],["s60","60 ימים","זה כבר אורח חיים",best>=60]];
+  if(reqMeals().length)L.push(["p1","יום מושלם","כל הארוחות סומנו",perfect>=1],["p10","10 ימים מושלמים","עקביות בתפריט",perfect>=10]);
+  if(water)L.push(["w7","שבוע של מים","יעד המים 7 ימים ברצף",wBest>=7]);
+  if(Object.keys(W).length)L.push(["o1","אימון ראשון","סיימת אימון באפליקציה",wdone>=1],["o10","10 אימונים","עשרה אימונים שהושלמו",wdone>=10]);
+  L.push(["m4","חודש של שקילות","4 שקילות",nW>=4],["b1","תמונת התחלה","צילום ההתקדמות הראשון",nB>=1]);return L}
+const BADGE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.2-4.1 5.8-.8z"/></svg>';
+let lastPct={};
+function celebrate(){if(matchMedia("(prefers-reduced-motion: reduce)").matches){toast("יום מושלם! כל הארוחות סומנו");return}
+  const c=document.createElement("canvas");c.className="confetti";c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devicePixelRatio;document.body.appendChild(c);
+  const g=c.getContext("2d"),cols=["#ff6b4a","#d9bf8c","#eee9e0","#7fb7a4"],P=[...Array(120)].map(()=>({x:c.width/2+(Math.random()-.5)*c.width*.3,y:c.height*.35,vx:(Math.random()-.5)*14*devicePixelRatio,vy:(-Math.random()*14-4)*devicePixelRatio,r:(3+Math.random()*4)*devicePixelRatio,a:Math.random()*6,col:cols[Math.random()*4|0]}));
+  let t=0;(function f(){g.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.vy+=.45*devicePixelRatio;p.x+=p.vx;p.y+=p.vy;p.a+=.2;g.save();g.translate(p.x,p.y);g.rotate(p.a);g.fillStyle=p.col;g.fillRect(-p.r,-p.r/2,p.r*2,p.r);g.restore()});
+    if(++t<110)requestAnimationFrame(f);else c.remove()})();
+  toast("יום מושלם! כל הארוחות סומנו")}
+function weekBars(){const ks=[...Array(7)].map((_,i)=>addDays(TODAY,i-6));
+  return `<div class="wkbars" role="img" aria-label="התקדמות 7 הימים האחרונים">${ks.map(k=>{const p=dayPct(k),w=woneOn(k),wh=waterHit(k);
+    return `<div class="wb ${k===TODAY?"now":""}"><div class="col"><i style="height:${Math.max(4,Math.round(p*100))}%"></i></div><span class="mk">${w?'<b class="o" title="אימון"></b>':""}${wh?'<b class="d" title="מים"></b>':""}</span><small>${k===TODAY?"היום":DN[fromKey(k).getDay()]}</small></div>`}).join("")}</div>`}
+function compareHTML(src){const ks=Object.keys(src||{}).sort();if(!ks.length)return "";const a=ks[0],b=ks[ks.length-1];
+  return `<div class="cmp">${ks.length>1?`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure><figure><img src="${src[b]}" alt="תמונה אחרונה"><figcaption>${fmt(b)} · עכשיו (${daysBetween(a,b)} ימים)</figcaption></figure>`:`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure>`}</div>`}
+
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
 const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||""));
@@ -555,7 +687,8 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   const facts=[];if(rq.length)facts.push(["var(--food)","ארוחות",`${mc}/${rq.length}`]);
   if(wo)facts.push(["var(--hot)","אימון",wl&&wl.done?"בוצע ✓":"מחכה"]);
   hs.slice(0,3).forEach(x=>facts.push(["var(--mes)",x.short||x.t,hv(x,day.h[x.id])]));
-  const pct=rq.length?mc/rq.length:(wl&&wl.done?1:0);
+  const pct=rq.length?mc/rq.length:(wl&&wl.done?1:0),stk=streakOf();
+  if(sel===TODAY&&lastPct[TODAY]!=null&&lastPct[TODAY]<1&&pct>=1&&rq.length)setTimeout(celebrate,150);if(sel===TODAY)lastPct[TODAY]=pct;
   $("v-today").innerHTML=`
   <div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>
   ${msgs[0]?`<div class="msg"><span class="tl">ט</span><div><small>טל · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
@@ -563,6 +696,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   <div class="sum"><img class="wm" src="pg-logo.png" alt="">
     <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
     <div class="facts">${facts.map(f=>`<div class="fact"><i style="background:${f[0]}"></i>${esc(f[1])}<span>${esc(f[2])}</span></div>`).join("")}</div>
+    <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
   ${wo?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#ff6b4a55"><span class="ic" style="background:#ff6b4a22"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
@@ -703,7 +837,15 @@ const wList=src=>Object.keys(src).sort().map(k=>({k,...src[k]}));
 let wkAns=null;const WQ=[["energy","אנרגיה השבוע","נמוכה","גבוהה"],["hunger","רעב במהלך השבוע","הרבה","כמעט אין"],["sleep","איכות השינה","גרועה","מצוינת"],["mood","כמה את/ה מרוצה מהשבוע","בכלל לא","מאוד"]];
 function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart(TODAY),cur=weekly[wk]||{},circ=(prof.weigh&&prof.weigh.circ)||[],base=prof.start&&prof.start.kg;
   if(!wkAns||(weekly[wk]&&Object.values(wkAns).every(v=>!v)))wkAns={energy:cur.energy||0,hunger:cur.hunger||0,sleep:cur.sleep||0,mood:cur.mood||0};
+  const B=badges(),got=B.filter(b=>b[3]).length,bk=Object.keys(body).sort();
   $("v-measure").innerHTML=`
+  <div class="sh"><h2>השבוע שלך</h2><span>ארוחות, אימונים ומים</span></div>
+  <div class="card">${weekBars()}<div class="wklegend"><span><i class="bar"></i>ארוחות שסומנו</span><span><i class="o"></i>אימון</span>${habits().some(x=>x.type==="cups")?'<span><i class="d"></i>יעד מים</span>':""}</div></div>
+  <div class="sh"><h2>הישגים</h2><span>${got} מתוך ${B.length}</span></div>
+  <div class="badges">${B.map(([id,t,d,ok])=>`<div class="bdg ${ok?"ok":""}"><span class="md">${BADGE}</span><b>${t}</b><small>${d}</small></div>`).join("")}</div>
+  <div class="sh"><h2>תמונות התקדמות</h2><span>${bk.length?`${bk.length} תמונות`:"פעם בשבועיים"}</span></div>
+  <div class="card">${bk.length?compareHTML(body):`<div class="empty">תמונה מהמראה, באותה תאורה ובאותה תנוחה. רק את/ה וטל רואים אותן.</div>`}
+    <label class="cta photo-in">צילום תמונת התקדמות<input id="bodyIn" type="file" accept="image/*" hidden></label></div>
   <div class="sh"><h2>שקילה</h2><span>${last?`אחרונה: ${fmt(last.k)}`:"עוד אין שקילה"}</span></div>
   <div class="card"><span class="hint">${esc((prof.weigh&&prof.weigh.hint)||"פעם בשבוע, באותו יום, בבוקר על בטן ריקה")}</span>
     <div class="row"><label style="flex:1;display:flex;flex-direction:column;gap:4px" class="lbl">משקל (ק״ג)<input id="wKg" type="number" inputmode="decimal" step="0.1"></label>
@@ -720,6 +862,8 @@ function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart
     if(!(kg>30&&kg<250)){toast("כתבו משקל תקין, למשל 70.4");return}if(k>TODAY){toast("אי אפשר לשקול בעתיד");return}
     const o={kg:Math.round(kg*10)/10,c:circ.map((_,i)=>{const v=parseFloat($("wC"+i).value);return v>10&&v<250?v:null})};
     weigh[k]=o;saveDoc(tp("weigh",k),o);toast("השקילה נשמרה");render()};
+  $("bodyIn").onchange=async ev=>{const f=ev.target.files[0];if(!f)return;if(preview){toast("מצב תצוגה — לא נשמר");return}
+    try{toast("מעלה…");const img=await shrink(f);body[TODAY]=img;saveDoc(tp("body",TODAY),{d:TODAY,img});toast("התמונה נשמרה");render()}catch(e){toast("לא הצלחנו לקרוא את התמונה")}};
   $("wkSave").onclick=()=>{if(Object.values(wkAns).includes(0)){toast("ענו על כל 4 השאלות");return}
     const o={...wkAns,note:$("wkNote").value.trim()};weekly[wk]=o;saveDoc(tp("weekly",wk),o);toast("הצ׳ק-אין נשלח לטל");render()}}
 $("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five button");if(!b)return;const q=b.closest(".five").dataset.q;
@@ -740,7 +884,7 @@ async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave
     if(user){try{names=await user.profiles([...ids])}catch(e){}}
     coachAt=new Date();setSave("מעודכן ✓","ok")}catch(e){setSave("שגיאה בטעינה","err")}
   coachLoading=false;if(tab==="coach")render()}
-async function loadPhotos(id){try{const s=await db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-6)).get();C[id].photos=Object.fromEntries(s.docs.map(d=>[d.id,d.data().img]));if(tab==="coach")render()}catch(e){}}
+async function loadPhotos(id){try{const [s,bs]=await Promise.all([db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-6)).get(),db.collection(`t/${id}/body`).get()]);C[id].photos=Object.fromEntries(s.docs.map(d=>[d.id,d.data().img]));C[id].body=Object.fromEntries(bs.docs.map(d=>[d.id,d.data().img]));if(tab==="coach")render()}catch(e){}}
 function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).filter(m=>!m.optional),hs=p.habits||[];
   const last7=[...Array(7)].map((_,i)=>addDays(TODAY,-i)),wk=weekStart(TODAY);
   const D=k=>c.days[k]?getDay(k,c.days):null;
@@ -810,7 +954,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
   <div class="hello"><span class="avatar" style="border-color:var(--hot)">${esc(nameOf(id).slice(0,1))}</span><div><small>${esc(p.goal||"")}</small><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}</div>${c.prof?`<button class="ghost" type="button" id="cView" style="margin-inline-start:auto;padding:8px 14px">צפייה כמו המתאמן</button>`:""}</div>
   ${mailBox(id)}
   <div class="kpis"><div class="kpi"><b>${a.lw?a.lw.kg:"–"}</b><small>משקל אחרון</small> ${a.dKg!=null?`<em style="color:${a.dKg<=0?"var(--ok)":"var(--warn)"}">${a.dKg>0?"+":""}${a.dKg} מההתחלה</em>`:""}</div>
-    <div class="kpi"><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות שסומנו · 7 ימים</small></div><div class="kpi"><b>${a.logged}/7</b><small>ימים מדווחים</small></div><div class="kpi"><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div></div>
+    <div class="kpi"><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות שסומנו · 7 ימים</small></div><div class="kpi"><b>${a.logged}/7</b><small>ימים מדווחים · רצף ${streakOf(c.days,c.wlog)}</small></div><div class="kpi"><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div></div>
   <div class="sh"><h2>דורש תשומת לב</h2><span>${a.flags.length||"הכול תקין"}</span></div>
   <div class="flags">${a.flags.length?a.flags.map(([cl,t])=>`<div class="flag" style="--c:${cl}">${esc(t)}</div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
   <div class="card"><b>הודעה ל${esc(nameOf(id).split(" ")[0])}</b><span class="hint">מופיעה בראש המסך שלו/ה</span><textarea id="cMsg" rows="3" placeholder="למשל: מעולה השבוע, מעלים משקל בחתירה"></textarea><div class="btns" style="margin-top:0"><button class="cta" type="button" id="cSend">שליחה</button></div>
@@ -822,6 +966,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
     ${Ls.length&&circ.length?`<div class="hist">${[...Ls].reverse().slice(0,4).map(w=>`<div><span>${fmt(w.k)}</span><b>${w.kg}</b><em>${(w.c||[]).map((v,i)=>v?`${circ[i]} ${v}`:"").filter(Boolean).join(" · ")||"—"}</em></div>`).join("")}</div>`:""}</div>
   <div class="card"><b>אימונים</b>${Object.keys(c.wo).length?`<div class="hist">${Object.entries(c.wo).map(([wid,w])=>{const ls=Object.values(c.wlog).filter(l=>l.wid===wid).sort((x,y)=>y.date.localeCompare(x.date));
     return `<div><span>${esc(w.title)}<br><em>${w.fixed?"קבוע":fmt(w.date)}</em></span><b>${ls.length?ls.slice(0,3).map(l=>`${fmt(l.date)} ${l.done?"✓":"חלקי"}${l.feel?" "+FEEL[l.feel]:""}`).join("<br>"):"לא התחיל/ה"}</b></div>`}).join("")}</div>`:`<div class="empty">אין אימונים. כתבו לClaude: ״תעלה ל${esc(nameOf(id).split(" ")[0])} את האימון של…״</div>`}</div>
+  <div class="card"><b>תמונות התקדמות</b>${c.body&&Object.keys(c.body).length?compareHTML(c.body):`<div class="empty">${c.photos?"עוד אין תמונות התקדמות":"טוען…"}</div>`}</div>
   <div class="card"><b>צילומי ארוחות · 7 ימים</b>${ph.length?`<div class="gal">${ph.map(k=>{const m=((p.menu&&p.menu.meals)||[]).find(m=>m.id===k.slice(11));return `<figure><img src="${c.photos[k]}" alt="צילום ארוחה"><figcaption>${fmt(k.slice(0,10))} · ${esc(m?m.t:"")}</figcaption></figure>`}).join("")}</div>`:`<div class="empty">${c.photos?"עוד אין צילומים":"טוען…"}</div>`}</div>
   <div class="card"><b>מחוץ לתפריט, הערות ודיווחי אימון</b><div class="feed">${feed.length?feed.join(""):`<div class="empty">אין עדיין</div>`}</div></div>
   <div class="card"><b>צ׳ק-אין שבועי</b>${wks.length?`<div class="hist">${wks.map(k=>{const w=c.weekly[k];return `<div><span>שבוע ${fmt(k)}</span><b>אנרגיה ${w.energy} · רעב ${w.hunger} · שינה ${w.sleep} · רצון ${w.mood}</b></div>${w.note?`<div style="border:0;padding-top:0"><em>${esc(w.note)}</em></div>`:""}`}).join("")}</div>`:`<div class="empty">עוד לא נשלח צ׳ק-אין</div>`}</div>
@@ -860,11 +1005,11 @@ setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
-  fill(W,c.wo);fill(MSG,c.msgs);fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
+  fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   try{const s=await db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-13)).get();s.docs.forEach(d=>{const v=d.data();if(v&&v.img)photos[d.id]=v.img})}catch(e){}
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=`תצוגה כמו ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos].forEach(s=>fill(s,{}));
+function exitPreview(){preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;go("coach")}
 $("pvbar").querySelector("button").onclick=exitPreview;
 
@@ -889,6 +1034,7 @@ $("pvbar").querySelector("button").onclick=exitPreview;
     Object.keys(store).forEach(k=>{if(!seen.has(k)&&!busy(tp(col,k)))delete store[k]});
     if(sheetMeal!==null||PL)return;render()},()=>setSave("החיבור נותק","err"));
   sub("days",days);sub("weigh",weigh);sub("weekly",weekly);sub("wlog",wlog);
+  db.collection(tp("body")).onSnapshot(s=>{Object.keys(body).forEach(k=>delete body[k]);s.docs.forEach(d=>{const v=d.data();if(v&&v.img)body[d.id]=v.img});if(sheetMeal===null&&!PL)render()},()=>{});
   db.collection(tp("photos")).where("d",">=",addDays(TODAY,-13)).onSnapshot(s=>{s.docs.forEach(d=>{if(!busy(tp("photos",d.id))){const v=d.data();if(v&&v.img)photos[d.id]=v.img}});if(sheetMeal===null&&!PL)render()},()=>{});
   go("today");
 })();
