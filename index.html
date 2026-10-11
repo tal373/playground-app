@@ -422,6 +422,12 @@ body{font-size:16.5px;letter-spacing:.005em}
 /* nav */
 .nav .navin{background:#101b2deb;border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .nb[aria-current="page"]{background:var(--ink);color:var(--bg)}
+
+.remind .rr{display:flex;align-items:center;gap:12px}
+.remind .rr div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.remind small{color:var(--muted);font-size:13px}
+.remind .cta{flex:none;padding:10px 18px;border-radius:999px}
+.remst{color:var(--ok);font-weight:600;font-size:14px}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -535,6 +541,20 @@ const user={
     (data||[]).forEach(r=>{const id=idOf(r.path);out[id]={id,name:(r.data&&r.data.name)||"",email:(r.data&&r.data.email)||null}});
     ids.forEach(i=>{if(!out[i])out[i]={id:i,name:"",email:null}});return out}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
+/* push reminders */
+const VAPID="BGMEWrSIvSfh8ZyBAeIYV50p6mph3JzPCXlNKHKeSHni9_NzMOhuv-q78QKZeqYfG5zkIA2CuqgnG0jHh5C8byI";
+let swReg=null;if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").then(r=>swReg=r).catch(()=>{});
+const b64=s=>{const p="=".repeat((4-s.length%4)%4),r=atob((s+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from([...r].map(c=>c.charCodeAt(0)))};
+const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+window.pgPush={
+  async state(){if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window))return isIOS&&!standalone()?"needs-home":"unsupported";
+    if(Notification.permission==="denied")return "denied";const r=swReg||await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();return s&&Notification.permission==="granted"?"on":"off"},
+  async enable(){if(isIOS&&!standalone())return "needs-home";const perm=await Notification.requestPermission();if(perm!=="granted")return "denied";
+    const r=swReg||await navigator.serviceWorker.ready;let s=await r.pushManager.getSubscription();if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(VAPID)});
+    const j=s.toJSON(),id=(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(j.endpoint)));const hex=[...new Uint8Array(id)].slice(0,8).map(x=>x.toString(16).padStart(2,"0")).join("");
+    await doc(`t/${me.id}/push/${hex}`).set({sub:j,ua:navigator.userAgent.slice(0,120),at:new Date().toISOString()});return "on"},
+  async disable(){const r=swReg||await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();if(s){await s.unsubscribe()}return "off"}};
 
 /* auth screen */
 let mode="in";
@@ -672,6 +692,13 @@ function weekBars(){const ks=[...Array(7)].map((_,i)=>addDays(TODAY,i-6));
 function compareHTML(src){const ks=Object.keys(src||{}).sort();if(!ks.length)return "";const a=ks[0],b=ks[ks.length-1];
   return `<div class="cmp">${ks.length>1?`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure><figure><img src="${src[b]}" alt="תמונה אחרונה"><figcaption>${fmt(b)} · עכשיו (${daysBetween(a,b)} ימים)</figcaption></figure>`:`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure>`}</div>`}
 
+const remindHTML=who=>`<div class="card remind" id="remind"><div class="rr"><div><b>תזכורות בטלפון</b><small>${who==="coach"?"סיכום ערב על המתאמנים":"תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון"}</small></div><button type="button" class="cta" id="remBtn" hidden>הפעלה</button><span class="remst" id="remSt"></span></div><p class="hint" id="remHint" hidden></p></div>`;
+async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(!b||!window.pgPush)return;
+  const show=v=>{b.hidden=v==="on"||v==="unsupported";st.textContent=v==="on"?"פעילות ✓":"";h.hidden=!(v==="needs-home"||v==="denied"||v==="unsupported");
+    h.textContent=v==="needs-home"?"באייפון התזכורות עובדות רק מהאייקון במסך הבית. מוסיפים דרך כפתור השיתוף ← ״הוסף למסך הבית״, נכנסים מהאייקון ולוחצים כאן שוב.":v==="denied"?"ההתראות חסומות. אפשר לפתוח אותן בהגדרות הטלפון ← התראות ← פלייגראונד.":v==="unsupported"?"הדפדפן הזה לא תומך בתזכורות. באייפון פותחים מהאייקון במסך הבית, ובאנדרואיד מכרום.":"";if(v==="needs-home")b.hidden=true};
+  try{show(await pgPush.state())}catch(e){}
+  b.onclick=async()=>{if(preview){toast("מצב תצוגה — לא נשמר");return}b.disabled=true;try{const v=await pgPush.enable();show(v);if(v==="on")toast("התזכורות הופעלו")}catch(e){toast("לא הצלחנו להפעיל תזכורות")}finally{b.disabled=false}}}
+
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
 const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||""));
@@ -691,7 +718,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   if(sel===TODAY&&lastPct[TODAY]!=null&&lastPct[TODAY]<1&&pct>=1&&rq.length)setTimeout(celebrate,150);if(sel===TODAY)lastPct[TODAY]=pct;
   $("v-today").innerHTML=`
   <div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>
-  ${msgs[0]?`<div class="msg"><span class="tl">ט</span><div><small>טל · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
+  ${msgs[0]?`<div class="msg"><span class="tl">ט</span><div><small>${msgs[0].auto?"הסיכום השבועי":"טל"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
   <div class="strip">${strip}</div>
   <div class="sum"><img class="wm" src="pg-logo.png" alt="">
     <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
@@ -838,7 +865,7 @@ let wkAns=null;const WQ=[["energy","אנרגיה השבוע","נמוכה","גב�
 function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart(TODAY),cur=weekly[wk]||{},circ=(prof.weigh&&prof.weigh.circ)||[],base=prof.start&&prof.start.kg;
   if(!wkAns||(weekly[wk]&&Object.values(wkAns).every(v=>!v)))wkAns={energy:cur.energy||0,hunger:cur.hunger||0,sleep:cur.sleep||0,mood:cur.mood||0};
   const B=badges(),got=B.filter(b=>b[3]).length,bk=Object.keys(body).sort();
-  $("v-measure").innerHTML=`
+  $("v-measure").innerHTML=`${remindHTML("me")}
   <div class="sh"><h2>השבוע שלך</h2><span>ארוחות, אימונים ומים</span></div>
   <div class="card">${weekBars()}<div class="wklegend"><span><i class="bar"></i>ארוחות שסומנו</span><span><i class="o"></i>אימון</span>${habits().some(x=>x.type==="cups")?'<span><i class="d"></i>יעד מים</span>':""}</div></div>
   <div class="sh"><h2>הישגים</h2><span>${got} מתוך ${B.length}</span></div>
@@ -862,6 +889,7 @@ function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart
     if(!(kg>30&&kg<250)){toast("כתבו משקל תקין, למשל 70.4");return}if(k>TODAY){toast("אי אפשר לשקול בעתיד");return}
     const o={kg:Math.round(kg*10)/10,c:circ.map((_,i)=>{const v=parseFloat($("wC"+i).value);return v>10&&v<250?v:null})};
     weigh[k]=o;saveDoc(tp("weigh",k),o);toast("השקילה נשמרה");render()};
+  wireRemind();
   $("bodyIn").onchange=async ev=>{const f=ev.target.files[0];if(!f)return;if(preview){toast("מצב תצוגה — לא נשמר");return}
     try{toast("מעלה…");const img=await shrink(f);body[TODAY]=img;saveDoc(tp("body",TODAY),{d:TODAY,img});toast("התמונה נשמרה");render()}catch(e){toast("לא הצלחנו לקרוא את התמונה")}};
   $("wkSave").onclick=()=>{if(Object.values(wkAns).includes(0)){toast("ענו על כל 4 השאלות");return}
@@ -930,8 +958,9 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
     return `<button class="trc" type="button" data-tr="${id}"><div class="r1"><span class="av">${esc(nameOf(id).slice(0,1))}</span><div><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}<small>${esc(a.p.goal||"")} · ${a.lastAct?`פעילות אחרונה ${a.lastAct===TODAY?"היום":fmt(a.lastAct)}`:"עוד לא דיווח/ה"}</small></div><span class="pill" style="--c:${st[0]}">${st[1]}</span></div>
       <div class="stats3"><div><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות · 7 ימים</small></div><div><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div><div><b>${a.lw?a.lw.kg:"—"}</b><small>${a.dKg!=null?`${a.dKg>0?"+":""}${a.dKg} ק״ג`:"משקל"}</small></div></div></button>`}).join("")||`<div class="card"><div class="empty">עוד אין מתאמנים. שלחו להם את הקישור לאפליקציה, והם יופיעו כאן אחרי ההרשמה.</div></div>`}</div>
+  ${remindHTML("coach")}
   <p class="hint" style="text-align:center">תכניות, אימונים והודעות מוסיפים דרך Claude: ״תעלה לג׳ואן אימון…״</p>`;
-  $("cRef").onclick=()=>{coachAt=coachAt||new Date();loadCoach()}}
+  $("cRef").onclick=()=>{coachAt=coachAt||new Date();loadCoach()};wireRemind()}
 function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TODAY);if(!c.photos)loadPhotos(id);
   const D=k=>c.days[k]?getDay(k,c.days):null,circ=(p.weigh&&p.weigh.circ)||[];
   const rows=[...Array(14)].map((_,i)=>addDays(TODAY,-i)).map(k=>{const d=D(k),wl=Object.values(c.wlog).filter(l=>l.date===k);
