@@ -336,6 +336,9 @@ td:first-child,th:first-child{text-align:right}
 .alink[hidden]{display:none}
 .logout{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
 .logout[hidden]{display:none}
+.remember{display:flex;align-items:center;gap:10px;justify-content:flex-start;color:var(--muted);font-size:15px;padding:2px 4px}
+.remember input{width:20px;height:20px;accent-color:var(--hot);padding:0}
+.remember[hidden]{display:none}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><b>PLAYGROUND</b><span class="save" id="save">מתחבר…</span></div>
@@ -381,6 +384,7 @@ td:first-child,th:first-child{text-align:right}
     <form id="aForm" novalidate>
       <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
       <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
+      <label class="remember" id="aRemL"><input type="checkbox" id="aRem" checked> זכור אותי</label>
       <button class="big" type="submit" id="aGo">כניסה</button>
     </form>
     <p class="aerr" id="aErr" role="alert"></p>
@@ -437,7 +441,7 @@ function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
 function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
   $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"מתחברים עם המייל שנתתם לטל";
-  $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";
+  $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aRemL").hidden=m==="reset"||m==="forgot";
   $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
   $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
   $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
@@ -452,6 +456,7 @@ $a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.t
     else if(mode==="in")r=await SB.auth.signInWithPassword({email:em,password:pw});
     else if(mode==="reset")r=await SB.auth.updateUser({password:pw});
     else{r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});if(!r.error){$a("aErr").textContent="נשלח מייל. פותחים את הקישור שבו מהטלפון הזה";$a("aGo").disabled=false;return}}
+    if(!r.error&&(mode==="in"||mode==="up")){try{localStorage.pgRem=$a("aRem").checked?"1":"0";sessionStorage.pgLive="1"}catch(e){}}
     if(r.error)$a("aErr").textContent=HE[r.error.message]||r.error.message;
     else if(mode==="up"&&!r.data.session)$a("aErr").textContent="נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים";
     else if(mode==="reset"){showAuth(false);if(!booted)go_()}
@@ -463,7 +468,9 @@ SB.auth.onAuthStateChange((ev,s)=>{me=s&&s.user?{id:s.user.id,email:s.user.email
   if(ev==="PASSWORD_RECOVERY"){showAuth(true);setMode("reset");return}
   if(me&&!booted&&mode!=="reset"){showAuth(false);go_()}
   if(ev==="SIGNED_OUT"&&booted)location.reload()});
-SB.auth.getSession().then(({data})=>{if(!data.session){showAuth(true);setMode("in")}});
+(async()=>{let forget=false;try{forget=localStorage.pgRem==="0"&&!sessionStorage.pgLive}catch(e){}
+  if(forget){await SB.auth.signOut({scope:"local"});showAuth(true);setMode("in");return}
+  const {data}=await SB.auth.getSession();if(!data.session){showAuth(true);setMode("in")}})();
 })();
 </script>
 <script>
