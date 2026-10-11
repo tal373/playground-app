@@ -1,0 +1,890 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פלייגראונד</title>
+<meta name="theme-color" content="#081325">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="פלייגראונד">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-512.png"><link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap">
+<style>*{box-sizing:border-box}html,body{margin:0}
+/* Layout: Playground-branded phone app. Mor: Today (day strip, summary, 5 meal cards with option sheets, daily habits, note) / Menu (her full plan) / Measures (weekly weigh-in, circumferences, weekly check-in). Tal (owner only): live coach dashboard. Single committed navy look from the logo. */
+:root{
+  color-scheme:dark;
+  --bg:#081325; --navy:#0c1d33; --s1:#11243e; --s2:#173050; --s3:#22406a; --line:#ffffff17;
+  --ink:#f5f7fb; --muted:#93a6c2; --dim:#5f7596;
+  --hot:#ff6b4a; --food:#7bd389; --habit:#ffc857; --mes:#5bb8ff; --wk:#9d8cff;
+  --ok:#4fd18b; --warn:#ffc857; --bad:#ff5a5a;
+  --font:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);direction:rtl;font-size:16px;line-height:1.45;font-variant-numeric:tabular-nums;overflow-x:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{border:0;background:none;cursor:pointer}
+button:disabled{cursor:default}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:12px}
+.app{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:12px 120px;position:relative}
+.app::before{content:"";position:fixed;inset:-10% -30% auto;height:520px;background:radial-gradient(closest-side,#1d4a8a55,transparent 70%),radial-gradient(closest-side at 85% 30%,#7bd3891a,transparent 70%);pointer-events:none;z-index:0}
+.app>*{position:relative;z-index:1}
+.view{display:flex;flex-direction:column;gap:18px;animation:fade .3s ease}
+.view[hidden]{display:none!important}
+@keyframes fade{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.brand{display:flex;align-items:center;gap:10px;padding-top:4px}
+.brand img{height:22px;width:auto}
+.brand b{font-weight:800;letter-spacing:.18em;font-size:13px;direction:ltr}
+.save{margin-inline-start:auto;font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.save.ok{color:var(--ok)} .save.err{color:var(--bad);border-color:#ff5a5a66}
+.banner{background:#ffc85722;border:1px solid #ffc85766;border-radius:16px;padding:12px 14px;font-size:14px}
+.banner[hidden]{display:none}
+
+.hello{display:flex;align-items:center;gap:12px}
+.avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;background:var(--s2);border:2px solid var(--food);flex:none}
+.hello div{display:flex;flex-direction:column;min-width:0}
+.hello small{color:var(--muted);font-size:13px}
+.hello b{font-size:20px;font-weight:700}
+
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dy{display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:8px 0}
+.dy small{font-size:11px;color:var(--muted)}
+.dy b{font-size:15px;font-weight:600}
+.dy i{width:6px;height:6px;border-radius:50%;background:transparent}
+.dy.has i{background:var(--food)}
+.dy[aria-pressed="true"]{background:var(--ink);color:var(--navy)}
+.dy[aria-pressed="true"] small{color:var(--navy)}
+
+.sum{background:linear-gradient(160deg,var(--s2),var(--navy) 65%);border:1px solid var(--line);border-radius:26px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;position:relative;overflow:hidden}
+.sum .wm{position:absolute;left:-30px;bottom:-34px;width:170px;opacity:.06;pointer-events:none}
+.ring{width:104px;height:104px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .tr{fill:none;stroke:#ffffff14;stroke-width:10}
+.ring .br{fill:none;stroke:var(--food);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .6s}
+.ring .in{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .in b{font-size:24px;font-weight:800;line-height:1}
+.ring .in small{font-size:11px;color:var(--muted)}
+.facts{display:flex;flex-direction:column;gap:8px;min-width:0}
+.fact{display:flex;align-items:center;gap:8px;font-size:14px}
+.fact i{width:9px;height:9px;border-radius:50%;flex:none}
+.fact span{margin-inline-start:auto;color:var(--muted);font-size:13px;text-align:left}
+.sum .cap{grid-column:1/-1;font-size:12px;color:var(--dim);margin:0}
+
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sh h2{margin:0;font-size:19px;font-weight:700}
+.sh span{color:var(--muted);font-size:13px}
+
+.meal{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:12px;text-align:right;width:100%}
+.meal .ic{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--food) 18%,var(--s2))}
+.meal .ic svg{width:22px;height:22px;stroke:var(--food);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.meal .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.meal .tx b{font-size:16px}
+.meal .tx small{color:var(--muted);font-size:13px}
+.meal .tx em{font-style:normal;font-size:14px;color:var(--food);overflow-wrap:anywhere}
+.meal .tx em.other{color:var(--habit)}
+.meal .st{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--s3);display:grid;place-items:center}
+.meal .st svg{width:14px;height:14px;stroke:var(--navy);stroke-width:3;fill:none;opacity:0}
+.meal.done .st{background:var(--food);border-color:var(--food)}
+.meal.done .st svg{opacity:1}
+.meal.done .ic{background:var(--food)}
+.meal.done .ic svg{stroke:var(--navy)}
+
+.card{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card>b{font-size:16px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tog{display:flex;align-items:center;gap:12px;background:var(--s2);border-radius:14px;padding:12px;text-align:right;width:100%}
+.tog .bx{flex:none;width:24px;height:24px;border-radius:8px;border:2px solid var(--s3);display:grid;place-items:center}
+.tog .bx svg{width:13px;height:13px;stroke:var(--navy);stroke-width:3;fill:none;opacity:0}
+.tog[aria-pressed="true"] .bx{background:var(--habit);border-color:var(--habit)}
+.tog[aria-pressed="true"] .bx svg{opacity:1}
+.tog span{flex:1;min-width:0}
+.tog small{display:block;color:var(--muted);font-size:12.5px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:600;font-size:14px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--navy)}
+.lbl{font-size:13px;color:var(--muted)}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:40px;height:40px;border-radius:12px;background:var(--s2);font-size:20px;font-weight:700}
+.stepper b{min-width:28px;text-align:center;font-size:20px}
+.hint{font-size:12.5px;color:var(--muted)}
+.hint.warn{color:var(--warn)}
+textarea,input[type=number],input[type=text],input[type=date]{background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;width:100%;resize:none;min-width:0}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:#000a;z-index:30;opacity:0;pointer-events:none;transition:opacity .25s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-width:520px;margin:0 auto;background:var(--s1);border-radius:28px 28px 0 0;border:1px solid var(--line);border-bottom:0;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-height:88%;overflow-y:auto}
+.sheet.open{transform:none}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--s3);margin:0 auto 14px}
+.sheet h3{margin:0 0 4px;font-size:22px}
+.sheet .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.sheet h4{margin:16px 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--line);border-radius:16px;padding:12px;text-align:right;width:100%}
+.opt span{flex:1;min-width:0}
+.opt b{display:block;font-size:15px}
+.opt small{display:block;color:var(--muted);font-size:13px}
+.opt .rd{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--s3)}
+.opt[aria-pressed="true"]{border-color:var(--food);background:color-mix(in srgb,var(--food) 14%,var(--s2))}
+.opt[aria-pressed="true"] .rd{border:7px solid var(--food)}
+.opt:disabled{opacity:.4}
+.note-k{background:#ffc85722;border-radius:12px;padding:8px 12px;font-size:13px;color:var(--habit)}
+.btns{display:flex;gap:10px;margin-top:14px}
+.cta{flex:1;display:flex;align-items:center;justify-content:center;background:var(--ink);color:var(--navy);border-radius:16px;padding:14px;font-weight:800;font-size:16px}
+.ghost{flex:none;border:1px solid var(--line);border-radius:16px;padding:14px 18px;color:var(--muted);font-weight:600}
+
+/* menu view */
+.goal{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.goal div{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:12px}
+.goal b{display:block;font-size:20px;font-weight:800}
+.goal small{color:var(--muted);font-size:12.5px}
+.msec{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:16px}
+.msec h3{margin:0;font-size:18px}
+.msec .k{color:var(--food);font-size:13px;font-weight:600}
+.msec ol,.msec ul{margin:10px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:15px;color:#d5deeb}
+.msec li small{color:var(--muted)}
+.msec h4{margin:12px 0 0;font-size:14px;color:var(--muted)}
+
+/* measures */
+.mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mrow label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+.hist{display:flex;flex-direction:column}
+.hist div{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist em{font-style:normal;color:var(--muted)}
+.q{display:flex;flex-direction:column;gap:6px}
+.q b{font-size:15px}
+.five{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;direction:ltr}
+.five button{background:var(--s2);border-radius:12px;padding:10px 0;font-weight:700}
+.five button[aria-pressed="true"]{background:var(--wk);color:var(--navy)}
+.legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim)}
+
+.chart{width:100%;height:140px;direction:ltr;display:block}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .base{stroke:var(--dim);stroke-width:1;stroke-dasharray:4 4}
+.chart text{fill:var(--muted);font-size:10px;font-family:var(--font)}
+.chart .ln{fill:none;stroke:var(--mes);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.chart .pt{fill:var(--bg);stroke:var(--mes);stroke-width:2}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:12px 0}
+
+/* coach */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.kpi{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:13px}
+.kpi b{display:block;font-size:24px;font-weight:800}
+.kpi small{color:var(--muted);font-size:12.5px}
+.kpi em{font-style:normal;font-size:12.5px;font-weight:600}
+.flags{display:flex;flex-direction:column;gap:8px}
+.flag{display:flex;gap:10px;align-items:center;background:var(--s1);border:1px solid var(--line);border-inline-start:4px solid var(--c);border-radius:14px;padding:11px 13px;font-size:14.5px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:18px;background:var(--s1)}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:13.5px}
+th,td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600;font-size:12px}
+td:first-child,th:first-child{text-align:right}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.feed{display:flex;flex-direction:column}
+.feed div{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;overflow-wrap:anywhere}
+.feed em{font-style:normal;color:var(--dim);font-size:12px;display:block}
+.photo-btn{position:relative;display:flex;justify-content:center;background:var(--s2);border:1px dashed var(--dim);border-radius:16px;padding:14px;font-weight:700;cursor:pointer}
+.photo-btn input{position:absolute;opacity:0;width:1px;height:1px}
+.photo-btn:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+.ph{width:100%;max-height:240px;object-fit:cover;border-radius:16px;margin-top:10px;display:block}
+.meal .th{flex:none;width:44px;height:44px;border-radius:14px;object-fit:cover}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gal figure{margin:0;min-width:0}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;display:block}
+.gal figcaption{font-size:11px;color:var(--muted);margin-top:3px}
+.cups{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.cup{aspect-ratio:3/4;border-radius:7px 7px 11px 11px;border:2px solid var(--s3);position:relative;overflow:hidden;padding:0}
+.cup::after{content:"";position:absolute;inset:auto 0 0;height:0;background:var(--mes);transition:height .25s}
+.cup[aria-pressed="true"]{border-color:var(--mes)}
+.cup[aria-pressed="true"]::after{height:78%}
+.danger{color:var(--bad);font-size:13px;text-decoration:underline;align-self:center;padding:8px}
+
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:20;padding:10px 12px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%);display:flex;justify-content:center}
+.navin{display:flex;gap:2px;background:#11243eee;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:999px;padding:5px}
+.nb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 14px;border-radius:999px;color:var(--muted);font-weight:600;font-size:11.5px;min-width:66px}
+.nb[hidden]{display:none}
+.nb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nb[aria-current="page"]{background:var(--ink);color:var(--navy)}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:var(--navy);font-weight:700;border-radius:999px;padding:10px 18px;opacity:0;transition:all .3s;z-index:60;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%)}
+@media (max-width:380px){.nb{min-width:56px;padding:7px 9px}.mrow{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important}}
+
+/* Joanne: water in liters, issue chips, workout blocks */
+.avatar{border-color:var(--wk)}
+.cups{grid-template-columns:repeat(12,1fr)}
+.issues button[aria-pressed="true"]{background:var(--warn);color:var(--navy)}
+.wo-hero{background:linear-gradient(160deg,var(--s2),var(--navy) 65%);border:1px solid var(--line);border-radius:26px;padding:18px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.wo-hero .wm{position:absolute;left:-30px;bottom:-34px;width:170px;opacity:.06;pointer-events:none}
+.wo-hero small{color:var(--hot);font-weight:700;font-size:12.5px;letter-spacing:.04em}
+.wo-hero h2{margin:0;font-size:24px;line-height:1.15;text-wrap:balance}
+.wo-hero p{margin:0;color:var(--muted);font-size:14px}
+.wo-prog{height:6px;border-radius:3px;background:var(--s3);overflow:hidden;margin-top:8px}
+.wo-prog i{display:block;height:100%;background:var(--hot);transition:width .4s}
+.blk{background:var(--s1);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.blk.done{border-color:var(--ok)}
+.blk-h{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.blk-h .n{flex:none;width:30px;height:30px;border-radius:10px;background:var(--s2);display:grid;place-items:center;font-weight:800;font-size:14px}
+.blk.done .blk-h .n{background:var(--ok);color:var(--navy)}
+.blk-h div{flex:1;min-width:0}
+.blk-h b{display:block;font-size:16px}
+.blk-h small{color:var(--hot);font-size:13px;font-weight:600}
+.ex-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.ex-row:last-of-type{border-bottom:0}
+.ex-row div{flex:1;min-width:0}
+.ex-row b{display:block;font-size:15px;direction:ltr;text-align:right}
+.ex-row small{display:block;color:var(--muted);font-size:13px}
+.ex-row a{flex:none;display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);background:var(--s2);border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:600}
+.ex-row a svg{width:10px;height:10px;fill:var(--hot);transform:scaleX(-1)}
+.blk-f{padding:12px 16px}
+.blk-f button{width:100%;border-radius:14px;padding:12px;font-weight:700;background:var(--s2);color:var(--ink)}
+.blk.done .blk-f button{background:var(--ok);color:var(--navy)}
+.feel{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.feel button{background:var(--s2);border-radius:12px;padding:10px 4px;font-size:12.5px;font-weight:600;line-height:1.2}
+.feel button[aria-pressed="true"]{background:var(--hot);color:var(--navy)}
+.past{display:flex;flex-direction:column;gap:8px}
+.past button{display:flex;justify-content:space-between;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-align:right;width:100%}
+.past button small{color:var(--muted)}
+.wk-ok{color:var(--ok);font-weight:700}
+
+/* unified app additions */
+[hidden]{display:none!important}
+.sets{display:flex;flex-direction:column;gap:6px;padding:0 16px 12px}
+.setrow{display:grid;grid-template-columns:44px 1fr 1fr 44px;gap:8px;align-items:center}
+.setrow span{font-size:12.5px;color:var(--muted)}
+.setrow input{padding:9px 10px;border-radius:12px;text-align:center}
+.setrow .ok{width:40px;height:40px;border-radius:12px;border:2px solid var(--s3);display:grid;place-items:center}
+.setrow .ok svg{width:14px;height:14px;stroke:var(--navy);stroke-width:3;fill:none;opacity:0}
+.setrow .ok[aria-pressed="true"]{background:var(--ok);border-color:var(--ok)}
+.setrow .ok[aria-pressed="true"] svg{opacity:1}
+.prev{font-size:12px;color:var(--habit);padding:0 16px 8px}
+.painsel{display:flex;align-items:center;gap:8px;padding:0 16px 12px;font-size:13px;color:var(--muted)}
+.painsel select{background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:6px 8px;color:var(--ink)}
+.go-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--hot);color:var(--navy);border-radius:16px;padding:14px;font-weight:800;font-size:16px;width:100%;margin-top:8px}
+.msg{display:flex;gap:12px;background:linear-gradient(135deg,#ff6b4a26,#ff6b4a08);border:1px solid #ff6b4a40;border-radius:20px;padding:14px}
+.msg .tl{flex:none;width:38px;height:38px;border-radius:50%;background:var(--hot);color:var(--navy);display:grid;place-items:center;font-weight:800}
+.msg small{color:var(--hot);font-weight:700;font-size:12.5px}
+.msg p{margin:2px 0 0;font-size:15px;white-space:pre-wrap}
+.trc{display:flex;flex-direction:column;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:14px;text-align:right;width:100%}
+.trc .r1{display:flex;align-items:center;gap:12px}
+.trc .av{flex:none;width:42px;height:42px;border-radius:50%;background:var(--s2);display:grid;place-items:center;font-weight:800}
+.trc .r1 div{flex:1;min-width:0}
+.trc b{display:block;font-size:16px}
+.trc small{color:var(--muted);font-size:13px}
+.pill{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;color:var(--navy);background:var(--c)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stats3 div{background:var(--s2);border-radius:12px;padding:8px;text-align:center}
+.stats3 b{font-size:16px}
+.stats3 small{display:block;font-size:11.5px}
+.back{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:600;padding:4px 0}
+.assign{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.assign select{flex:1;min-width:0;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--ink)}
+.assign button{background:var(--ink);color:var(--navy);font-weight:700;border-radius:12px;padding:10px 16px}
+.player{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.player.open{transform:none}
+.pin{max-width:520px;width:100%;margin:0 auto;height:100%;display:flex;flex-direction:column;gap:14px;padding:calc(14px + env(safe-area-inset-top,0px)) 18px calc(18px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+.ptop{display:flex;align-items:center;gap:12px}
+.x{width:40px;height:40px;border-radius:50%;background:var(--s1);display:grid;place-items:center;flex:none}
+.x svg{width:16px;height:16px;stroke:var(--ink);stroke-width:2.4}
+.seg{flex:1;height:5px;border-radius:3px;background:var(--s3);overflow:hidden}
+.seg i{display:block;height:100%;background:var(--hot)}
+.stage{flex:1;min-height:220px;border-radius:26px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:20px;background:radial-gradient(circle at 70% 15%,#ff6b4a40,transparent 60%),var(--s1);border:1px solid var(--line)}
+.stage small{color:var(--hot);font-weight:700}
+.stage h2{margin:0;font-size:25px;line-height:1.15;direction:ltr;text-align:right}
+.stage p{margin:0;color:#c9d4e4;font-size:15px}
+.stage .vids{display:flex;gap:8px;flex-wrap:wrap}
+.stage .vids a{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);background:#00000055;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:600}
+.stage .vids svg{width:10px;height:10px;fill:var(--hot);transform:scaleX(-1)}
+.meter{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.meter div{background:var(--s1);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.meter small{color:var(--muted);font-size:13px}
+.meter b{font-size:26px;font-weight:800}
+.meter input{font-size:22px;font-weight:800;text-align:center;padding:8px}
+.big{background:var(--hot);color:var(--navy);border-radius:20px;padding:18px;font-weight:800;font-size:18px;width:100%}
+.rest{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.rest[hidden],.work[hidden]{display:none!important}
+.work{flex:1;display:flex;flex-direction:column;gap:12px}
+.rring{width:min(68vw,240px);aspect-ratio:1;position:relative}
+.rring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.rring .tr{fill:none;stroke:var(--s2);stroke-width:8}
+.rring .br{fill:none;stroke:var(--hot);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.rring .in{position:absolute;inset:0;display:grid;place-content:center}
+.rring .in b{font-size:58px;font-weight:800;line-height:1}
+.rb{display:flex;gap:10px}
+.rb button{background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:12px 20px;font-weight:700}
+.pnav{display:flex;justify-content:space-between}
+.pnav button{color:var(--muted);font-weight:600;font-size:14px;padding:6px 2px}
+.welcome{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;text-align:center}
+.welcome img{width:140px}
+.welcome h1{margin:0;font-size:28px}
+.welcome p{margin:0;color:var(--muted);max-width:34ch}
+.pvbar{position:sticky;top:8px;z-index:30;display:flex;align-items:center;gap:10px;background:var(--hot);color:var(--navy);border-radius:16px;padding:10px 14px;margin-bottom:10px}
+.pvbar span{font-size:12.5px;opacity:.8}
+.pvbar button{margin-inline-start:auto;background:var(--navy);color:var(--ink);border-radius:12px;padding:8px 12px;font-weight:700}
+.pvbar[hidden]{display:none!important}
+/* login */
+.auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.auth[hidden]{display:none!important}
+.authin{width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px;text-align:center}
+.authin img{width:150px;margin:0 auto 8px}
+.authin h1{margin:0;font-size:26px}
+.authin p{margin:0;color:var(--muted)}
+.authin form{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.authin input{font-size:17px;padding:14px;border-radius:14px;text-align:left}
+.authin input[hidden]{display:none}
+.aerr{min-height:1.4em;color:var(--warn);font-size:14px}
+.alink{color:var(--muted);font-weight:600;padding:6px;text-decoration:underline;text-underline-offset:3px}
+.alink[hidden]{display:none}
+.logout{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.logout[hidden]{display:none}
+</style></head><body>
+<div class="app">
+  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><b>PLAYGROUND</b><span class="save" id="save">מתחבר…</span></div>
+  <div class="banner" id="banner" hidden></div>
+  <div class="pvbar" id="pvbar" hidden><b></b><span>לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
+  <section class="view" id="v-today"></section>
+  <section class="view" id="v-workout" hidden></section>
+  <section class="view" id="v-menu" hidden></section>
+  <section class="view" id="v-measure" hidden></section>
+  <section class="view" id="v-coach" hidden></section>
+</div>
+
+<nav class="nav" id="nav" hidden><div class="navin">
+  <button class="nb" type="button" data-tab="today"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>היום</button>
+  <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>אימון</button>
+  <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
+  <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
+  <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>מתאמנים</button>
+</div></nav>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="בחירת ארוחה"></div>
+<div class="toast" id="toast" role="status"></div>
+
+<div class="player" id="player" role="dialog" aria-modal="true" aria-label="אימון מודרך">
+  <div class="pin">
+    <div class="ptop"><button class="x" id="pClose" type="button" aria-label="סגירה"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg></button><div class="seg"><i id="pBar"></i></div></div>
+    <div class="work" id="pWork"></div>
+    <div class="rest" id="pRest" hidden>
+      <small style="color:var(--muted)">מנוחה</small>
+      <div class="rring"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="rBar" cx="100" cy="100" r="90"/></svg><div class="in"><b id="rSec">60</b></div></div>
+      <div id="rNext" style="color:var(--muted)"></div>
+      <div class="rb"><button type="button" id="rPlus">+15 שנ׳</button><button type="button" id="rSkip">דלג</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="auth" id="auth" hidden>
+  <div class="authin">
+    <img src="pg-logo.png" alt="Playground">
+    <h1 id="aTitle">כניסה לאפליקציה</h1>
+    <p id="aSub">מתחברים עם המייל שנתתם לטל</p>
+    <form id="aForm" novalidate>
+      <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
+      <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
+      <button class="big" type="submit" id="aGo">כניסה</button>
+    </form>
+    <p class="aerr" id="aErr" role="alert"></p>
+    <button type="button" class="alink" id="aSwitch">פעם ראשונה כאן? הרשמה</button>
+    <button type="button" class="alink" id="aForgot">שכחתי סיסמה</button>
+  </div>
+</div>
+<button type="button" class="logout" id="aOut" hidden>התנתקות</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* Supabase backend behind the same db/user API the app already uses */
+(()=>{
+const SB=window.supabase.createClient("https://rrqngqxrcvhaeeudrhjz.supabase.co","sb_publishable_Cxxhu4h4CFtIUpqxcb-FTg_DIvC16lY");
+const $a=id=>document.getElementById(id);
+{const br=document.querySelector(".brand");if(br)br.appendChild($a("aOut"))}
+let me=null,readyRes;const ready=new Promise(r=>readyRes=r);
+const parentOf=p=>p.split("/").slice(0,-1).join("/"),idOf=p=>p.split("/").pop();
+const snap=(path,row)=>({id:idOf(path),exists:!!row,data:()=>row?row.data:undefined});
+const E=e=>{const x=new Error((e&&e.message)||"error");x.code=(e&&(e.code==="42501"||/row-level security/i.test(e.message||"")))?"invalid_argument":"unavailable";return x};
+const withMe=(path,d)=>me&&path===`t/${me.id}`?{...d,email:me.email}:d;
+/* live updates: one channel, fan out to listeners */
+const L=new Set();let chan=null;
+function live(){if(chan)return;chan=SB.channel("docs").on("postgres_changes",{event:"*",schema:"public",table:"docs"},pl=>{const r=(pl.new&&pl.new.path)?pl.new:pl.old;L.forEach(f=>{try{f(r||{})}catch(e){}})}).subscribe()}
+function listen(match,refetch){let t=null;const f=r=>{if(r.path&&!match(r))return;clearTimeout(t);t=setTimeout(refetch,250)};L.add(f);
+  const onVis=()=>{if(!document.hidden)refetch()};document.addEventListener("visibilitychange",onVis);
+  return ()=>{L.delete(f);document.removeEventListener("visibilitychange",onVis)}}
+function doc(path){return{
+  async get(){const {data,error}=await SB.from("docs").select("path,data").eq("path",path).maybeSingle();if(error)throw E(error);return snap(path,data)},
+  async set(d){const {error}=await SB.from("docs").upsert({path,parent:parentOf(path),data:withMe(path,d)});if(error)throw E(error)},
+  async update(d){const cur=await this.get();const {error}=await SB.from("docs").upsert({path,parent:parentOf(path),data:withMe(path,{...(cur.exists?cur.data():{}),...d})});if(error)throw E(error)},
+  async delete(){const {error}=await SB.from("docs").delete().eq("path",path);if(error)throw E(error)},
+  onSnapshot(cb,ecb){const run=()=>this.get().then(cb,e=>ecb&&ecb(e));run();return listen(r=>r.path===path,run)}}}
+function coll(path,filters=[]){return{
+  doc:id=>doc(`${path}/${id}`),
+  where(f,op,v){return coll(path,[...filters,[f,op,v]])},
+  async get(){let q=SB.from("docs").select("path,data").eq("parent",path).limit(1000);
+    for(const [f,op,v] of filters){const k=`data->>${f}`;q=op===">="?q.gte(k,v):op==="<="?q.lte(k,v):op===">"?q.gt(k,v):op==="<"?q.lt(k,v):q.eq(k,v)}
+    const {data,error}=await q;if(error)throw E(error);return {docs:(data||[]).map(r=>snap(r.path,r))}},
+  onSnapshot(cb,ecb){const run=()=>this.get().then(cb,e=>ecb&&ecb(e));run();return listen(r=>r.parent===path||(r.path&&parentOf(r.path)===path),run)}}}
+const db={doc,collection:p=>coll(p)};
+const user={
+  async id(){return me&&me.id},
+  async isOwner(){const {data}=await SB.rpc("is_admin");return !!data},
+  async can(){return true},
+  async profiles(ids){const out={};if(!ids.length)return out;
+    const {data}=await SB.from("docs").select("path,data").in("path",ids.map(i=>`t/${i}`));
+    (data||[]).forEach(r=>{const id=idOf(r.path);out[id]={id,name:(r.data&&r.data.name)||"",email:(r.data&&r.data.email)||null}});
+    ids.forEach(i=>{if(!out[i])out[i]={id:i,name:"",email:null}});return out}};
+window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
+
+/* auth screen */
+let mode="in";
+function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
+function setMode(m){mode=m;$a("aErr").textContent="";
+  $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
+  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"מתחברים עם המייל שנתתם לטל";
+  $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";
+  $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
+  $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
+  $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
+$a("aSwitch").onclick=()=>setMode(mode==="in"?"up":"in");
+$a("aForgot").onclick=()=>setMode("forgot");
+const HE={"Invalid login credentials":"מייל או סיסמה לא נכונים","User already registered":"המייל הזה כבר רשום. נסו כניסה","Email not confirmed":"צריך לאשר את המייל דרך הקישור שנשלח"};
+$a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.trim().toLowerCase(),pw=$a("aPass").value;$a("aErr").textContent="";
+  if(mode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){$a("aErr").textContent="צריך מייל תקין";return}
+  if(mode!=="forgot"&&pw.length<6){$a("aErr").textContent="סיסמה של לפחות 6 תווים";return}
+  $a("aGo").disabled=true;let r;
+  try{if(mode==="up")r=await SB.auth.signUp({email:em,password:pw});
+    else if(mode==="in")r=await SB.auth.signInWithPassword({email:em,password:pw});
+    else if(mode==="reset")r=await SB.auth.updateUser({password:pw});
+    else{r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});if(!r.error){$a("aErr").textContent="נשלח מייל. פותחים את הקישור שבו מהטלפון הזה";$a("aGo").disabled=false;return}}
+    if(r.error)$a("aErr").textContent=HE[r.error.message]||r.error.message;
+    else if(mode==="up"&&!r.data.session)$a("aErr").textContent="נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים";
+    else if(mode==="reset"){showAuth(false);if(!booted)go_()}
+  }finally{$a("aGo").disabled=false}};
+$a("aOut").onclick=async()=>{await SB.auth.signOut();location.reload()};
+let booted=false;
+function go_(){booted=true;live();readyRes()}
+SB.auth.onAuthStateChange((ev,s)=>{me=s&&s.user?{id:s.user.id,email:s.user.email}:null;
+  if(ev==="PASSWORD_RECOVERY"){showAuth(true);setMode("reset");return}
+  if(me&&!booted&&mode!=="reset"){showAuth(false);go_()}
+  if(ev==="SIGNED_OUT"&&booted)location.reload()});
+SB.auth.getSession().then(({data})=>{if(!data.session){showAuth(true);setMode("in")}});
+})();
+</script>
+<script>
+/* ===== helpers ===== */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const dk=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const fromKey=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(k,n)=>{const d=fromKey(k);d.setDate(d.getDate()+n);return dk(d)};
+const weekStart=k=>{const d=fromKey(k);d.setDate(d.getDate()-d.getDay());return dk(d)};
+const DN=["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
+const fmt=k=>{if(!k)return "";const d=fromKey(k);return `${DN[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}`};
+const daysBetween=(a,b)=>Math.round((fromKey(b)-fromKey(a))/864e5);
+const Lit=c=>{const v=c*0.25;return (Math.round(v*100)/100).toString()};
+const toast=t=>{const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),1900)};
+const CHK='<svg viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg>';
+const PLAY='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>';
+const IC={sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/>',food:'<path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/>',apple:'<path d="M12 7c-2-2-6-1-6 4 0 4 3 9 6 8 3 1 6-4 6-8 0-5-4-6-6-4zM12 7c0-2 1-3 3-4"/>',moon:'<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>'};
+const TODAY=dk();
+const FEEL=["","קל מדי","קל","בדיוק","קשה","קשה מאוד"];
+
+/* ===== state ===== */
+let db=null,user=null,isOwner=false,uid=null,prof=null,readOnly=false,booted=false,preview=null,ownerUid=null;
+const W={},MSG={},days={},weigh={},weekly={},wlog={},photos={};
+let tab="today",sel=TODAY,woSel=null;
+const tp=(c,id)=>`t/${uid}/${c}${id?"/"+id:""}`;
+const meals=()=>((prof&&prof.menu&&prof.menu.meals)||[]);
+const reqMeals=()=>meals().filter(m=>!m.optional);
+const habits=()=>((prof&&prof.habits)||[]);
+const blank=()=>({meals:{},h:{},note:""});
+const getDay=(k,src=days)=>{const d=src[k];return d?Object.assign(blank(),JSON.parse(JSON.stringify(d))):blank()};
+function mealDone(day,m){const x=day.meals[m.id];return !!x&&(Object.keys(x.sel||{}).length>0||!!(x.x&&x.x.trim())||!!x.ph||!!x.skip)}
+const mealsCount=(day,ms)=>(ms||reqMeals()).filter(m=>mealDone(day,m)).length;
+const hasData=d=>!!d&&(Object.keys(d.meals||{}).length>0||Object.values(d.h||{}).some(v=>Array.isArray(v)?v.length:!!v)||!!(d.note||"").trim());
+function mealLabel(day,m){const x=day.meals[m.id];if(!x)return null;if(x.skip)return {t:"דילגתי"};
+  const parts=Object.entries(x.sel||{}).map(([g,i])=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]:"").filter(Boolean);
+  if(parts.length)return {t:parts.join(" + ")};if(x.x&&x.x.trim())return {t:x.x,other:true};if(x.ph)return {t:"צילום ארוחה"};return null}
+function hv(h,v){if(h.type==="toggle")return v?"✓":"—";if(h.type==="cups")return h.liters?`${Lit(v||0)} ל׳`:`${v||0}/${h.target||h.max}`;
+  if(h.type==="counter")return `${v||0}${h.max?"/"+h.max:""}`;if(h.type==="choice"){const o=(h.opts||[]).find(o=>o[0]===(v||""));return o?o[1]:"—"}
+  if(h.type==="chips")return (v||[]).join(", ")||"—";return ""}
+
+/* ===== saving ===== */
+const timers={},inflight={},queued={};
+function setSave(t,c){const el=$("save");el.textContent=t;el.className="save "+(c||"")}
+function showBanner(t){const b=$("banner");b.textContent=t;b.hidden=false}
+function saveDoc(path,data){if(!db){setSave("לא מחובר","err");return}if(preview){toast("מצב תצוגה — לא נשמר");return}if(readOnly){toast("אין הרשאת שמירה");return}
+  queued[path]=data;setSave("שומר…");clearTimeout(timers[path]);timers[path]=setTimeout(()=>pump(path),600)}
+async function pump(path){if(inflight[path])return;
+  while(queued[path]){const d=queued[path];delete queued[path];inflight[path]=true;
+    try{await db.doc(path).set(d);setSave("נשמר ✓","ok")}
+    catch(e){if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,900));try{await db.doc(path).set(d);setSave("נשמר ✓","ok")}catch(e2){fail(e2)}}else fail(e)}
+    inflight[path]=false}}
+function fail(e){const c=e&&e.code;setSave("לא נשמר","err");
+  if(c==="invalid_argument"&&!isOwner){readOnly=true;showBanner("השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.")}
+  else if(c==="quota_exceeded")showBanner("נגמר המקום לשמירת נתונים. ספרו לטל.")}
+const busy=p=>!!(queued[p]||inflight[p]);
+function updDay(k,fn){if(preview){toast("מצב תצוגה — לא נשמר");return}const d=getDay(k);fn(d);days[k]=d;saveDoc(tp("days",k),d)}
+
+let dirty=false;
+const typing=()=>{const a=document.activeElement;return a&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="file"))&&!$("sheet").contains(a)&&!$("player").contains(a)};
+function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
+  if(!isOwner&&!prof){renderWelcome();return}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach})[tab]()}
+document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
+
+function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
+  $("v-today").innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>ברוכים הבאים לפלייגראונד</h1><p>${uid?"קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין."}</p></div>`}
+
+/* ===== TODAY ===== */
+const RC=2*Math.PI*44;
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||""));
+const logId=(wid,date)=>`${wid}_${date}`;
+function todayWorkout(){const l=woList();return l[0]||null}
+function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
+  const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
+  const first=(prof.name||"").split(" ")[0];
+  let strip="";for(let i=6;i>=0;i--){const k=addDays(TODAY,-i),d=fromKey(k);
+    strip+=`<button class="dy ${hasData(days[k])||Object.keys(wlog).some(x=>x.endsWith("_"+k)&&wlog[x].done)?"has":""}" type="button" data-day="${k}" aria-pressed="${k===sel}"><small>${i===0?"היום":DN[d.getDay()]}</small><b>${d.getDate()}</b><i></i></button>`}
+  const msgs=Object.keys(MSG).map(id=>({id,...MSG[id]})).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
+  const wo=todayWorkout(),wl=wo&&wlog[logId(wo.id,sel)],hs=habits().filter(x=>!x.dow||x.dow.includes(dow));
+  const facts=[];if(rq.length)facts.push(["var(--food)","ארוחות",`${mc}/${rq.length}`]);
+  if(wo)facts.push(["var(--hot)","אימון",wl&&wl.done?"בוצע ✓":"מחכה"]);
+  hs.slice(0,3).forEach(x=>facts.push(["var(--mes)",x.short||x.t,hv(x,day.h[x.id])]));
+  const pct=rq.length?mc/rq.length:(wl&&wl.done?1:0);
+  $("v-today").innerHTML=`
+  <div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>
+  ${msgs[0]?`<div class="msg"><span class="tl">ט</span><div><small>טל · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
+  <div class="strip">${strip}</div>
+  <div class="sum"><img class="wm" src="pg-logo.png" alt="">
+    <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
+    <div class="facts">${facts.map(f=>`<div class="fact"><i style="background:${f[0]}"></i>${esc(f[1])}<span>${esc(f[2])}</span></div>`).join("")}</div>
+    ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
+  </div>
+  ${wo?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#ff6b4a55"><span class="ic" style="background:#ff6b4a22"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
+  ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
+  ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
+    return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
+  ${hs.length?`<div class="sh"><h2>הרגלים</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
+  <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}
+function habitHTML(x,day){const v=day.h[x.id];
+  if(x.type==="toggle")return `<button class="tog" type="button" data-h="${x.id}" aria-pressed="${!!v}"><span class="bx">${CHK}</span><span>${esc(x.t)}${x.d?`<small>${esc(x.d)}</small>`:""}</span></button>`;
+  if(x.type==="cups"){const n=v||0;return `<div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b><b style="color:var(--mes)">${x.liters?Lit(n)+" ליטר":n+" "+(x.unit||"")}</b></div>
+    <div class="cups" style="grid-template-columns:repeat(${x.max},1fr)">${Array.from({length:x.max},(_,i)=>`<button class="cup" type="button" data-cup="${x.id}" data-i="${i}" aria-pressed="${i<n}" aria-label="כוס ${i+1}"></button>`).join("")}</div>${x.d?`<span class="hint">${esc(x.d)}</span>`:""}`}
+  if(x.type==="counter"){const n=v||0;return `<div class="row" style="justify-content:space-between"><span>${esc(x.t)}</span><div class="stepper"><button type="button" data-cnt="${x.id}" data-d="-1" aria-label="פחות">−</button><b>${n}</b><button type="button" data-cnt="${x.id}" data-d="1" aria-label="עוד">+</button></div></div>${x.d?`<span class="hint ${x.max&&n>x.max?"warn":""}">${esc(x.d)}</span>`:""}`}
+  if(x.type==="choice")return `<span class="lbl">${esc(x.t)}</span><div class="chips">${x.opts.map(([val,t])=>`<button type="button" data-ch="${x.id}" data-v="${esc(val)}" aria-pressed="${(v||"")===val}">${esc(t)}</button>`).join("")}</div>${x.d?`<span class="hint">${esc(x.d)}</span>`:""}`;
+  if(x.type==="chips")return `<span class="lbl">${esc(x.t)}</span><div class="chips issues">${x.opts.map(t=>`<button type="button" data-chips="${x.id}" data-v="${esc(t)}" aria-pressed="${(v||[]).includes(t)}">${esc(t)}</button>`).join("")}</div>`;
+  return ""}
+
+/* meal sheet */
+let sheetMeal=null;
+function openSheet(i){sheetMeal=i;drawSheet();$("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").scrollTop=0}
+function closeSheet(){sheetMeal=null;$("scrim").classList.remove("open");$("sheet").classList.remove("open");render()}
+$("scrim").onclick=closeSheet;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(sheetMeal!==null)closeSheet();if($("player").classList.contains("open"))closePlayer()}});
+const optBtn=(t,d,attrs,on)=>`<button class="opt" type="button" ${attrs} aria-pressed="${!!on}"><span><b>${esc(t)}</b>${d?`<small>${esc(d)}</small>`:""}</span><i class="rd"></i></button>`;
+function drawSheet(){const m=meals()[sheetMeal],day=getDay(sel),x=day.meals[m.id]||{},sl=x.sel||{},pk=sel+"-"+m.id;
+  $("sheet").innerHTML=`<div class="grab"></div><h3>${esc(m.t)}</h3><p class="sub">${esc(m.k||"")}</p>
+  <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
+  ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
+  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}</h4>`:"<div style='height:12px'></div>"}<div class="opts">${g.items.map((it,ii)=>optBtn(it[0],it[1],`data-g="${gi}" data-i="${ii}"`,sl[gi]===ii)).join("")}</div>`).join("")}
+  ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
+  ${m.optional?`<div class="opts" style="margin-top:10px">${optBtn(m.skipText||"לא היה צורך","",`data-skip="1"`,x.skip)}</div>`:""}
+  <h4>אכלתי משהו אחר</h4><textarea id="other" rows="2" placeholder="מה אכלת? טל יראה את זה">${esc(x.x||"")}</textarea>
+  <div class="btns"><button class="cta" type="button" id="shDone">סיום</button><button class="ghost" type="button" id="shClear">ניקוי</button></div>`;
+  $("photoIn").onchange=ev=>handlePhoto(ev.target.files[0],m.id);
+  $("shDone").onclick=closeSheet;
+  $("shClear").onclick=()=>{updDay(sel,d=>{delete d.meals[m.id]});drawSheet()};
+  $("other").oninput=ev=>{const v=ev.target.value;updDay(sel,d=>{const y=d.meals[m.id]||{};y.x=v;d.meals[m.id]=y})}}
+$("sheet").addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b)return;const m=meals()[sheetMeal];
+  updDay(sel,d=>{const y=d.meals[m.id]||{};y.sel=Object.assign({},y.sel||{});
+    if(b.dataset.skip){y.skip=!y.skip;if(y.skip)y.sel={}}
+    else{const g=b.dataset.g,i=+b.dataset.i;y.skip=false;if(y.sel[g]===i)delete y.sel[g];else{y.sel[g]=i;(m.groups[g].excl||[]).forEach(o=>delete y.sel[o])}}
+    d.meals[m.id]=y});drawSheet()});
+async function shrink(file){const url=URL.createObjectURL(file);
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+  let max=900,q=.72,out="";for(let t=0;t<6;t++){const s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
+    c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    out=c.toDataURL("image/jpeg",q);if(out.length<170000)break;max*=.8;q=Math.max(.4,q-.08)}
+  URL.revokeObjectURL(url);return out}
+async function handlePhoto(f,mid){if(!f)return;toast("מעלה את הצילום…");
+  try{const img=await shrink(f),k=sel+"-"+mid;photos[k]=img;updDay(sel,x=>{const y=x.meals[mid]||{};y.ph=true;x.meals[mid]=y});
+    saveDoc(tp("photos",k),{d:sel,m:mid,img});drawSheet()}catch(e){toast("לא הצלחתי לקרוא את התמונה")}}
+
+/* ===== WORKOUT ===== */
+function lastLog(wid,before){const ks=Object.keys(wlog).filter(k=>k.startsWith(wid+"_")&&k.slice(wid.length+1)<before).sort();return ks.length?wlog[ks[ks.length-1]]:null}
+function curWorkout(){const l=woList();return (woSel&&W[woSel])?{id:woSel,...W[woSel]}:l[0]}
+const getLog=(wid,date)=>Object.assign({sets:{},pain:{},done:false,feel:0,note:""},JSON.parse(JSON.stringify(wlog[logId(wid,date)]||{})));
+function setLog(wid,date,fn){const l=getLog(wid,date);fn(l);l.wid=wid;l.date=date;wlog[logId(wid,date)]=l;saveDoc(tp("wlog",logId(wid,date)),l)}
+function renderWorkout(){const list=woList();
+  if(!list.length){$("v-workout").innerHTML=`<div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>האימונים שלך</small><h2>טל עוד לא העלה אימון</h2><p>כשיעלה אימון הוא יופיע כאן, עם סרטון לכל תרגיל.</p></div>`;return}
+  const w=curWorkout(),lg=getLog(w.id,TODAY),prev=lastLog(w.id,TODAY);
+  const totalSets=(w.blocks||[]).reduce((a,b)=>a+(b.items||[]).reduce((s,it)=>s+(it.sets||0),0),0);
+  const doneSets=Object.values(lg.sets).reduce((a,arr)=>a+(arr||[]).filter(s=>s&&s.ok).length,0);
+  $("v-workout").innerHTML=`
+  <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
+    ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
+    ${totalSets?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
+  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.rest?` · מנוחה ${b.rest>=60?Math.floor(b.rest/60)+":"+pad(b.rest%60):b.rest+" שנ׳"}`:""}</small></div></div>
+    ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
+      return `<div class="ex-row"><div><b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
+      ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
+      ${it.sets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow"><span>סט ${si+1}</span><input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}"><input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
+      ${prof.painScale?`<div class="painsel">כאב בתרגיל (0–10)<select data-pain="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${String(lg.pain[key]??"")===String(v)?"selected":""}>${v===""?"—":v}</option>`).join("")}</select></div>`:""}`}).join("")}</div>`).join("")}
+  <div class="card"><b>איך היה האימון?</b>
+    <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
+    <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
+    <div class="btns" style="margin-top:0"><button class="cta" type="button" id="woDone">${lg.done?"עדכון הדיווח":"סיימתי את האימון"}</button></div></div>
+  ${list.length>1?`<div class="sh"><h2>אימונים נוספים</h2></div><div class="past">${list.filter(x=>x.id!==w.id).map(x=>`<button type="button" data-wo="${x.id}"><span>${esc(x.title)}</span><small>${x.fixed?"קבוע":fmt(x.date)}</small></button>`).join("")}</div>`:""}`;
+  $("woDone").onclick=()=>{setLog(w.id,TODAY,l=>{l.done=true;l.note=$("woNote").value.trim()});toast("הדיווח נשלח לטל");render()};
+  const g=$("guided");if(g)g.onclick=()=>openPlayer(w)}
+const vids=it=>{const v=it.v||[];if(!v.length)return "";return `<span style="display:flex;flex-direction:column;gap:6px;flex:none">${v.map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</span>`};
+$("v-workout").addEventListener("click",ev=>{const t=ev.target,w=curWorkout();if(!w)return;
+  const ok=t.closest("[data-ok]");if(ok){const k=ok.dataset.ok,s=+ok.dataset.s;setLog(w.id,TODAY,l=>{const a=(l.sets[k]||[]).slice();a[s]=Object.assign({},a[s]||{},{ok:!(a[s]&&a[s].ok)});l.sets[k]=a});render();return}
+  const fe=t.closest("[data-feel]");if(fe){setLog(w.id,TODAY,l=>{l.feel=+fe.dataset.feel});[...fe.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===fe));return}
+  const wo=t.closest("[data-wo]");if(wo){woSel=wo.dataset.wo;render();window.scrollTo(0,0)}});
+$("v-workout").addEventListener("input",ev=>{const t=ev.target,w=curWorkout();if(!w)return;
+  if(t.dataset.kg!=null||t.dataset.rp!=null){const k=t.dataset.kg??t.dataset.rp,s=+t.dataset.s,f=t.dataset.kg!=null?"kg":"r";
+    setLog(w.id,TODAY,l=>{const a=(l.sets[k]||[]).slice();const o=Object.assign({},a[s]||{});o[f]=f==="kg"?(t.value===""?null:+t.value):t.value;a[s]=o;l.sets[k]=a})}
+  if(t.id==="woNote"){const v=t.value;setLog(w.id,TODAY,l=>{l.note=v})}});
+$("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();if(t.dataset.pain==null||!w)return;
+  setLog(w.id,TODAY,l=>{if(t.value==="")delete l.pain[t.dataset.pain];else l.pain[t.dataset.pain]=+t.value});
+  if(+t.value>=5)toast("כאב 5 ומעלה: לא ממשיכים את התרגיל היום. טל יראה את הדיווח")});
+
+/* guided player */
+let PL=null,timer=null,left=0,full=0,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
+function openPlayer(w){const steps=[];(w.blocks||[]).forEach((b,bi)=>(b.items||[]).forEach((it,ii)=>{for(let s=0;s<(it.sets||0);s++)steps.push({bi,ii,s,b,it})}));
+  if(!steps.length)return;const lg=getLog(w.id,TODAY);let i=steps.findIndex(st=>!((lg.sets[st.bi+"-"+st.ii]||[])[st.s]||{}).ok);if(i<0)i=0;
+  PL={w,steps,i};$("player").classList.add("open");showStep();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
+function closePlayer(){$("player").classList.remove("open");clearInterval(timer);try{lock&&lock.release()}catch(e){}PL=null;render()}
+$("pClose").onclick=closePlayer;
+function showStep(){const {w,steps,i}=PL,st=steps[i],key=st.bi+"-"+st.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[st.s]||{};
+  const prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][st.s]?prev.sets[key][st.s].kg:null;
+  $("pRest").hidden=true;$("pWork").hidden=false;$("pBar").style.width=(i/steps.length*100)+"%";
+  $("pWork").innerHTML=`<div class="stage"><small>${esc(st.b.name)} · ${i+1}/${steps.length}</small><h2>${esc(st.it.n)}</h2>${st.it.d?`<p>${esc(st.it.d)}</p>`:""}
+    <div class="vids">${(st.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div></div>
+    <div class="meter"><div><small>סט</small><b>${st.s+1}/${st.it.sets}</b><small>${esc(st.it.reps||"")} חזרות</small></div>
+      <div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div></div>
+    <button class="big" type="button" id="pDone">סיימתי סט</button>
+    <div class="pnav"><button type="button" id="pPrev" ${i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`;
+  $("pDone").onclick=()=>{const kg=$("pKg").value;setLog(w.id,TODAY,l=>{const a=(l.sets[key]||[]).slice();a[st.s]=Object.assign({},a[st.s]||{},{ok:true,kg:kg===""?null:+kg});l.sets[key]=a});
+    if(i>=steps.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}
+    startRest(st.b.rest||60)};
+  $("pPrev").onclick=()=>{if(PL.i>0){PL.i--;showStep()}};$("pNext").onclick=()=>{if(PL.i<steps.length-1){PL.i++;showStep()}else closePlayer()}}
+function startRest(sec){PL.i++;const nx=PL.steps[PL.i];$("rNext").textContent=`הבא: ${nx.it.n} · סט ${nx.s+1}`;$("pWork").hidden=true;$("pRest").hidden=false;
+  full=left=sec;tick();clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);showStep()}},1000)}
+function tick(){$("rSec").textContent=Math.max(left,0);$("rBar").style.strokeDashoffset=RRC*(1-Math.max(left,0)/full)}
+$("rPlus").onclick=()=>{left+=15;full+=15;tick()};$("rSkip").onclick=()=>{clearInterval(timer);showStep()};
+
+/* ===== MENU ===== */
+function renderMenu(){const mn=prof.menu;
+  if(!mn){$("v-menu").innerHTML=`<div class="sh"><h2>התפריט</h2></div><div class="card"><div class="empty">בתכנית שלך אין כרגע תפריט</div></div>`;return}
+  const li=a=>a.map(([t,d])=>`<li>${esc(t)}${d?` <small>· ${esc(d)}</small>`:""}</li>`).join("");
+  $("v-menu").innerHTML=`<div class="sh"><h2>התפריט שלך</h2><span>מאת טל</span></div>
+  ${(mn.goals||[]).length?`<div class="goal">${mn.goals.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join("")}</div>`:""}
+  ${(mn.intro||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+  ${mn.meals.map(m=>`<div class="msec"><h3>${esc(m.t)}</h3><span class="k">${esc(m.k||"")}</span>${(m.groups||[]).map(g=>`${g.h?`<h4>${esc(g.h)}</h4>`:""}<ul>${li(g.items)}</ul>`).join("")}${m.note?`<h4>שימו לב</h4><ul><li>${esc(m.note)}</li></ul>`:""}</div>`).join("")}
+  ${(mn.rules||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`}
+
+/* ===== MEASURES ===== */
+function lineChart(pts,base){const Wd=340,H=140,Lf=30,R=12,T=14,B=22,vals=pts.map(p=>p.v).concat(base!=null?[base]:[]);
+  const mn=Math.floor(Math.min(...vals))-1,mx=Math.ceil(Math.max(...vals))+1;
+  const x=i=>pts.length<2?(Lf+Wd-R)/2:Lf+i*(Wd-Lf-R)/(pts.length-1),y=v=>T+(mx-v)*(H-T-B)/(mx-mn);
+  let g=[mn,Math.round((mn+mx)/2),mx].map(v=>`<line class="grid" x1="${Lf}" x2="${Wd-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${Lf-6}" y="${y(v)+3}" text-anchor="end">${v}</text>`).join("");
+  if(base!=null)g+=`<line class="base" x1="${Lf}" x2="${Wd-R}" y1="${y(base)}" y2="${y(base)}"/><text x="${Wd-R}" y="${y(base)-5}" text-anchor="end">התחלה ${base}</text>`;
+  const d=pts.map((p,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join("");
+  const lab=pts.map((p,i)=>(i===0||i===pts.length-1)?`<text x="${x(i)}" y="${H-6}" text-anchor="middle">${fromKey(p.k).getDate()}.${fromKey(p.k).getMonth()+1}</text>`:"").join("");
+  return `<svg class="chart" viewBox="0 0 ${Wd} ${H}" preserveAspectRatio="none" role="img" aria-label="גרף משקל">${g}${pts.length>1?`<path class="ln" d="${d}"/>`:""}${pts.map((p,i)=>`<circle class="pt" cx="${x(i)}" cy="${y(p.v)}" r="${i===pts.length-1?4.5:3}"/>`).join("")}${lab}<text x="${x(pts.length-1)}" y="${y(pts[pts.length-1].v)-9}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${pts[pts.length-1].v}</text></svg>`}
+const wList=src=>Object.keys(src).sort().map(k=>({k,...src[k]}));
+let wkAns=null;const WQ=[["energy","אנרגיה השבוע","נמוכה","גבוהה"],["hunger","רעב במהלך השבוע","הרבה","כמעט אין"],["sleep","איכות השינה","גרועה","מצוינת"],["mood","כמה את/ה מרוצה מהשבוע","בכלל לא","מאוד"]];
+function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart(TODAY),cur=weekly[wk]||{},circ=(prof.weigh&&prof.weigh.circ)||[],base=prof.start&&prof.start.kg;
+  if(!wkAns||(weekly[wk]&&Object.values(wkAns).every(v=>!v)))wkAns={energy:cur.energy||0,hunger:cur.hunger||0,sleep:cur.sleep||0,mood:cur.mood||0};
+  $("v-measure").innerHTML=`
+  <div class="sh"><h2>שקילה</h2><span>${last?`אחרונה: ${fmt(last.k)}`:"עוד אין שקילה"}</span></div>
+  <div class="card"><span class="hint">${esc((prof.weigh&&prof.weigh.hint)||"פעם בשבוע, באותו יום, בבוקר על בטן ריקה")}</span>
+    <div class="row"><label style="flex:1;display:flex;flex-direction:column;gap:4px" class="lbl">משקל (ק״ג)<input id="wKg" type="number" inputmode="decimal" step="0.1"></label>
+      <label style="flex:1;display:flex;flex-direction:column;gap:4px" class="lbl">תאריך<input id="wDate" type="date" value="${TODAY}" max="${TODAY}"></label></div>
+    ${circ.length?`<span class="lbl">היקפים בס״מ · לא חובה</span><div class="mrow">${circ.map((c,i)=>`<label>${esc(c)}<input id="wC${i}" type="number" inputmode="decimal" step="0.5"></label>`).join("")}</div>`:""}
+    <div class="btns" style="margin-top:4px"><button class="cta" type="button" id="wSave">שמירת שקילה</button></div></div>
+  <div class="card"><b>המשקל</b>${Ls.length?lineChart(Ls.map(w=>({k:w.k,v:w.kg})),base):`<div class="empty">אחרי השקילה הראשונה יופיע כאן הגרף</div>`}
+    ${Ls.length?`<div class="hist">${[...Ls].reverse().slice(0,8).map(w=>`<div><span>${fmt(w.k)}</span><b>${w.kg} ק״ג</b><em>${(w.c||[]).map((v,i)=>v?`${circ[i]||""} ${v}`:"").filter(Boolean).join(" · ")||"—"}</em></div>`).join("")}</div>`:""}</div>
+  <div class="sh"><h2>צ׳ק-אין שבועי</h2><span>${weekly[wk]?"נשלח ✓ אפשר לעדכן":"דקה אחת"}</span></div>
+  <div class="card">${WQ.map(([key,t,lo,hi])=>`<div class="q"><b>${t}</b><div class="five" data-q="${key}">${[1,2,3,4,5].map(v=>`<button type="button" data-v="${v}" aria-pressed="${wkAns[key]===v}">${v}</button>`).join("")}</div><div class="legend"><span>${lo}</span><span>${hi}</span></div></div>`).join("")}
+    <div class="q"><b>משהו שטל צריך לדעת?</b><textarea id="wkNote" rows="3" placeholder="מה עבד, מה היה קשה, אירועים בשבוע הבא">${esc(cur.note||"")}</textarea></div>
+    <div class="btns"><button class="cta" type="button" id="wkSave">שליחה לטל</button></div></div>`;
+  $("wSave").onclick=()=>{const kg=parseFloat($("wKg").value),k=$("wDate").value||TODAY;
+    if(!(kg>30&&kg<250)){toast("כתבו משקל תקין, למשל 70.4");return}if(k>TODAY){toast("אי אפשר לשקול בעתיד");return}
+    const o={kg:Math.round(kg*10)/10,c:circ.map((_,i)=>{const v=parseFloat($("wC"+i).value);return v>10&&v<250?v:null})};
+    weigh[k]=o;saveDoc(tp("weigh",k),o);toast("השקילה נשמרה");render()};
+  $("wkSave").onclick=()=>{if(Object.values(wkAns).includes(0)){toast("ענו על כל 4 השאלות");return}
+    const o={...wkAns,note:$("wkNote").value.trim()};weekly[wk]=o;saveDoc(tp("weekly",wk),o);toast("הצ׳ק-אין נשלח לטל");render()}}
+$("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five button");if(!b)return;const q=b.closest(".five").dataset.q;
+  wkAns[q]=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===b))});
+
+/* ===== COACH ===== */
+const C={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null;
+async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave("טוען…");
+  try{const [ps,ts,tl,mt]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]}))]);
+    meta=Object.fromEntries(mt.docs.map(d=>[d.id,d.data()]));
+    tpls=tl.docs.map(d=>({id:d.id,...d.data()}));
+    const ids=new Set([...ps.docs.map(d=>d.id),...ts.docs.map(d=>d.id)]);
+    for(const id of ids){const p=ps.docs.find(d=>d.id===id),t=ts.docs.find(d=>d.id===id);
+      const [dy,wg,wk,wl,wo,ms]=await Promise.all(["days","weigh","weekly","wlog"].map(c=>db.collection(`t/${id}/${c}`).get()).concat([db.collection(`p/${id}/workouts`).get(),db.collection(`p/${id}/msgs`).get()]));
+      const m=x=>Object.fromEntries(x.docs.map(d=>[d.id,d.data()]));
+      C[id]={prof:p?p.data():null,t:t?t.data():null,days:m(dy),weigh:m(wg),weekly:m(wk),wlog:m(wl),wo:m(wo),msgs:m(ms),photos:C[id]?C[id].photos:null}}
+    Object.keys(C).forEach(id=>{if(!ids.has(id))delete C[id]});
+    if(user){try{names=await user.profiles([...ids])}catch(e){}}
+    coachAt=new Date();setSave("מעודכן ✓","ok")}catch(e){setSave("שגיאה בטעינה","err")}
+  coachLoading=false;if(tab==="coach")render()}
+async function loadPhotos(id){try{const s=await db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-6)).get();C[id].photos=Object.fromEntries(s.docs.map(d=>[d.id,d.data().img]));if(tab==="coach")render()}catch(e){}}
+function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).filter(m=>!m.optional),hs=p.habits||[];
+  const last7=[...Array(7)].map((_,i)=>addDays(TODAY,-i)),wk=weekStart(TODAY);
+  const D=k=>c.days[k]?getDay(k,c.days):null;
+  const mealsPct=ms.length?Math.round(last7.reduce((a,k)=>a+(D(k)?mealsCount(D(k),ms):0),0)/(7*ms.length)*100):null;
+  const logged=last7.filter(k=>hasData(c.days[k])).length;
+  const logs=Object.values(c.wlog||{}),wo7=logs.filter(l=>l.done&&l.date>=last7[6]).length;
+  const acts=[...Object.keys(c.days).filter(k=>hasData(c.days[k])),...logs.filter(l=>l.done||Object.keys(l.sets||{}).length).map(l=>l.date)].sort();
+  const lastAct=acts[acts.length-1],gap=lastAct?daysBetween(lastAct,TODAY):null;
+  const Ls=wList(c.weigh),lw=Ls[Ls.length-1],base=p.start&&p.start.kg!=null?p.start.kg:(Ls[0]&&Ls[0].kg);
+  const flags=[];
+  if(!p.name)flags.push(["var(--wk)","מחכה לשיוך תכנית"]);
+  else if(!lastAct)flags.push(["var(--warn)","עוד לא דיווח/ה כלום"]);else if(gap>=2)flags.push(["var(--bad)",`לא דיווח/ה ${gap} ימים`]);
+  hs.forEach(h=>{const vals=last7.map(k=>D(k)?D(k).h[h.id]:undefined);
+    if(h.type==="chips"&&h.flag)last7.forEach((k,i)=>{const v=vals[i];if(v&&v.length)flags.push(["var(--bad)",`${fmt(k)}: ${v.join(", ")}`])});
+    if(h.type==="toggle"&&h.flag){const n=vals.filter(Boolean).length;if(n>=(h.flag||3))flags.push(["var(--warn)",`${h.t}: ${n} מתוך 7 ימים`])}
+    if(h.type==="toggle"&&h.weekly){const n=[...Array(7)].map((_,i)=>addDays(wk,i)).filter(k=>k<=TODAY&&D(k)&&D(k).h[h.id]).length;if(n>h.weekly)flags.push(["var(--warn)",`${h.t}: ${n} השבוע (היעד ${h.weekly})`])}
+    if(h.type==="counter"&&h.max){const n=vals.filter(v=>v>h.max).length;if(n)flags.push(["var(--warn)",`${h.t} מעל ${h.max} ב-${n} ימים`])}
+    if(h.type==="choice"&&h.warnIf){const n=vals.filter(v=>v===h.warnIf).length;if(n)flags.push(["var(--warn)",`${h.t}: ״${(h.opts.find(o=>o[0]===h.warnIf)||[])[1]}״ ב-${n} ימים`])}
+    if(h.type==="cups"&&h.target){const xs=vals.filter(v=>v>0);if(xs.length>=3){const avg=xs.reduce((a,b)=>a+b,0)/xs.length;if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${h.liters?Lit(Math.round(avg))+" ל׳":Math.round(avg)} (היעד ${h.liters?Lit(h.target)+" ל׳":h.target})`])}}});
+  logs.filter(l=>l.date>=last7[6]).forEach(l=>{const wn=(c.wo[l.wid]||{}).title||"אימון";
+    Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"} (${fmt(l.date)})`])}});
+    if(l.feel>=5)flags.push(["var(--warn)",`״קשה מאוד״ ב-${wn} (${fmt(l.date)})`])});
+  const wq=c.weekly[wk];if(wq&&(wq.energy<=2||wq.mood<=2||wq.hunger<=2))flags.push(["var(--wk)",`צ׳ק-אין: אנרגיה ${wq.energy}/5, רעב ${wq.hunger}/5, שביעות רצון ${wq.mood}/5`]);
+  return {p,ms,hs,mealsPct,logged,wo7,lastAct,gap,lw,base,dKg:lw&&base!=null?Math.round((lw.kg-base)*10)/10:null,flags}}
+const mailOf=id=>(meta[id]&&meta[id].email)||(names[id]&&names[id].email)||"";
+const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="ltr" placeholder="המייל של המתאמן" value="${esc(mailOf(id))}" style="flex:1;min-width:0;padding:10px;border-radius:12px"><button type="button" data-mail="${id}">שמירת מייל</button></div>`;
+const nameOf=id=>(C[id]&&C[id].prof&&C[id].prof.name)||(names[id]&&names[id].name)||mailOf(id)||"מתאמן/ת חדש/ה";
+function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
+  if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
+  const ids=Object.keys(C),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
+  const act=ids.filter(id=>C[id].prof),pend=ids.filter(id=>!C[id].prof),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
+  const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id])));
+  $("v-coach").innerHTML=`
+  <div class="hello"><span class="avatar" style="border-color:var(--hot)">ט</span><div><small>לוח המאמן${coachAt?` · עודכן ${pad(coachAt.getHours())}:${pad(coachAt.getMinutes())}`:""}</small><b>כל המתאמנים</b></div><button class="ghost" type="button" id="cRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
+  ${coachLoading&&!coachAt?`<div class="card"><div class="empty">טוען את המתאמנים…</div></div>`:""}
+  <div class="kpis"><div class="kpi"><b>${act.length}</b><small>מתאמנים פעילים</small></div><div class="kpi"><b>${todayN}</b><small>דיווחו היום</small></div>
+    <div class="kpi"><b style="color:${att?"var(--bad)":"var(--ok)"}">${att}</b><small>דורשים תשומת לב</small></div><div class="kpi"><b>${pend.length}</b><small>מחכים לשיוך</small></div></div>
+  ${pend.length?`<div class="sh"><h2>מחכים לשיוך</h2><span>נכנסו לאפליקציה</span></div>${pend.map(id=>`<div class="card"><b>${esc(nameOf(id))}</b><span class="hint">נכנס/ה ${fmt((C[id].t||{}).joined)}</span>${mailBox(id)}
+    <div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}">${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">שיוך</button></div></div>`).join("")}`:""}
+  <div class="sh"><h2>דורש תשומת לב</h2><span>${allFlags.length||"הכול תקין"}</span></div>
+  <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id])=>`<button class="flag" type="button" data-tr="${id}" style="--c:${c};text-align:right;width:100%">${esc(t)}</button>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
+  <div class="sh"><h2>המתאמנים</h2><span>לחיצה לפרטים</span></div>
+  <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
+    return `<button class="trc" type="button" data-tr="${id}"><div class="r1"><span class="av">${esc(nameOf(id).slice(0,1))}</span><div><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}<small>${esc(a.p.goal||"")} · ${a.lastAct?`פעילות אחרונה ${a.lastAct===TODAY?"היום":fmt(a.lastAct)}`:"עוד לא דיווח/ה"}</small></div><span class="pill" style="--c:${st[0]}">${st[1]}</span></div>
+      <div class="stats3"><div><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות · 7 ימים</small></div><div><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div><div><b>${a.lw?a.lw.kg:"—"}</b><small>${a.dKg!=null?`${a.dKg>0?"+":""}${a.dKg} ק״ג`:"משקל"}</small></div></div></button>`}).join("")||`<div class="card"><div class="empty">עוד אין מתאמנים. שלחו להם את הקישור לאפליקציה, והם יופיעו כאן אחרי ההרשמה.</div></div>`}</div>
+  <p class="hint" style="text-align:center">תכניות, אימונים והודעות מוסיפים דרך Claude: ״תעלה לג׳ואן אימון…״</p>`;
+  $("cRef").onclick=()=>{coachAt=coachAt||new Date();loadCoach()}}
+function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TODAY);if(!c.photos)loadPhotos(id);
+  const D=k=>c.days[k]?getDay(k,c.days):null,circ=(p.weigh&&p.weigh.circ)||[];
+  const rows=[...Array(14)].map((_,i)=>addDays(TODAY,-i)).map(k=>{const d=D(k),wl=Object.values(c.wlog).filter(l=>l.date===k);
+    if((!d||!hasData(c.days[k]))&&!wl.length)return `<tr><td>${fmt(k)}</td><td colspan="4" style="color:var(--dim)">לא דווח</td></tr>`;
+    const mc=d&&a.ms.length?mealsCount(d,a.ms):0,col=mc===a.ms.length?"var(--ok)":mc>=a.ms.length/2?"var(--warn)":"var(--bad)";
+    const hsum=d?a.hs.map(h=>{const v=d.h[h.id];if(v==null||v===""||v===false||(Array.isArray(v)&&!v.length)||v===0)return "";return `${h.short||h.t}: ${hv(h,v)}`}).filter(Boolean).join(" · "):"";
+    return `<tr><td>${fmt(k)}</td><td>${a.ms.length?`<span class="dot" style="background:${col}"></span> ${mc}/${a.ms.length}`:"—"}</td><td>${wl.map(l=>l.done?`✓ ${FEEL[l.feel]||""}`:"חלקי").join(", ")||"—"}</td><td style="white-space:normal;min-width:180px;text-align:right">${esc(hsum)||"—"}</td><td>${d&&d.note&&d.note.trim()?"✎":""}</td></tr>`}).join("");
+  const feed=[];[...Array(14)].map((_,i)=>addDays(TODAY,-i)).forEach(k=>{const d=D(k);if(!d)return;
+    a.ms.concat(((p.menu&&p.menu.meals)||[]).filter(m=>m.optional)).forEach(m=>{const x=d.meals[m.id];if(x&&x.x&&x.x.trim())feed.push(`<div><em>${fmt(k)} · ${esc(m.t)} · משהו אחר</em>${esc(x.x)}</div>`)});
+    if(d.note&&d.note.trim())feed.push(`<div><em>${fmt(k)} · הערה</em>${esc(d.note)}</div>`)});
+  Object.values(c.wlog).filter(l=>l.note).sort((x,y)=>y.date.localeCompare(x.date)).slice(0,6).forEach(l=>feed.push(`<div><em>${fmt(l.date)} · אימון · ${esc((c.wo[l.wid]||{}).title||"")}</em>${esc(l.note)}</div>`));
+  const prog=[];Object.entries(c.wo).forEach(([wid,w])=>(w.blocks||[]).forEach((b,bi)=>(b.items||[]).forEach((it,ii)=>{if(!it.sets)return;const key=bi+"-"+ii;
+    const pts=Object.values(c.wlog).filter(l=>l.wid===wid&&l.sets&&l.sets[key]).map(l=>({d:l.date,kg:Math.max(0,...l.sets[key].filter(s=>s&&s.kg).map(s=>s.kg))})).filter(x=>x.kg>0).sort((x,y)=>x.d.localeCompare(y.d));
+    if(pts.length)prog.push([it.n,pts[0],pts[pts.length-1],pts.length])})));
+  const ph=Object.keys(c.photos||{}).sort().reverse();
+  const msgs=Object.entries(c.msgs).sort((x,y)=>(y[1].at||"").localeCompare(x[1].at||""));
+  const Ls=wList(c.weigh),wks=Object.keys(c.weekly).sort().reverse().slice(0,4);
+  $("v-coach").innerHTML=`
+  <button class="back" type="button" id="cBack">→ כל המתאמנים</button>
+  <div class="hello"><span class="avatar" style="border-color:var(--hot)">${esc(nameOf(id).slice(0,1))}</span><div><small>${esc(p.goal||"")}</small><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}</div>${c.prof?`<button class="ghost" type="button" id="cView" style="margin-inline-start:auto;padding:8px 14px">צפייה כמו המתאמן</button>`:""}</div>
+  ${mailBox(id)}
+  <div class="kpis"><div class="kpi"><b>${a.lw?a.lw.kg:"–"}</b><small>משקל אחרון</small> ${a.dKg!=null?`<em style="color:${a.dKg<=0?"var(--ok)":"var(--warn)"}">${a.dKg>0?"+":""}${a.dKg} מההתחלה</em>`:""}</div>
+    <div class="kpi"><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות שסומנו · 7 ימים</small></div><div class="kpi"><b>${a.logged}/7</b><small>ימים מדווחים</small></div><div class="kpi"><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div></div>
+  <div class="sh"><h2>דורש תשומת לב</h2><span>${a.flags.length||"הכול תקין"}</span></div>
+  <div class="flags">${a.flags.length?a.flags.map(([cl,t])=>`<div class="flag" style="--c:${cl}">${esc(t)}</div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
+  <div class="card"><b>הודעה ל${esc(nameOf(id).split(" ")[0])}</b><span class="hint">מופיעה בראש המסך שלו/ה</span><textarea id="cMsg" rows="3" placeholder="למשל: מעולה השבוע, מעלים משקל בחתירה"></textarea><div class="btns" style="margin-top:0"><button class="cta" type="button" id="cSend">שליחה</button></div>
+    ${msgs.length?`<div class="feed">${msgs.slice(0,4).map(([mid,m])=>`<div><em>${fmt(m.at)}</em>${esc(m.text)}</div>`).join("")}</div>`:""}</div>
+  <div class="sh"><h2>14 הימים האחרונים</h2></div>
+  <div class="tbl"><table><thead><tr><th>יום</th><th>ארוחות</th><th>אימון</th><th>הרגלים</th><th>הערה</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <div class="card"><b>התקדמות בכוח</b>${prog.length?`<div class="hist">${prog.map(([n,f,l,cnt])=>`<div><span style="direction:ltr">${esc(n)}</span><b>${f.kg}→${l.kg} ק״ג</b><em>${cnt} אימונים</em></div>`).join("")}</div>`:`<div class="empty">יופיע אחרי שירשמו משקלים באימונים</div>`}</div>
+  <div class="card"><b>משקל</b>${Ls.length?lineChart(Ls.map(w=>({k:w.k,v:w.kg})),p.start&&p.start.kg):`<div class="empty">עוד אין שקילות</div>`}
+    ${Ls.length&&circ.length?`<div class="hist">${[...Ls].reverse().slice(0,4).map(w=>`<div><span>${fmt(w.k)}</span><b>${w.kg}</b><em>${(w.c||[]).map((v,i)=>v?`${circ[i]} ${v}`:"").filter(Boolean).join(" · ")||"—"}</em></div>`).join("")}</div>`:""}</div>
+  <div class="card"><b>אימונים</b>${Object.keys(c.wo).length?`<div class="hist">${Object.entries(c.wo).map(([wid,w])=>{const ls=Object.values(c.wlog).filter(l=>l.wid===wid).sort((x,y)=>y.date.localeCompare(x.date));
+    return `<div><span>${esc(w.title)}<br><em>${w.fixed?"קבוע":fmt(w.date)}</em></span><b>${ls.length?ls.slice(0,3).map(l=>`${fmt(l.date)} ${l.done?"✓":"חלקי"}${l.feel?" "+FEEL[l.feel]:""}`).join("<br>"):"לא התחיל/ה"}</b></div>`}).join("")}</div>`:`<div class="empty">אין אימונים. כתבו לClaude: ״תעלה ל${esc(nameOf(id).split(" ")[0])} את האימון של…״</div>`}</div>
+  <div class="card"><b>צילומי ארוחות · 7 ימים</b>${ph.length?`<div class="gal">${ph.map(k=>{const m=((p.menu&&p.menu.meals)||[]).find(m=>m.id===k.slice(11));return `<figure><img src="${c.photos[k]}" alt="צילום ארוחה"><figcaption>${fmt(k.slice(0,10))} · ${esc(m?m.t:"")}</figcaption></figure>`}).join("")}</div>`:`<div class="empty">${c.photos?"עוד אין צילומים":"טוען…"}</div>`}</div>
+  <div class="card"><b>מחוץ לתפריט, הערות ודיווחי אימון</b><div class="feed">${feed.length?feed.join(""):`<div class="empty">אין עדיין</div>`}</div></div>
+  <div class="card"><b>צ׳ק-אין שבועי</b>${wks.length?`<div class="hist">${wks.map(k=>{const w=c.weekly[k];return `<div><span>שבוע ${fmt(k)}</span><b>אנרגיה ${w.energy} · רעב ${w.hunger} · שינה ${w.sleep} · רצון ${w.mood}</b></div>${w.note?`<div style="border:0;padding-top:0"><em>${esc(w.note)}</em></div>`:""}`}).join("")}</div>`:`<div class="empty">עוד לא נשלח צ׳ק-אין</div>`}</div>
+  <div class="card"><b>החלפת תכנית</b><span class="hint">מעתיק תפריט, הרגלים ואימונים מתבנית. הדיווחים נשמרים.</span><div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}" ${t.name===p.name?"selected":""}>${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">החלה</button></div></div>`;
+  $("cBack").onclick=()=>{coachSel=null;render();window.scrollTo(0,0)};
+  if($("cView"))$("cView").onclick=()=>enterPreview(id);
+  $("cSend").onclick=async()=>{const t=$("cMsg").value.trim();if(!t)return;const mid="m"+Date.now();const o={text:t,at:TODAY};
+    try{await db.doc(`p/${id}/msgs/${mid}`).set(o);c.msgs[mid]=o;toast("ההודעה נשלחה");render()}catch(e){fail(e)}}}
+async function assign(id){const sel=$("as-"+id);if(!sel)return;const t=tpls.find(x=>x.id===sel.value);if(!t)return;setSave("משייך…");
+  try{const {workouts:wos,...pr}=t;await db.doc(`p/${id}`).set({...pr,tpl:t.id,assigned:TODAY});
+    for(const w of (wos||[])){const {id:wid,...rest}=w;await db.doc(`p/${id}/workouts/${wid}`).set(rest)}
+    toast(`${t.name} שויך/ה`);await loadCoach()}catch(e){fail(e)}}
+$("v-coach").addEventListener("click",ev=>{const t=ev.target;
+  const as=t.closest("[data-assign]");if(as){assign(as.dataset.assign);return}
+  const ml=t.closest("[data-mail]");if(ml){const id=ml.dataset.mail,v=$("em-"+id).value.trim();db.doc(`meta/${id}`).set({email:v}).then(()=>{meta[id]={email:v};toast("המייל נשמר");render()}).catch(fail);return}
+  const tr=t.closest("[data-tr]");if(tr){coachSel=tr.dataset.tr;render();window.scrollTo(0,0)}});
+
+/* ===== today events ===== */
+document.addEventListener("click",ev=>{const t=ev.target;
+  const nb=t.closest("[data-tab]");if(nb&&!t.closest("#v-coach")){go(nb.dataset.tab);return}
+  if(!$("v-today").contains(t))return;
+  const dy=t.closest("[data-day]");if(dy){sel=dy.dataset.day;render();return}
+  const ml=t.closest("[data-meal]");if(ml){openSheet(+ml.dataset.meal);return}
+  const hb=t.closest("[data-h]");if(hb){const id=hb.dataset.h;updDay(sel,d=>{d.h[id]=!d.h[id]});render();return}
+  const cu=t.closest("[data-cup]");if(cu){const id=cu.dataset.cup,i=+cu.dataset.i;updDay(sel,d=>{const n=d.h[id]||0;d.h[id]=n===i+1?i:i+1});render();return}
+  const cn=t.closest("[data-cnt]");if(cn){const id=cn.dataset.cnt;updDay(sel,d=>{d.h[id]=Math.max(0,Math.min(20,(d.h[id]||0)+ +cn.dataset.d))});render();return}
+  const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
+  const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
+$("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
+function go(t){tab=t;["today","workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=v!==t);
+  document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
+  if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
+setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
+
+/* ===== owner preview ===== */
+const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
+function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
+async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
+  fill(W,c.wo);fill(MSG,c.msgs);fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
+  try{const s=await db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-13)).get();s.docs.forEach(d=>{const v=d.data();if(v&&v.img)photos[d.id]=v.img})}catch(e){}
+  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;
+  const b=$("pvbar");b.querySelector("b").textContent=`תצוגה כמו ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
+function exitPreview(){preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos].forEach(s=>fill(s,{}));
+  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;go("coach")}
+$("pvbar").querySelector("button").onclick=exitPreview;
+
+/* ===== boot ===== */
+(async()=>{
+  const use=window.claude&&window.claude.use?n=>window.claude.use(n):()=>Promise.resolve(null);
+  [db,user]=await Promise.all([use("db"),use("user")]);
+  if(user){isOwner=await user.isOwner();uid=await user.id();ownerUid=uid}
+  booted=true;
+  if(!db){setSave("לא מחובר","err");renderWelcome();return}
+  if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;
+    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);go("coach");return}
+  if(!uid){setSave("לא מחובר","err");renderWelcome();return}
+  setSave("מחובר ✓","ok");
+  const cw=await user.can("data.write");if(cw===false)readOnly=true;
+  try{const me=await db.doc(`t/${uid}`).get();if(!me.exists&&!readOnly)await db.doc(`t/${uid}`).set({joined:TODAY,seen:TODAY});else if(me.exists&&(me.data()||{}).seen!==TODAY&&!readOnly)await db.doc(`t/${uid}`).update({seen:TODAY})}catch(e){if(e&&e.code==="invalid_argument"){readOnly=true;showBanner("השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.")}}
+  db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{});
+  db.collection(`p/${uid}/workouts`).onSnapshot(s=>{Object.keys(W).forEach(k=>delete W[k]);s.docs.forEach(d=>W[d.id]=d.data());if(sheetMeal===null&&!PL)render()},()=>{});
+  db.collection(`p/${uid}/msgs`).onSnapshot(s=>{Object.keys(MSG).forEach(k=>delete MSG[k]);s.docs.forEach(d=>MSG[d.id]=d.data());if(sheetMeal===null)render()},()=>{});
+  const sub=(col,store)=>db.collection(tp(col)).onSnapshot(s=>{const seen=new Set();
+    s.docs.forEach(d=>{seen.add(d.id);if(!busy(tp(col,d.id)))store[d.id]=d.data()});
+    Object.keys(store).forEach(k=>{if(!seen.has(k)&&!busy(tp(col,k)))delete store[k]});
+    if(sheetMeal!==null||PL)return;render()},()=>setSave("החיבור נותק","err"));
+  sub("days",days);sub("weigh",weigh);sub("weekly",weekly);sub("wlog",wlog);
+  db.collection(tp("photos")).where("d",">=",addDays(TODAY,-13)).onSnapshot(s=>{s.docs.forEach(d=>{if(!busy(tp("photos",d.id))){const v=d.data();if(v&&v.img)photos[d.id]=v.img}});if(sheetMeal===null&&!PL)render()},()=>{});
+  go("today");
+})();
+</script>
+
+</body></html>
