@@ -465,6 +465,9 @@ body{font-size:16px;letter-spacing:0}
 .rep{background:var(--s2);border-radius:var(--r-m);padding:10px 12px;font-size:14px;white-space:pre-wrap;color:#d6dce6}
 .rep b{display:block;font-size:12px;color:var(--gold);margin-bottom:2px}
 .pvbar{background:var(--hot)}
+
+.danger{border-color:#ff6b6b33}
+.danger .del{color:var(--bad);border-color:#ff6b6b55}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -570,7 +573,9 @@ function coll(path,filters=[]){return{
     for(const [f,op,v] of filters){const k=`data->>${f}`;q=op===">="?q.gte(k,v):op==="<="?q.lte(k,v):op===">"?q.gt(k,v):op==="<"?q.lt(k,v):q.eq(k,v)}
     const {data,error}=await q;if(error)throw E(error);return {docs:(data||[]).map(r=>snap(r.path,r))}},
   onSnapshot(cb,ecb){const run=()=>this.get().then(cb,e=>ecb&&ecb(e));run();return listen(r=>r.parent===path||(r.path&&parentOf(r.path)===path),run)}}}
-const db={doc,collection:p=>coll(p)};
+const db={doc,collection:p=>coll(p),
+  async removePrefix(p){const a=await SB.from("docs").delete().eq("path",p);if(a.error)throw E(a.error);const b=await SB.from("docs").delete().like("path",p+"/%");if(b.error)throw E(b.error)},
+  async admins(){const {data}=await SB.from("admins").select("email");return (data||[]).map(r=>String(r.email).toLowerCase())}};
 const user={
   async id(){return me&&me.id},
   async isOwner(){const {data}=await SB.rpc("is_admin");return !!data},
@@ -938,10 +943,11 @@ $("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five bu
   wkAns[q]=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===b))});
 
 /* ===== COACH ===== */
-const C={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null;
+const C={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[];
 async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave("טוען…");
   try{const [ps,ts,tl,mt]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]}))]);
     meta=Object.fromEntries(mt.docs.map(d=>[d.id,d.data()]));
+    if(db.admins){try{adminMails=await db.admins()}catch(e){}}
     tpls=tl.docs.map(d=>({id:d.id,...d.data()}));
     const ids=new Set([...ps.docs.map(d=>d.id),...ts.docs.map(d=>d.id)]);
     for(const id of ids){const p=ps.docs.find(d=>d.id===id),t=ts.docs.find(d=>d.id===id);
@@ -982,7 +988,7 @@ const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="lt
 const nameOf=id=>(C[id]&&C[id].prof&&C[id].prof.name)||(names[id]&&names[id].name)||mailOf(id)||"מתאמן/ת חדש/ה";
 function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
-  const ids=Object.keys(C),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
+  const ids=Object.keys(C).filter(id=>!adminMails.includes(((C[id].t||{}).email||"").toLowerCase())||C[id].prof),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
   const act=ids.filter(id=>C[id].prof),pend=ids.filter(id=>!C[id].prof),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
   const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id])));
   $("v-coach").innerHTML=`
@@ -1039,17 +1045,27 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
   <div class="card"><b>צילומי ארוחות · 7 ימים</b>${ph.length?`<div class="gal">${ph.map(k=>{const m=((p.menu&&p.menu.meals)||[]).find(m=>m.id===k.slice(11));return `<figure><img src="${c.photos[k]}" alt="צילום ארוחה"><figcaption>${fmt(k.slice(0,10))} · ${esc(m?m.t:"")}</figcaption></figure>`}).join("")}</div>`:`<div class="empty">${c.photos?"עוד אין צילומים":"טוען…"}</div>`}</div>
   <div class="card"><b>מחוץ לתפריט, הערות ודיווחי אימון</b><div class="feed">${feed.length?feed.join(""):`<div class="empty">אין עדיין</div>`}</div></div>
   <div class="card"><b>צ׳ק-אין שבועי</b>${wks.length?`<div class="hist">${wks.map(k=>{const w=c.weekly[k];return `<div><span>שבוע ${fmt(k)}</span><b>אנרגיה ${w.energy} · רעב ${w.hunger} · שינה ${w.sleep} · רצון ${w.mood}</b></div>${w.note?`<div style="border:0;padding-top:0"><em>${esc(w.note)}</em></div>`:""}`}).join("")}</div>`:`<div class="empty">עוד לא נשלח צ׳ק-אין</div>`}</div>
-  <div class="card"><b>החלפת תכנית</b><span class="hint">מעתיק תפריט, הרגלים ואימונים מתבנית. הדיווחים נשמרים.</span><div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}" ${t.name===p.name?"selected":""}>${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">החלה</button></div></div>`;
+  <div class="card"><b>החלפת תכנית</b><span class="hint">מעתיק תפריט, הרגלים ואימונים מתבנית. הדיווחים נשמרים.</span><div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}" ${t.name===p.name?"selected":""}>${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">החלה</button></div></div>
+  <div class="card danger"><b>ניהול חשבון</b><span class="hint">ניתוק: מוריד את התכנית, החשבון והדיווחים נשארים. מחיקה: מוחק את התכנית וכל הדיווחים, התמונות והשקילות. אין דרך לשחזר.</span>
+    <div class="askb"><button class="ghost" type="button" data-rm="unassign" data-id="${id}">ניתוק מהתכנית</button><button class="ghost del" type="button" data-rm="full" data-id="${id}">מחיקת כל הנתונים</button></div></div>`;
   $("cBack").onclick=()=>{coachSel=null;render();window.scrollTo(0,0)};
   if($("cView"))$("cView").onclick=()=>enterPreview(id);
   $("cSend").onclick=async()=>{const t=$("cMsg").value.trim();if(!t)return;const mid="m"+Date.now();const o={text:t,at:TODAY};
     try{await db.doc(`p/${id}/msgs/${mid}`).set(o);c.msgs[mid]=o;toast("ההודעה נשלחה");render()}catch(e){fail(e)}}}
+async function removeTrainee(btn){const id=btn.dataset.id,full=btn.dataset.rm==="full",key=btn.dataset.rm+id;
+  if(confirmDel!==key){confirmDel=key;const old=btn.textContent;btn.textContent="לחץ שוב לאישור";setTimeout(()=>{if(confirmDel===key){confirmDel=null;btn.textContent=old}},4000);return}
+  confirmDel=null;if(!db.removePrefix){toast("זמין רק באפליקציה");return}btn.disabled=true;setSave("מוחק…");
+  try{const em=((C[id]&&C[id].t)||{}).email||mailOf(id);await db.removePrefix(`p/${id}`);if(em)await db.removePrefix(`inv/${em.toLowerCase()}`);
+    if(full){await db.removePrefix(`t/${id}`);await db.removePrefix(`meta/${id}`)}
+    toast(full?"הנתונים נמחקו":"נותק מהתכנית");coachSel=null;delete C[id];await loadCoach();render();window.scrollTo(0,0)}
+  catch(e){toast("לא הצלחנו למחוק");setSave("שגיאה","err");btn.disabled=false}}
 async function assign(id){const sel=$("as-"+id);if(!sel)return;const t=tpls.find(x=>x.id===sel.value);if(!t)return;setSave("משייך…");
   try{const {workouts:wos,...pr}=t;await db.doc(`p/${id}`).set({...pr,tpl:t.id,assigned:TODAY});
     for(const w of (wos||[])){const {id:wid,...rest}=w;await db.doc(`p/${id}/workouts/${wid}`).set(rest)}
     toast(`${t.name} שויך/ה`);await loadCoach()}catch(e){fail(e)}}
 $("v-coach").addEventListener("click",ev=>{const t=ev.target;
   const as=t.closest("[data-assign]");if(as){assign(as.dataset.assign);return}
+  const rm=t.closest("[data-rm]");if(rm){removeTrainee(rm);return}
   const ml=t.closest("[data-mail]");if(ml){const id=ml.dataset.mail,v=$("em-"+id).value.trim();db.doc(`meta/${id}`).set({email:v}).then(()=>{meta[id]={email:v};toast("המייל נשמר");render()}).catch(fail);return}
   const tr=t.closest("[data-tr]");if(tr){coachSel=tr.dataset.tr;render();window.scrollTo(0,0)}});
 
