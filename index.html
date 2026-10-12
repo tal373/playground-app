@@ -497,6 +497,11 @@ body{font-size:16px;letter-spacing:0}
 .app{padding-top:calc(12px + env(safe-area-inset-top,0px))}
 .auth{padding-top:calc(24px + env(safe-area-inset-top,0px))}
 .pvbar{top:calc(8px + env(safe-area-inset-top,0px))}
+
+.fl2{padding:6px 6px 6px 13px;gap:8px}
+.fl2 .ft{flex:1;text-align:right;padding:5px 0;font-size:14.5px;color:var(--ink)}
+.fl2 .ack{flex:none;width:38px;height:38px;border-radius:12px;background:var(--s2);border:1px solid var(--line);color:var(--ok);font-weight:800;font-size:16px}
+.fl2 .ack:active{background:var(--ok);color:var(--bg)}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -974,10 +979,11 @@ $("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five bu
   wkAns[q]=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===b))});
 
 /* ===== COACH ===== */
-const C={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[];
+const C={},ACK={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[];
 async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave("טוען…");
   try{const [ps,ts,tl,mt]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]}))]);
     meta=Object.fromEntries(mt.docs.map(d=>[d.id,d.data()]));
+    try{const a=await db.doc("cfg/acks").get();Object.keys(ACK).forEach(k=>delete ACK[k]);if(a.exists)Object.assign(ACK,a.data()||{})}catch(e){}
     if(db.admins){try{adminMails=await db.admins()}catch(e){}}
     tpls=tl.docs.map(d=>({id:d.id,...d.data()}));
     const ids=new Set([...ps.docs.map(d=>d.id),...ts.docs.map(d=>d.id)]);
@@ -1013,7 +1019,8 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
     Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"} (${fmt(l.date)})`])}});
     if(l.feel>=5)flags.push(["var(--warn)",`״קשה מאוד״ ב-${wn} (${fmt(l.date)})`])});
   const wq=c.weekly[wk];if(wq&&(wq.energy<=2||wq.mood<=2||wq.hunger<=2))flags.push(["var(--wk)",`צ׳ק-אין: אנרגיה ${wq.energy}/5, רעב ${wq.hunger}/5, שביעות רצון ${wq.mood}/5`]);
-  return {p,ms,hs,mealsPct,logged,wo7,lastAct,gap,lw,base,dKg:lw&&base!=null?Math.round((lw.kg-base)*10)/10:null,flags}}
+  const fl=flags.filter(f=>!ACK[id+"|"+f[1]]);
+  return {p,ms,hs,mealsPct,logged,wo7,lastAct,gap,lw,base,dKg:lw&&base!=null?Math.round((lw.kg-base)*10)/10:null,flags:fl}}
 const mailOf=id=>(meta[id]&&meta[id].email)||(names[id]&&names[id].email)||"";
 const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="ltr" placeholder="המייל של המתאמן" value="${esc(mailOf(id))}" style="flex:1;min-width:0;padding:10px;border-radius:12px"><button type="button" data-mail="${id}">שמירת מייל</button></div>`;
 const nameOf=id=>(C[id]&&C[id].prof&&C[id].prof.name)||(names[id]&&names[id].name)||mailOf(id)||"מתאמן/ת חדש/ה";
@@ -1021,7 +1028,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
   const ids=Object.keys(C).filter(id=>!adminMails.includes(((C[id].t||{}).email||"").toLowerCase())||C[id].prof),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
   const act=ids.filter(id=>C[id].prof),pend=ids.filter(id=>!C[id].prof),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
-  const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id])));
+  const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id,f[1]])));
   $("v-coach").innerHTML=`
   <div class="hello"><span class="avatar" style="border-color:var(--hot)">ט</span><div><small>לוח המאמן${coachAt?` · עודכן ${pad(coachAt.getHours())}:${pad(coachAt.getMinutes())}`:""}</small><b>כל המתאמנים</b></div><button class="ghost" type="button" id="cRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
   ${coachLoading&&!coachAt?`<div class="card"><div class="empty">טוען את המתאמנים…</div></div>`:""}
@@ -1030,7 +1037,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   ${pend.length?`<div class="sh"><h2>מחכים לשיוך</h2><span>נכנסו לאפליקציה</span></div>${pend.map(id=>`<div class="card"><b>${esc(nameOf(id))}</b><span class="hint">נכנס/ה ${fmt((C[id].t||{}).joined)}</span>${mailBox(id)}
     <div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}">${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">שיוך</button></div></div>`).join("")}`:""}
   <div class="sh"><h2>דורש תשומת לב</h2><span>${allFlags.length||"הכול תקין"}</span></div>
-  <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id])=>`<button class="flag" type="button" data-tr="${id}" style="--c:${c};text-align:right;width:100%">${esc(t)}</button>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
+  <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id,raw])=>`<div class="flag fl2" style="--c:${c}"><button class="ft" type="button" data-tr="${id}">${esc(t)}</button><button class="ack" type="button" data-ack="${esc(id+"|"+raw)}" aria-label="טופל">✓</button></div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
   <div class="sh"><h2>המתאמנים</h2><span>לחיצה לפרטים</span></div>
   <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
     return `<button class="trc" type="button" data-tr="${id}"><div class="r1"><span class="av">${esc(nameOf(id).slice(0,1))}</span><div><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}<small>${esc(a.p.goal||"")} · ${a.lastAct?`פעילות אחרונה ${a.lastAct===TODAY?"היום":fmt(a.lastAct)}`:"עוד לא דיווח/ה"}</small></div><span class="pill" style="--c:${st[0]}">${st[1]}</span></div>
@@ -1062,7 +1069,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
   <div class="kpis"><div class="kpi"><b>${a.lw?a.lw.kg:"–"}</b><small>משקל אחרון</small> ${a.dKg!=null?`<em style="color:${a.dKg<=0?"var(--ok)":"var(--warn)"}">${a.dKg>0?"+":""}${a.dKg} מההתחלה</em>`:""}</div>
     <div class="kpi"><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות שסומנו · 7 ימים</small></div><div class="kpi"><b>${a.logged}/7</b><small>ימים מדווחים · רצף ${streakOf(c.days,c.wlog)}</small></div><div class="kpi"><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div></div>
   <div class="sh"><h2>דורש תשומת לב</h2><span>${a.flags.length||"הכול תקין"}</span></div>
-  <div class="flags">${a.flags.length?a.flags.map(([cl,t])=>`<div class="flag" style="--c:${cl}">${esc(t)}</div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
+  <div class="flags">${a.flags.length?a.flags.map(([cl,t])=>`<div class="flag fl2" style="--c:${cl}"><span class="ft">${esc(t)}</span><button class="ack" type="button" data-ack="${esc(id+"|"+t)}" aria-label="טופל">✓</button></div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
   <div class="card"><b>הודעה ל${esc(nameOf(id).split(" ")[0])}</b><span class="hint">מופיעה בראש המסך שלו/ה</span><textarea id="cMsg" rows="3" placeholder="למשל: מעולה השבוע, מעלים משקל בחתירה"></textarea><div class="btns" style="margin-top:0"><button class="cta" type="button" id="cSend">שליחה</button></div>
     ${msgs.length?`<div class="feed">${msgs.slice(0,4).map(([mid,m])=>`<div><em>${fmt(m.at)}</em>${esc(m.text)}</div>`).join("")}</div>`:""}</div>
   <div class="sh"><h2>14 הימים האחרונים</h2></div>
@@ -1097,6 +1104,8 @@ async function assign(id){const sel=$("as-"+id);if(!sel)return;const t=tpls.find
 $("v-coach").addEventListener("click",ev=>{const t=ev.target;
   const as=t.closest("[data-assign]");if(as){assign(as.dataset.assign);return}
   const rm=t.closest("[data-rm]");if(rm){removeTrainee(rm);return}
+  const ak=t.closest("[data-ack]");if(ak){const k=ak.dataset.ack;ACK[k]=TODAY;const lim=addDays(TODAY,-45);Object.keys(ACK).forEach(x=>{if(ACK[x]<lim)delete ACK[x]});
+    ak.closest(".flag").remove();db.doc("cfg/acks").set({...ACK}).then(()=>{toast("סומן כטופל");render()}).catch(fail);return}
   const ml=t.closest("[data-mail]");if(ml){const id=ml.dataset.mail,v=$("em-"+id).value.trim();db.doc(`meta/${id}`).set({email:v}).then(()=>{meta[id]={email:v};toast("המייל נשמר");render()}).catch(fail);return}
   const tr=t.closest("[data-tr]");if(tr){coachSel=tr.dataset.tr;render();window.scrollTo(0,0)}});
 
