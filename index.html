@@ -468,6 +468,30 @@ body{font-size:16px;letter-spacing:0}
 
 .danger{border-color:#ff6b6b33}
 .danger .del{color:var(--bad);border-color:#ff6b6b55}
+
+/* brand: Playground x Tal Lipshtat */
+.brand{gap:10px;align-items:center}
+.brand img{height:26px}
+.brand .bt{display:flex;flex-direction:column;line-height:1.15}
+.brand .bt b{font-size:11px;letter-spacing:.34em;color:var(--ink);font-weight:800}
+.brand .bt small{font-size:11.5px;color:var(--hot);font-weight:600;letter-spacing:.01em}
+.app::after{content:"";position:fixed;left:-120px;bottom:-60px;width:420px;height:230px;background:url(pg-logo.png) no-repeat center/contain;opacity:.035;pointer-events:none;z-index:0}
+.sum .wm{opacity:.07;width:230px;left:-40px;bottom:-46px}
+.msg{background:linear-gradient(135deg,#ff6b4a2b,#ff6b4a0a);border-color:#ff6b4a4d}
+.msg .tl{background:var(--bg);border:1.5px solid var(--hot);overflow:hidden}
+.msg .tl img{width:24px;height:auto}
+.msg small{letter-spacing:.01em}
+.sig{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;color:var(--dim);padding-bottom:6px}
+.sig img{width:46px;opacity:.55;margin-bottom:4px}
+.sig b{font-size:10.5px;letter-spacing:.34em;color:var(--muted);font-weight:800}
+.sig span{font-size:12px}
+.aby{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:-4px}
+.aby b{font-size:11px;letter-spacing:.36em;color:var(--ink);font-weight:800}
+.aby span{font-size:13px;color:var(--hot);font-weight:600}
+.authin img{width:170px}
+.authin h1{margin-top:10px}
+.authin input{background:var(--s1);border:1px solid var(--line);color:var(--ink)}
+.authin input:focus{border-color:var(--hot);outline:none}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -488,7 +512,7 @@ body{font-size:16px;letter-spacing:0}
 .remember[hidden]{display:none}
 </style></head><body>
 <div class="app">
-  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><b>PLAYGROUND</b><span class="save" id="save">מתחבר…</span></div>
+  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
   <div class="banner" id="banner" hidden></div>
   <div class="pvbar" id="pvbar" hidden><b></b><span>מתעדכן בזמן אמת · לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
   <section class="view" id="v-today"></section>
@@ -497,6 +521,7 @@ body{font-size:16px;letter-spacing:0}
   <section class="view" id="v-measure" hidden></section>
   <section class="view" id="v-coach" hidden></section>
   <section class="view" id="v-claude" hidden></section>
+  <footer class="sig"><img src="pg-logo.png" alt=""><b>PLAYGROUND STUDIO</b><span>ליווי אישי של טל ליפשטט · אימון, תזונה ושיקום</span></footer>
 </div>
 
 <nav class="nav" id="nav" hidden><div class="navin">
@@ -528,8 +553,9 @@ body{font-size:16px;letter-spacing:0}
 <div class="auth" id="auth" hidden>
   <div class="authin">
     <img src="pg-logo.png" alt="Playground">
+    <div class="aby"><b>PLAYGROUND STUDIO</b><span>ליווי אישי · טל ליפשטט</span></div>
     <h1 id="aTitle">כניסה לאפליקציה</h1>
-    <p id="aSub">מתחברים עם המייל שנתתם לטל</p>
+    <p id="aSub">אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.</p>
     <form id="aForm" novalidate>
       <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
       <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
@@ -605,7 +631,7 @@ let mode="in";
 function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
 function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
-  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"מתחברים עם המייל שנתתם לטל";
+  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.";
   $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aRemL").hidden=m==="reset"||m==="forgot";
   $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
   $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
@@ -762,7 +788,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   if(sel===TODAY&&lastPct[TODAY]!=null&&lastPct[TODAY]<1&&pct>=1&&rq.length)setTimeout(celebrate,150);if(sel===TODAY)lastPct[TODAY]=pct;
   $("v-today").innerHTML=`
   <div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>
-  ${msgs[0]?`<div class="msg"><span class="tl">ט</span><div><small>${msgs[0].auto?"הסיכום השבועי":"טל"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
+  ${msgs[0]?`<div class="msg"><span class="tl"><img src="pg-logo.png" alt=""></span><div><small>${msgs[0].auto?"הסיכום השבועי מטל":"טל ליפשטט · המאמן שלך"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
   <div class="strip">${strip}</div>
   <div class="sum"><img class="wm" src="pg-logo.png" alt="">
     <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
