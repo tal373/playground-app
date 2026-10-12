@@ -452,6 +452,19 @@ body{font-size:16px;letter-spacing:0}
 .remind small{color:var(--muted);font-size:13px}
 .remind .cta{flex:none;padding:10px 18px;border-radius:999px}
 .remst{color:var(--ok);font-weight:600;font-size:14px}
+
+.ask textarea{min-height:120px;font-size:16px;line-height:1.5}
+.askb{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.askb button{border-radius:var(--r-m);padding:13px;font-weight:800}
+.askb .ghost{background:var(--s2);color:var(--ink);border:1px solid var(--line)}
+.reqs{display:flex;flex-direction:column;gap:10px}
+.req{background:var(--s1);border:1px solid var(--line);border-radius:var(--r-l);padding:14px;display:flex;flex-direction:column;gap:8px}
+.req .rh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.req .rh small{color:var(--dim);font-size:12px}
+.req p{margin:0;white-space:pre-wrap;font-size:15px}
+.rep{background:var(--s2);border-radius:var(--r-m);padding:10px 12px;font-size:14px;white-space:pre-wrap;color:#d6dce6}
+.rep b{display:block;font-size:12px;color:var(--gold);margin-bottom:2px}
+.pvbar{background:var(--hot)}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -474,12 +487,13 @@ body{font-size:16px;letter-spacing:0}
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><b>PLAYGROUND</b><span class="save" id="save">מתחבר…</span></div>
   <div class="banner" id="banner" hidden></div>
-  <div class="pvbar" id="pvbar" hidden><b></b><span>לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
+  <div class="pvbar" id="pvbar" hidden><b></b><span>מתעדכן בזמן אמת · לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
   <section class="view" id="v-today"></section>
   <section class="view" id="v-workout" hidden></section>
   <section class="view" id="v-menu" hidden></section>
   <section class="view" id="v-measure" hidden></section>
   <section class="view" id="v-coach" hidden></section>
+  <section class="view" id="v-claude" hidden></section>
 </div>
 
 <nav class="nav" id="nav" hidden><div class="navin">
@@ -487,6 +501,7 @@ body{font-size:16px;letter-spacing:0}
   <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>אימון</button>
   <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
+  <button class="nb" type="button" data-tab="claude" hidden><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>Claude</button>
   <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>מתאמנים</button>
 </div></nav>
 
@@ -679,7 +694,7 @@ let dirty=false;
 const typing=()=>{const a=document.activeElement;return a&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="file"))&&!$("sheet").contains(a)&&!$("player").contains(a)};
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!prof){renderWelcome();return}
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach})[tab]()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude})[tab]()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
 function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
@@ -1005,7 +1020,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
   const Ls=wList(c.weigh),wks=Object.keys(c.weekly).sort().reverse().slice(0,4);
   $("v-coach").innerHTML=`
   <button class="back" type="button" id="cBack">→ כל המתאמנים</button>
-  <div class="hello"><span class="avatar" style="border-color:var(--hot)">${esc(nameOf(id).slice(0,1))}</span><div><small>${esc(p.goal||"")}</small><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}</div>${c.prof?`<button class="ghost" type="button" id="cView" style="margin-inline-start:auto;padding:8px 14px">צפייה כמו המתאמן</button>`:""}</div>
+  <div class="hello"><span class="avatar" style="border-color:var(--hot)">${esc(nameOf(id).slice(0,1))}</span><div><small>${esc(p.goal||"")}</small><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}</div>${c.prof?`<button class="ghost" type="button" id="cView" style="margin-inline-start:auto;padding:8px 14px">שיקוף חי</button>`:""}</div>
   ${mailBox(id)}
   <div class="kpis"><div class="kpi"><b>${a.lw?a.lw.kg:"–"}</b><small>משקל אחרון</small> ${a.dKg!=null?`<em style="color:${a.dKg<=0?"var(--ok)":"var(--warn)"}">${a.dKg>0?"+":""}${a.dKg} מההתחלה</em>`:""}</div>
     <div class="kpi"><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות שסומנו · 7 ימים</small></div><div class="kpi"><b>${a.logged}/7</b><small>ימים מדווחים · רצף ${streakOf(c.days,c.wlog)}</small></div><div class="kpi"><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div></div>
@@ -1050,23 +1065,56 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;["today","workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=v!==t);
+function go(t){tab=t;["today","workout","menu","measure","coach","claude"].forEach(v=>$("v-"+v).hidden=v!==t);
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
+
+/* ===== Claude: requests from the coach ===== */
+const REQ={};
+const ST={new:["ממתין לטיפול","var(--warn)"],working:["בטיפול","var(--mes)"],done:["בוצע ✓","var(--ok)"],chat:["נשלח לצ׳אט","var(--muted)"],error:["צריך הבהרה","var(--bad)"]};
+function claudePrompt(t){return `[פלייגראונד · ניהול מתאמנים]\nהשתמש בסקיל playground-admin (מאגר Supabase של אפליקציית המתאמנים, פרויקט rrqngqxrcvhaeeudrhjz).\n\n${t}`}
+function renderClaude(){const list=Object.entries(REQ).sort((a,b)=>(b[1].at||"").localeCompare(a[1].at||""));
+  $("v-claude").innerHTML=`
+  <div class="hello"><span class="avatar" style="border-color:var(--gold)">C</span><div><small>ניהול בטקסט</small><b>מה צריך?</b></div></div>
+  <div class="card ask"><textarea id="askT" rows="5" placeholder="למשל: תשייך את dana@gmail.com לתכנית של מור · תעלה לג׳ואן את האימון של שלישי · תעלה ליעד המים של טניה ל-3.5 ליטר · מי לא דיווח 3 ימים?">${esc(localStorage.pgAsk||"")}</textarea>
+    <div class="askb"><button class="cta" type="button" id="askNow">עכשיו בצ׳אט</button><button class="ghost" type="button" id="askQ">לתור · עד שעה</button></div>
+    <p class="hint">״עכשיו״ פותח את Claude עם הבקשה מוכנה, ושם לוחצים שליחה. ״לתור״ מטופל אוטומטית בשעות 7:00–23:00, והתשובה מגיעה לכאן ולהתראה.</p></div>
+  <div class="sh"><h2>בקשות</h2><span>${list.length||""}</span></div>
+  <div class="reqs">${list.length?list.slice(0,40).map(([id,r])=>{const st=ST[r.status]||ST.new;return `<div class="req"><div class="rh"><span class="pill" style="--c:${st[1]}">${st[0]}</span><small>${esc(fmtTime(r.at))}</small></div><p>${esc(r.text)}</p>${r.reply?`<div class="rep"><b>Claude</b>${esc(r.reply)}</div>`:""}</div>`}).join(""):`<div class="card"><div class="empty">עוד אין בקשות. כתוב למעלה מה צריך, בשפה חופשית.</div></div>`}</div>`;
+  const T=$("askT");T.oninput=()=>{try{localStorage.pgAsk=T.value}catch(e){}};
+  const save=async st=>{const t=T.value.trim();if(!t){toast("כתוב קודם מה צריך");return null}const id="r"+Date.now();const o={text:t,at:new Date().toISOString(),status:st};
+    try{await db.doc(`req/${id}`).set(o);REQ[id]=o;T.value="";try{localStorage.pgAsk=""}catch(e){}return t}catch(e){toast("לא נשמר, נסה שוב");return null}};
+  $("askNow").onclick=async()=>{const t=T.value.trim();if(!t){toast("כתוב קודם מה צריך");return}const pr=claudePrompt(t);try{await navigator.clipboard.writeText(pr)}catch(e){}
+    window.open("https://claude.ai/new?q="+encodeURIComponent(pr),"_blank");await save("chat");render()};
+  $("askQ").onclick=async()=>{if(await save("new")){toast("נשלח לתור. אעדכן כאן כשזה מוכן");render()}}}
+const fmtTime=iso=>{if(!iso)return "";const d=new Date(iso);return `${fmt(dk(d))} · ${pad(d.getHours())}:${pad(d.getMinutes())}`};
 
 /* ===== owner preview ===== */
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
-  try{const s=await db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-13)).get();s.docs.forEach(d=>{const v=d.data();if(v&&v.img)photos[d.id]=v.img})}catch(e){}
-  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;
-  const b=$("pvbar");b.querySelector("b").textContent=`תצוגה כמו ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
-  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;go("coach")}
+  liveU.forEach(f=>{try{f()}catch(e){}});liveU=subscribeAll();
+  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;
+  const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
+function exitPreview(){liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;go("coach")}
 $("pvbar").querySelector("button").onclick=exitPreview;
 
+function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
+  k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{}));
+  k(db.collection(`p/${uid}/workouts`).onSnapshot(s=>{Object.keys(W).forEach(k=>delete W[k]);s.docs.forEach(d=>W[d.id]=d.data());if(sheetMeal===null&&!PL)render()},()=>{}));
+  k(db.collection(`p/${uid}/msgs`).onSnapshot(s=>{Object.keys(MSG).forEach(k=>delete MSG[k]);s.docs.forEach(d=>MSG[d.id]=d.data());if(sheetMeal===null)render()},()=>{}));
+  const sub=(col,store)=>k(db.collection(tp(col)).onSnapshot(s=>{const seen=new Set();
+    s.docs.forEach(d=>{seen.add(d.id);if(!busy(tp(col,d.id)))store[d.id]=d.data()});
+    Object.keys(store).forEach(k=>{if(!seen.has(k)&&!busy(tp(col,k)))delete store[k]});
+    if(sheetMeal!==null||PL)return;render()},()=>setSave("החיבור נותק","err")));
+  sub("days",days);sub("weigh",weigh);sub("weekly",weekly);sub("wlog",wlog);
+  k(db.collection(tp("body")).onSnapshot(s=>{Object.keys(body).forEach(k=>delete body[k]);s.docs.forEach(d=>{const v=d.data();if(v&&v.img)body[d.id]=v.img});if(sheetMeal===null&&!PL)render()},()=>{}));
+  k(db.collection(tp("photos")).where("d",">=",addDays(TODAY,-13)).onSnapshot(s=>{s.docs.forEach(d=>{if(!busy(tp("photos",d.id))){const v=d.data();if(v&&v.img)photos[d.id]=v.img}});if(sheetMeal===null&&!PL)render()},()=>{}));
+  return U}
+let liveU=[];
 /* ===== boot ===== */
 (async()=>{
   const use=window.claude&&window.claude.use?n=>window.claude.use(n):()=>Promise.resolve(null);
@@ -1074,22 +1122,14 @@ $("pvbar").querySelector("button").onclick=exitPreview;
   if(user){isOwner=await user.isOwner();uid=await user.id();ownerUid=uid}
   booted=true;
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
-  if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;
+  if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
+    db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
     ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);go("coach");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
   const cw=await user.can("data.write");if(cw===false)readOnly=true;
   try{const me=await db.doc(`t/${uid}`).get();if(!me.exists&&!readOnly)await db.doc(`t/${uid}`).set({joined:TODAY,seen:TODAY});else if(me.exists&&(me.data()||{}).seen!==TODAY&&!readOnly)await db.doc(`t/${uid}`).update({seen:TODAY})}catch(e){if(e&&e.code==="invalid_argument"){readOnly=true;showBanner("השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.")}}
-  db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{});
-  db.collection(`p/${uid}/workouts`).onSnapshot(s=>{Object.keys(W).forEach(k=>delete W[k]);s.docs.forEach(d=>W[d.id]=d.data());if(sheetMeal===null&&!PL)render()},()=>{});
-  db.collection(`p/${uid}/msgs`).onSnapshot(s=>{Object.keys(MSG).forEach(k=>delete MSG[k]);s.docs.forEach(d=>MSG[d.id]=d.data());if(sheetMeal===null)render()},()=>{});
-  const sub=(col,store)=>db.collection(tp(col)).onSnapshot(s=>{const seen=new Set();
-    s.docs.forEach(d=>{seen.add(d.id);if(!busy(tp(col,d.id)))store[d.id]=d.data()});
-    Object.keys(store).forEach(k=>{if(!seen.has(k)&&!busy(tp(col,k)))delete store[k]});
-    if(sheetMeal!==null||PL)return;render()},()=>setSave("החיבור נותק","err"));
-  sub("days",days);sub("weigh",weigh);sub("weekly",weekly);sub("wlog",wlog);
-  db.collection(tp("body")).onSnapshot(s=>{Object.keys(body).forEach(k=>delete body[k]);s.docs.forEach(d=>{const v=d.data();if(v&&v.img)body[d.id]=v.img});if(sheetMeal===null&&!PL)render()},()=>{});
-  db.collection(tp("photos")).where("d",">=",addDays(TODAY,-13)).onSnapshot(s=>{s.docs.forEach(d=>{if(!busy(tp("photos",d.id))){const v=d.data();if(v&&v.img)photos[d.id]=v.img}});if(sheetMeal===null&&!PL)render()},()=>{});
+  subscribeAll();
   go("today");
 })();
 </script>
