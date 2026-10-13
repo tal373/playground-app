@@ -535,6 +535,13 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .ing .gin input{width:64px;padding:6px 8px;text-align:center;font:inherit;font-size:14px}
 .recbtn{display:flex;flex-direction:column;gap:4px;width:100%;text-align:start;border:1px solid var(--gold);cursor:pointer;color:inherit;font:inherit}
 .recbtn b{color:var(--gold);font-size:17px}.recbtn small{opacity:.75}
+/* coach recipe library */
+.crb input,.crb textarea{width:100%;margin-top:10px;font:inherit;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:inherit}
+.lrec .lrh{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}.lrec .lrh small{opacity:.7}
+.lrec .chips button{font-size:13px;padding:7px 12px}
+.lrec .fits{margin-top:12px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.lrec .fits div{display:flex;gap:8px;flex-wrap:wrap}.lrec .fits b{color:var(--gold)}.lrec .fits span{opacity:.8}
+.lrec .askb{margin-top:12px}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -932,11 +939,20 @@ const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
 /* free mix: portion that fits each lunch/dinner budget */
 const isMixMeal=m=>!!m&&(["l","d"].includes(m.id)||!!m.mix);
-function mealBudget(m){if(m.kcal)return +m.kcal;const s=(m.k||"").replace(/(\d),(\d)/g,"$1$2");let r=s.match(/(\d+)\s*[–-]\s*(\d+)\s*קק/);if(r)return (+r[1]+ +r[2])/2;r=s.match(/(\d+)\s*קק/);if(r)return +r[1];
-  const K=+((prof.menu||{}).kcal)||0;return K?K*(m.id==="l"?.3:.25):(m.id==="l"?450:380)}
-function mixGrams(r,m){const k=recPer100(r)[0];return k>0?Math.max(10,Math.round(mealBudget(m)/k*10)*10):0}
+function mealBudget(m,P){P=P||prof;if(m.kcal)return +m.kcal;const s=(m.k||"").replace(/(\d),(\d)/g,"$1$2");let r=s.match(/(\d+)\s*[–-]\s*(\d+)\s*קק/);if(r)return (+r[1]+ +r[2])/2;r=s.match(/(\d+)\s*קק/);if(r)return +r[1];
+  const K=+(((P||{}).menu||{}).kcal)||0;return K?K*(m.id==="l"?.3:.25):(m.id==="l"?450:380)}
+function mixGrams(r,m,P){const k=recPer100(r)[0];return k>0?Math.max(10,Math.round(mealBudget(m,P)/k*10)*10):0}
 const recList=()=>Object.entries(recipes).sort((a,b)=>(b[1].at||"").localeCompare(a[1].at||""));
-const mixFit=r=>(prof.menu&&prof.menu.meals||[]).filter(isMixMeal).map(m=>{const g=mixGrams(r,m);return g?`${m.t}: כ-${g} ג׳`:""}).filter(Boolean).join(" · ");
+const mixFit=(r,P)=>{P=P||prof;return ((P&&P.menu&&P.menu.meals)||[]).filter(isMixMeal).map(m=>{const g=mixGrams(r,m,P);return g?`${m.t}: כ-${g} ג׳`:""}).filter(Boolean).join(" · ")};
+/* shared decoder: Claude first, local parser as fallback */
+async function decodeRecipe(r){const t=(r.tx||"").trim();if(!t){toast("כותבים קודם את הרכיבים");return false}
+  let res=window.pgAI?await window.pgAI.recipe(t):null,ai=!!res;if(!res)res=parseRecipe(t,FOOD);
+  if(ai&&res.name&&!r.name.trim())r.name=res.name;
+  res.items.forEach(x=>{const v=nut(x.per,x.g);r.items.push({n:x.n,g:x.g,src:x.src,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)})});
+  if(!r.name.trim()){const fl=t.split(/\n/)[0];if(/:/.test(fl))r.name=fl.split(":")[0].trim()}
+  r.tx=res.bad.join("\n");r.msg=[res.items.length?`זיהיתי ${res.items.length} רכיבים${ai?" (פוענח ע״י Claude)":""}. כדאי לעבור על הגרמים`:"",res.zero.length?`תבלינים לא נספרים: ${esc(res.zero.join(", "))}`:"",res.bad.length?`<b>לא זיהיתי מה שנשאר בתיבה.</b> אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״`:""].filter(Boolean).join("<br>");return true}
+const regram=(x,g)=>{if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].forEach(k=>x[k]=r1(x[k]*f));x.g=g};
+
 function addFood(mid,item){updDay(sel,d=>{const y=d.meals[mid]||{};y.food=[...(y.food||[]),item];y.skip=false;d.meals[mid]=y})}
 function searchHTML(q){const s=(q||"").trim();const hits=s?FOOD.filter(f=>f[0].includes(s)).slice(0,10):[];
   return hits.map(f=>`<button class="fi" type="button" data-fi="${esc(f[0])}"><b>${esc(f[0])}</b><small>${f[1]} קק״ל · ${f[2]} ג׳ חלבון ל-100 ג׳</small></button>`).join("")||(s?`<div class="hint">לא נמצא. אפשר להוסיף רכיב משלך למטה.</div>`:"")}
@@ -963,7 +979,7 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     $("svBack").onclick=()=>{SV=null;drawSheet()};return}
   if(SV.type==="rec"){const r=SV.rec,t=sumF(r.items),raw=r.items.reduce((s,x)=>s+(+x.g||0),0);
     sh.innerHTML=`<div class="grab"></div><button class="back" type="button" id="svBack">→ חזרה</button><h3>מתכון או מיקס</h3><p class="sub">כותבים את המתכון במילים, כמו בהודעה. האפליקציה מפענחת, מחשבת קלוריות וערכים, ואומרת כמה מזה לאכול בכל ארוחה</p>
-    <input id="rn" placeholder="שם, למשל פשטידת ברוקולי" value="${esc(r.name)}">
+    <input id="rn" type="text" placeholder="שם, למשל פשטידת ברוקולי" value="${esc(r.name)}">
     <textarea id="rtx" rows="5" placeholder="למשל:&#10;4 ביצים&#10;300 גרם ברוקולי&#10;חצי כוס קמח חומוס&#10;כף שמן זית&#10;100 גרם בולגרית 5%">${esc(r.tx||"")}</textarea>
     <button class="cta" type="button" id="rParse" style="width:100%">פענוח וחישוב</button>
     ${r.msg?`<p class="hint rmsg">${r.msg}</p>`:""}
@@ -974,13 +990,8 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     ${r.items.length?`<div class="tot"><b>כל המנה</b><span>${macroLine(t)}</span><b>ל-100 ג׳</b><span id="rper">${macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)))}</span>${mixFit(r)?`<b>כמה לאכול</b><span id="rmix">${mixFit(r)}</span>`:""}</div>`:""}
     <button class="cta" type="button" id="rSave" style="width:100%">שמירה</button>`;
     $("rn").oninput=e=>r.name=e.target.value;$("rtx").oninput=e=>r.tx=e.target.value;
-    $("rParse").onclick=async()=>{const t=(r.tx||"").trim();if(!t){toast("כתבי קודם את הרכיבים");return}const bt=$("rParse");bt.disabled=true;bt.textContent="מפענח…";
-      let res=window.pgAI?await window.pgAI.recipe(t):null,ai=!!res;if(!res)res=parseRecipe(t,FOOD);
-      if(ai&&res.name&&!r.name.trim())r.name=res.name;
-      res.items.forEach(x=>{const v=nut(x.per,x.g);r.items.push({n:x.n,g:x.g,src:x.src,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)})});
-      if(!r.name.trim()){const fl=t.split(/\n/)[0];if(/:/.test(fl))r.name=fl.split(":")[0].trim()}
-      r.tx=res.bad.join("\n");r.msg=[res.items.length?`זיהיתי ${res.items.length} רכיבים${ai?" (פוענח ע״י Claude)":""}. כדאי לעבור על הגרמים`:"",res.zero.length?`תבלינים לא נספרים: ${esc(res.zero.join(", "))}`:"",res.bad.length?`<b>לא זיהיתי מה שנשאר בתיבה.</b> אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״`:""].filter(Boolean).join("<br>");drawFood()};
-    sh.querySelectorAll("[data-gi]").forEach(inp=>inp.onchange=()=>{const x=r.items[+inp.dataset.gi],g=+inp.value;if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].forEach(k=>x[k]=r1(x[k]*f));x.g=g;drawFood()});$("rw").oninput=e=>{r.cooked=e.target.value;const el=$("rper");if(el)el.textContent=macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)));const em=$("rmix");if(em)em.textContent=mixFit(r)};
+    $("rParse").onclick=async()=>{const bt=$("rParse");bt.disabled=true;bt.textContent="מפענח…";await decodeRecipe(r);drawFood()};
+    sh.querySelectorAll("[data-gi]").forEach(inp=>inp.onchange=()=>{regram(r.items[+inp.dataset.gi],+inp.value);drawFood()});$("rw").oninput=e=>{r.cooked=e.target.value;const el=$("rper");if(el)el.textContent=macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)));const em=$("rmix");if(em)em.textContent=mixFit(r)};
     $("rAdd").onclick=()=>{SV={type:"recIng",rec:r};drawFood()};
     sh.querySelector(".ings").onclick=e=>{const b=e.target.closest("[data-del]");if(!b)return;r.items.splice(+b.dataset.del,1);drawFood()};
     $("rSave").onclick=()=>{if(!r.name.trim()){toast("שם למנה");return}if(!r.items.length){toast("צריך לפחות רכיב אחד");return}
@@ -1011,7 +1022,7 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
   $("sheet").innerHTML=`<div class="grab"></div><h3>${esc(m.t)}</h3><p class="sub">${esc(m.k||"")}</p>
   <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
   ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
-  ${isMixMeal(m)?`<h4>המתכונים שלי <small class="mh">· הכמות מחושבת לארוחה הזו</small></h4>${recList().length?`<div class="opts">${recList().map(([id,r])=>{const g=mixGrams(r,m),t=nut(recPer100(r),g);return optBtn(r.name,`${g} ג׳ · ${ri(t.k)} קק״ל · ${ri(t.p)} ג׳ חלבון`,`data-mix="${id}"`,(x.food||[]).some(f=>f.rec===id))}).join("")}</div>`:""}<button class="ghost" type="button" id="mixNew" style="width:100%;margin-top:8px">+ מתכון חדש · כותבים והאפליקציה מחשבת</button>`:""}
+  ${isMixMeal(m)?`<h4>המתכונים שלי <small class="mh">· הכמות מחושבת לארוחה הזו</small></h4>${recList().length?`<div class="opts">${recList().map(([id,r])=>{const g=mixGrams(r,m),t=nut(recPer100(r),g);return optBtn(r.name,`${r.from?"מטל · ":""}${g} ג׳ · ${ri(t.k)} קק״ל · ${ri(t.p)} ג׳ חלבון`,`data-mix="${id}"`,(x.food||[]).some(f=>f.rec===id))}).join("")}</div>`:""}<button class="ghost" type="button" id="mixNew" style="width:100%;margin-top:8px">+ מתכון חדש · כותבים והאפליקציה מחשבת</button>`:""}
   ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}${g.multi?` <small class="mh">· אפשר כמה</small>`:""}</h4>`:"<div style='height:12px'></div>"}<div class="opts${g.multi?" multi":""}">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?(g.multi?`${ri(it[2].k)} קק״ל`:`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`):""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,selIdx(sl[gi]).includes(ii))).join("")}</div>`).join("")}
   ${Object.keys(sl).length&&(m.groups||[]).length>1?`<div class="note-k plate" style="margin-top:12px"><b>הצלחת שלך</b> ${macroLine(sumF(mealItems(m,x)))}</div>`:""}
   ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
@@ -1178,11 +1189,12 @@ async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave
     tpls=tl.docs.map(d=>({id:d.id,...d.data()}));
     const ids=new Set([...ps.docs.map(d=>d.id),...ts.docs.map(d=>d.id)]);
     for(const id of ids){const p=ps.docs.find(d=>d.id===id),t=ts.docs.find(d=>d.id===id);
-      const [dy,wg,wk,wl,wo,ms]=await Promise.all(["days","weigh","weekly","wlog"].map(c=>db.collection(`t/${id}/${c}`).get()).concat([db.collection(`p/${id}/workouts`).get(),db.collection(`p/${id}/msgs`).get()]));
+      const [dy,wg,wk,wl,rc,wo,ms]=await Promise.all(["days","weigh","weekly","wlog","recipes"].map(c=>db.collection(`t/${id}/${c}`).get()).concat([db.collection(`p/${id}/workouts`).get(),db.collection(`p/${id}/msgs`).get()]));
       const m=x=>Object.fromEntries(x.docs.map(d=>[d.id,d.data()]));
-      C[id]={prof:p?p.data():null,t:t?t.data():null,days:m(dy),weigh:m(wg),weekly:m(wk),wlog:m(wl),wo:m(wo),msgs:m(ms),photos:C[id]?C[id].photos:null}}
+      C[id]={prof:p?p.data():null,t:t?t.data():null,days:m(dy),weigh:m(wg),weekly:m(wk),wlog:m(wl),recs:m(rc),wo:m(wo),msgs:m(ms),photos:C[id]?C[id].photos:null}}
     Object.keys(C).forEach(id=>{if(!ids.has(id))delete C[id]});
     if(user){try{names=await user.profiles([...ids])}catch(e){}}
+    try{const lb=await db.collection("lib/recipes").get();Object.keys(LIB).forEach(k=>delete LIB[k]);lb.docs.forEach(d=>LIB[d.id]=d.data())}catch(e){}
     coachAt=new Date();setSave("מעודכן ✓","ok")}catch(e){setSave("שגיאה בטעינה","err")}
   coachLoading=false;if(tab==="coach")render()}
 async function loadPhotos(id){try{const [s,bs]=await Promise.all([db.collection(`t/${id}/photos`).where("d",">=",addDays(TODAY,-6)).get(),db.collection(`t/${id}/body`).get()]);C[id].photos=Object.fromEntries(s.docs.map(d=>[d.id,d.data().img]));C[id].body=Object.fromEntries(bs.docs.map(d=>[d.id,d.data().img]));if(tab==="coach")render()}catch(e){}}
@@ -1215,6 +1227,7 @@ const mailOf=id=>(meta[id]&&meta[id].email)||(names[id]&&names[id].email)||"";
 const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="ltr" placeholder="המייל של המתאמן" value="${esc(mailOf(id))}" style="flex:1;min-width:0;padding:10px;border-radius:12px"><button type="button" data-mail="${id}">שמירת מייל</button></div>`;
 const nameOf=id=>(C[id]&&C[id].prof&&C[id].prof.name)||(names[id]&&names[id].name)||mailOf(id)||"מתאמן/ת חדש/ה";
 function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
+  if(coachSel==="__rec"){renderCoachRecipes();return}
   if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
   const ids=Object.keys(C).filter(id=>!adminMails.includes(((C[id].t||{}).email||"").toLowerCase())||C[id].prof),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
   const act=ids.filter(id=>C[id].prof),pend=ids.filter(id=>!C[id].prof),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
@@ -1226,6 +1239,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
     <div class="kpi"><b style="color:${att?"var(--bad)":"var(--ok)"}">${att}</b><small>דורשים תשומת לב</small></div><div class="kpi"><b>${pend.length}</b><small>מחכים לשיוך</small></div></div>
   ${pend.length?`<div class="sh"><h2>מחכים לשיוך</h2><span>נכנסו לאפליקציה</span></div>${pend.map(id=>`<div class="card"><b>${esc(nameOf(id))}</b><span class="hint">נכנס/ה ${fmt((C[id].t||{}).joined)}</span>${mailBox(id)}
     <div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}">${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">שיוך</button></div></div>`).join("")}`:""}
+  <button class="card recbtn" type="button" id="cRec"><b>מפענח מתכונים</b><small>כותבים מתכון, מקבלים קלוריות וערכים, ומשייכים למתאמנים${Object.keys(LIB).length?` · ${Object.keys(LIB).length} בספרייה`:""}</small></button>
   <div class="sh"><h2>דורש תשומת לב</h2><span>${allFlags.length||"הכול תקין"}</span></div>
   <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id,raw])=>`<div class="flag fl2" style="--c:${c}"><button class="ft" type="button" data-tr="${id}">${esc(t)}</button><button class="ack" type="button" data-ack="${esc(id+"|"+raw)}" aria-label="טופל">✓</button></div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
   <div class="sh"><h2>המתאמנים</h2><span>לחיצה לפרטים</span></div>
@@ -1234,7 +1248,50 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
       <div class="stats3"><div><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות · 7 ימים</small></div><div><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div><div><b>${a.lw?a.lw.kg:"—"}</b><small>${a.dKg!=null?`${a.dKg>0?"+":""}${a.dKg} ק״ג`:"משקל"}</small></div></div></button>`}).join("")||`<div class="card"><div class="empty">עוד אין מתאמנים. שלחו להם את הקישור לאפליקציה, והם יופיעו כאן אחרי ההרשמה.</div></div>`}</div>
   ${remindHTML("coach")}
   <p class="hint" style="text-align:center">תכניות, אימונים והודעות מוסיפים דרך Claude: ״תעלה לג׳ואן אימון…״</p>`;
-  $("cRef").onclick=()=>{coachAt=coachAt||new Date();loadCoach()};wireRemind()}
+  $("cRef").onclick=()=>{coachAt=coachAt||new Date();loadCoach()};$("cRec").onclick=()=>{coachSel="__rec";render();window.scrollTo(0,0)};wireRemind()}
+/* ===== coach: recipe library, decode and assign to trainees ===== */
+const LIB={};let CR={name:"",items:[],cooked:"",tx:""},crEdit=null,crDel=null;
+const recTarget=()=>Object.keys(C).filter(id=>C[id].prof&&C[id].prof.menu);
+const recCopy=r=>({name:r.name,items:(r.items||[]).map(({src,...x})=>x),cooked:+r.cooked||null,at:new Date().toISOString(),from:"טל"});
+const per100o=r=>(p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r));
+function renderCoachRecipes(){const r=CR,t=sumF(r.items),lib=Object.entries(LIB).sort((a,b)=>(b[1].at||"").localeCompare(a[1].at||"")),tg=recTarget();
+  $("v-coach").innerHTML=`
+  <button class="back" type="button" id="crBack">→ חזרה למתאמנים</button>
+  <div class="hello"><span class="avatar" style="border-color:var(--gold)">מ</span><div><small>ספריית המתכונים שלך</small><b>מפענח מתכונים</b></div></div>
+  <div class="card crb"><b>${crEdit?"עריכת מתכון":"מתכון חדש"}</b><span class="hint">כותבים במילים, כמו בהודעה. Claude מפענח לגרמים ומחשב הכל</span>
+    <input id="crN" type="text" placeholder="שם המתכון" value="${esc(r.name)}">
+    <textarea id="crT" rows="5" placeholder="למשל:&#10;פשטידת ברוקולי: 4 ביצים&#10;300 גרם ברוקולי&#10;חצי כוס קמח חומוס&#10;כף שמן זית">${esc(r.tx||"")}</textarea>
+    <button class="cta" type="button" id="crGo" style="width:100%">פענוח וחישוב</button>
+    ${r.msg?`<p class="hint rmsg">${r.msg}</p>`:""}
+    ${r.items.length?`<div class="ings">${r.items.map((x,i)=>`<div class="ing"><span><b>${esc(x.n)}</b><small>${x.src?`${esc(x.src)} · `:""}${ri(x.k)} קק״ל</small></span><label class="gin"><input type="number" inputmode="decimal" data-cg="${i}" value="${ri(x.g)}" aria-label="גרמים">ג׳</label><button type="button" data-cd="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>
+    <label class="lbl">משקל כל המנה אחרי בישול (ג׳) · לא חובה<input id="crW" type="number" inputmode="decimal" value="${esc(r.cooked||"")}" placeholder="${ri(r.items.reduce((s,x)=>s+(+x.g||0),0))}"></label>
+    <div class="tot"><b>כל המתכון</b><span>${macroLine(t)}</span><b>ל-100 ג׳</b><span id="crP">${macroLine(per100o(r))}</span></div>
+    <div class="askb"><button class="cta" type="button" id="crSave">${crEdit?"שמירת שינויים":"שמירה לספרייה"}</button><button class="ghost" type="button" id="crClr">ניקוי</button></div>`:""}
+  </div>
+  <div class="sh"><h2>הספרייה</h2><span>${lib.length?"לחיצה על שם משייכת או מורידה":""}</span></div>
+  ${lib.length?lib.map(([id,x])=>{const p=recPer100(x),tot=sumF(x.items||[]),as=tg.filter(u=>C[u].recs&&C[u].recs["L"+id]);
+    return `<div class="card lrec"><div class="lrh"><b>${esc(x.name)}</b><small>${ri(p[0])} קק״ל · ${r1(p[1])} ג׳ חלבון ל-100 ג׳ · כל המתכון ${ri(tot.k)} קק״ל</small></div>
+    <div class="chips">${tg.map(u=>`<button type="button" data-ra="${id}" data-u="${u}" aria-pressed="${as.includes(u)}">${esc(nameOf(u))}</button>`).join("")||`<span class="hint">אין מתאמנים עם תפריט</span>`}</div>
+    ${as.length?`<div class="fits">${as.map(u=>{const f=mixFit(x,C[u].prof);return `<div><b>${esc(nameOf(u))}</b><span>${f?esc(f):"אין צהריים/ערב בתפריט"}</span></div>`}).join("")}</div>`:""}
+    <div class="askb"><button class="ghost" type="button" data-re="${id}">עריכה</button><button class="ghost del" type="button" data-rx="${id}">${crDel===id?"לחץ שוב למחיקה":"מחיקה מהספרייה"}</button></div></div>`}).join(""):`<div class="card"><div class="empty">עוד אין מתכונים. כתוב למעלה את הראשון.</div></div>`}
+  <p class="hint" style="text-align:center">משויך = מופיע למתאמן בצהריים ובערב ברשימה ״המתכונים שלי״, עם הכמות שמתאימה לו</p>`;
+  $("crBack").onclick=()=>{coachSel=null;render();window.scrollTo(0,0)};
+  $("crN").oninput=e=>r.name=e.target.value;$("crT").oninput=e=>r.tx=e.target.value;
+  $("crGo").onclick=async()=>{const b=$("crGo");b.disabled=true;b.textContent="מפענח…";await decodeRecipe(r);renderCoachRecipes()};
+  document.querySelectorAll("[data-cg]").forEach(i=>i.onchange=()=>{regram(r.items[+i.dataset.cg],+i.value);renderCoachRecipes()});
+  document.querySelectorAll("[data-cd]").forEach(b=>b.onclick=()=>{r.items.splice(+b.dataset.cd,1);renderCoachRecipes()});
+  if($("crW"))$("crW").oninput=e=>{r.cooked=e.target.value;$("crP").textContent=macroLine(per100o(r))};
+  if($("crClr"))$("crClr").onclick=()=>{CR={name:"",items:[],cooked:"",tx:""};crEdit=null;renderCoachRecipes()};
+  if($("crSave"))$("crSave").onclick=async()=>{if(!r.name.trim()){toast("שם למתכון");return}const id=crEdit||("r"+Date.now()),o=recCopy({...r,name:r.name.trim()});delete o.from;
+    try{await db.doc(`lib/recipes/${id}`).set(o);LIB[id]=o;
+      const as=recTarget().filter(u=>C[u].recs&&C[u].recs["L"+id]);for(const u of as){const c=recCopy(o);await db.doc(`t/${u}/recipes/L${id}`).set(c);C[u].recs["L"+id]=c}
+      toast(crEdit?`עודכן${as.length?` · גם אצל ${as.length} מתאמנים`:""}`:"נשמר בספרייה");CR={name:"",items:[],cooked:"",tx:""};crEdit=null;renderCoachRecipes()}catch(e){fail(e)}};
+  document.querySelectorAll("[data-ra]").forEach(b=>b.onclick=async()=>{const id=b.dataset.ra,u=b.dataset.u,on=b.getAttribute("aria-pressed")==="true",path=`t/${u}/recipes/L${id}`;C[u].recs=C[u].recs||{};
+    try{if(on){await db.doc(path).delete();delete C[u].recs["L"+id];toast(`הוסר מ${nameOf(u)}`)}else{const c=recCopy(LIB[id]);await db.doc(path).set(c);C[u].recs["L"+id]=c;toast(`שויך ל${nameOf(u)}`)}renderCoachRecipes()}catch(e){fail(e)}});
+  document.querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const x=LIB[b.dataset.re];crEdit=b.dataset.re;CR={name:x.name,items:(x.items||[]).map(i=>({...i})),cooked:x.cooked||"",tx:""};renderCoachRecipes();window.scrollTo(0,0)});
+  document.querySelectorAll("[data-rx]").forEach(b=>b.onclick=async()=>{const id=b.dataset.rx;if(crDel!==id){crDel=id;renderCoachRecipes();setTimeout(()=>{if(crDel===id){crDel=null;if(coachSel==="__rec")renderCoachRecipes()}},4000);return}
+    crDel=null;try{await db.doc(`lib/recipes/${id}`).delete();delete LIB[id];toast("נמחק מהספרייה. אצל מתאמנים שכבר שויך הוא נשאר");renderCoachRecipes()}catch(e){fail(e)}})}
+
 function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TODAY);if(!c.photos)loadPhotos(id);
   const D=k=>c.days[k]?getDay(k,c.days):null,circ=(p.weigh&&p.weigh.circ)||[];
   const rows=[...Array(14)].map((_,i)=>addDays(TODAY,-i)).map(k=>{const d=D(k),wl=Object.values(c.wlog).filter(l=>l.date===k);
