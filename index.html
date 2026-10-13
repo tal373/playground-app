@@ -550,6 +550,8 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .pickb{display:inline-block;margin-inline-end:8px;margin-bottom:4px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--s2);font-size:12px;font-weight:700;color:var(--muted);vertical-align:middle}
 .pickb[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
 .ex-row.unpicked{opacity:.5}
+.pausebn{border:1px solid var(--gold);display:flex;flex-direction:column;gap:4px}.pausebn b{color:var(--gold)}.pausebn span{opacity:.8}
+.pzc{display:flex;flex-direction:column;gap:4px}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -769,7 +771,7 @@ function hv(h,v){if(h.type==="toggle")return v?"✓":"—";if(h.type==="cups")re
 const timers={},inflight={},queued={};
 function setSave(t,c){const el=$("save");el.textContent=t;el.className="save "+(c||"")}
 function showBanner(t){const b=$("banner");b.textContent=t;b.hidden=false}
-function saveDoc(path,data){if(!db){setSave("לא מחובר","err");return}if(preview){toast("מצב תצוגה — לא נשמר");return}if(readOnly){toast("אין הרשאת שמירה");return}
+function saveDoc(path,data){if(!db){setSave("לא מחובר","err");return}if(isPaused()){toast("החשבון בהשהיה כרגע");return}if(preview){toast("מצב תצוגה — לא נשמר");return}if(readOnly){toast("אין הרשאת שמירה");return}
   queued[path]=data;setSave("שומר…");clearTimeout(timers[path]);timers[path]=setTimeout(()=>pump(path),600)}
 async function pump(path){if(inflight[path])return;
   while(queued[path]){const d=queued[path];delete queued[path];inflight[path]=true;
@@ -784,8 +786,12 @@ function updDay(k,fn){if(preview){toast("מצב תצוגה — לא נשמר");r
 
 let dirty=false;
 const typing=()=>{const a=document.activeElement;return a&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="file"))&&!$("sheet").contains(a)&&!$("player").contains(a)};
+const isPaused=()=>!!(prof&&prof.paused)&&(!isOwner||!!preview);
+function applyPause(){if(isOwner&&!preview)return;const pz=isPaused();["today","workout","measure"].forEach(t=>{const b=document.querySelector(`.nb[data-tab="${t}"]`);if(b)b.hidden=pz});
+  if(pz&&["today","workout","measure"].includes(tab)){tab="menu";["today","workout","measure"].forEach(v=>$("v-"+v).hidden=true);$("v-menu").hidden=false;document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab==="menu"?"page":"false"))}}
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!prof){renderWelcome();return}
+  applyPause();
   ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude})[tab]()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
@@ -1137,7 +1143,8 @@ function renderMenu(){const mn=prof.menu;
   if(!mn){$("v-menu").innerHTML=`<div class="sh"><h2>התפריט</h2></div><div class="card"><div class="empty">בתכנית שלך אין כרגע תפריט</div></div>`;return}
   const li=a=>a.map(([t,d])=>`<li>${esc(t)}${d?` <small>· ${esc(d)}</small>`:""}</li>`).join("");
   $("v-menu").innerHTML=`<div class="sh"><h2>התפריט שלך</h2><span>מאת טל</span></div>
-  ${meals().some(isMixMeal)?`<button class="card recbtn" type="button" id="menuRec"><b>מפענח מתכונים</b><small>כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב</small></button>`:""}
+  ${isPaused()?`<div class="card pausebn"><b>החשבון שלך בהשהיה</b><span>אפשר לצפות בתפריט. לחידוש הליווי המלא, דברו עם טל.</span></div>`:""}
+  ${meals().some(isMixMeal)&&!isPaused()?`<button class="card recbtn" type="button" id="menuRec"><b>מפענח מתכונים</b><small>כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב</small></button>`:""}
   ${(mn.goals||[]).length?`<div class="goal">${mn.goals.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join("")}</div>`:""}
   ${(mn.intro||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
   ${mn.meals.map(m=>`<div class="msec"><h3>${esc(m.t)}</h3><span class="k">${esc(m.k||"")}</span>${(m.groups||[]).map(g=>`${g.h?`<h4>${esc(g.h)}</h4>`:""}<ul>${li(g.items)}</ul>`).join("")}${isMixMeal(m)&&recList().length?`<h4>המתכונים שלי</h4><ul>${recList().map(([,r])=>`<li>${esc(r.name)} <small>· כ-${mixGrams(r,m)} ג׳ · ${ri(nut(recPer100(r),mixGrams(r,m)).k)} קק״ל</small></li>`).join("")}</ul>`:""}${m.note?`<h4>שימו לב</h4><ul><li>${esc(m.note)}</li></ul>`:""}</div>`).join("")}
@@ -1233,7 +1240,7 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
     Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"} (${fmt(l.date)})`])}});
     if(l.feel>=5)flags.push(["var(--warn)",`״קשה מאוד״ ב-${wn} (${fmt(l.date)})`])});
   const wq=c.weekly[wk];if(wq&&(wq.energy<=2||wq.mood<=2||wq.hunger<=2))flags.push(["var(--wk)",`צ׳ק-אין: אנרגיה ${wq.energy}/5, רעב ${wq.hunger}/5, שביעות רצון ${wq.mood}/5`]);
-  const fl=flags.filter(f=>!ACK[id+"|"+f[1]]);
+  const fl=p.paused?[]:flags.filter(f=>!ACK[id+"|"+f[1]]);
   return {p,ms,hs,mealsPct,logged,wo7,lastAct,gap,lw,base,dKg:lw&&base!=null?Math.round((lw.kg-base)*10)/10:null,flags:fl}}
 const mailOf=id=>(meta[id]&&meta[id].email)||(names[id]&&names[id].email)||"";
 const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="ltr" placeholder="המייל של המתאמן" value="${esc(mailOf(id))}" style="flex:1;min-width:0;padding:10px;border-radius:12px"><button type="button" data-mail="${id}">שמירת מייל</button></div>`;
@@ -1255,7 +1262,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   <div class="sh"><h2>דורש תשומת לב</h2><span>${allFlags.length||"הכול תקין"}</span></div>
   <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id,raw])=>`<div class="flag fl2" style="--c:${c}"><button class="ft" type="button" data-tr="${id}">${esc(t)}</button><button class="ack" type="button" data-ack="${esc(id+"|"+raw)}" aria-label="טופל">✓</button></div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
   <div class="sh"><h2>המתאמנים</h2><span>לחיצה לפרטים</span></div>
-  <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
+  <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.p.paused?["var(--muted)","בהשהיה"]:a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
     return `<button class="trc" type="button" data-tr="${id}"><div class="r1"><span class="av">${esc(nameOf(id).slice(0,1))}</span><div><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}<small>${esc(a.p.goal||"")} · ${a.lastAct?`פעילות אחרונה ${a.lastAct===TODAY?"היום":fmt(a.lastAct)}`:"עוד לא דיווח/ה"}</small></div><span class="pill" style="--c:${st[0]}">${st[1]}</span></div>
       <div class="stats3"><div><b>${a.mealsPct!=null?a.mealsPct+"%":"—"}</b><small>ארוחות · 7 ימים</small></div><div><b>${a.wo7}</b><small>אימונים · 7 ימים</small></div><div><b>${a.lw?a.lw.kg:"—"}</b><small>${a.dKg!=null?`${a.dKg>0?"+":""}${a.dKg} ק״ג`:"משקל"}</small></div></div></button>`}).join("")||`<div class="card"><div class="empty">עוד אין מתאמנים. שלחו להם את הקישור לאפליקציה, והם יופיעו כאן אחרי ההרשמה.</div></div>`}</div>
   ${remindHTML("coach")}
@@ -1360,6 +1367,8 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
   <div class="card"><b>מחוץ לתפריט, הערות ודיווחי אימון</b><div class="feed">${feed.length?feed.join(""):`<div class="empty">אין עדיין</div>`}</div></div>
   <div class="card"><b>צ׳ק-אין שבועי</b>${wks.length?`<div class="hist">${wks.map(k=>{const w=c.weekly[k];return `<div><span>שבוע ${fmt(k)}</span><b>אנרגיה ${w.energy} · רעב ${w.hunger} · שינה ${w.sleep} · רצון ${w.mood}</b></div>${w.note?`<div style="border:0;padding-top:0"><em>${esc(w.note)}</em></div>`:""}`}).join("")}</div>`:`<div class="empty">עוד לא נשלח צ׳ק-אין</div>`}</div>
   <div class="card"><b>החלפת תכנית</b><span class="hint">מעתיק תפריט, הרגלים ואימונים מתבנית. הדיווחים נשמרים.</span><div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}" ${t.name===p.name?"selected":""}>${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">החלה</button></div></div>
+  <div class="card pzc"><b>${p.paused?"החשבון בהשהיה":"השהיית חשבון"}</b><span class="hint">${p.paused?`מושהה מ-${p.pausedAt?fmt(p.pausedAt):"—"}. רואה רק את התפריט, בלי דיווחים, אימונים ותזכורות. הנתונים שמורים.`:"למשל כשלא שולם. המתאמן יראה רק את התפריט, בלי דיווחים, אימונים ותזכורות. הכל נשמר וחוזר בלחיצה."}</span>
+    <button class="${p.paused?"cta":"ghost"}" type="button" data-pz="${id}" style="width:100%;margin-top:10px">${p.paused?"החזרת גישה מלאה":"השהיית החשבון"}</button></div>
   <div class="card danger"><b>ניהול חשבון</b><span class="hint">ניתוק: מוריד את התכנית, החשבון והדיווחים נשארים. מחיקה: מוחק את התכנית וכל הדיווחים, התמונות והשקילות. אין דרך לשחזר.</span>
     <div class="askb"><button class="ghost" type="button" data-rm="unassign" data-id="${id}">ניתוק מהתכנית</button><button class="ghost del" type="button" data-rm="full" data-id="${id}">מחיקת כל הנתונים</button></div></div>`;
   $("cBack").onclick=()=>{coachSel=null;render();window.scrollTo(0,0)};
@@ -1380,6 +1389,8 @@ async function assign(id){const sel=$("as-"+id);if(!sel)return;const t=tpls.find
 $("v-coach").addEventListener("click",ev=>{const t=ev.target;
   const as=t.closest("[data-assign]");if(as){assign(as.dataset.assign);return}
   const rm=t.closest("[data-rm]");if(rm){removeTrainee(rm);return}
+  const pz=t.closest("[data-pz]");if(pz){const id=pz.dataset.pz,p=C[id]&&C[id].prof;if(!p)return;const on=!p.paused;pz.disabled=true;
+    db.doc(`p/${id}`).update({paused:on,pausedAt:on?TODAY:null}).then(()=>{p.paused=on;p.pausedAt=on?TODAY:null;toast(on?`${nameOf(id)} בהשהיה`:`הגישה של ${nameOf(id)} חזרה`);render()}).catch(e=>{pz.disabled=false;fail(e)});return}
   const ak=t.closest("[data-ack]");if(ak){const k=ak.dataset.ack;ACK[k]=TODAY;const lim=addDays(TODAY,-45);Object.keys(ACK).forEach(x=>{if(ACK[x]<lim)delete ACK[x]});
     ak.closest(".flag").remove();db.doc("cfg/acks").set({...ACK}).then(()=>{toast("סומן כטופל");render()}).catch(fail);return}
   const ml=t.closest("[data-mail]");if(ml){const id=ml.dataset.mail,v=$("em-"+id).value.trim();db.doc(`meta/${id}`).set({email:v}).then(()=>{meta[id]={email:v};toast("המייל נשמר");render()}).catch(fail);return}
