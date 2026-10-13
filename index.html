@@ -519,6 +519,15 @@ body{font-size:16px;letter-spacing:0}
 .tot{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;background:var(--s1);border-radius:14px;padding:10px 12px;font-size:13px;margin:8px 0}
 .tot b{color:var(--gold)}.tot span{color:var(--ink)}
 .sheet .back{margin-bottom:4px}
+/* multi-pick groups (build-a-plate veggies) */
+.opts.multi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opts.multi .opt{padding:10px 12px;min-height:0}
+.opts.multi .opt small{font-size:11px}
+.opts.multi .opt .rd{border-radius:6px;width:20px;height:20px}
+.opts.multi .opt[aria-pressed="true"] .rd{border:2px solid var(--food);background:var(--food);box-shadow:inset 0 0 0 3px var(--s2)}
+h4 .mh{font-weight:500;opacity:.6;font-size:12px}
+.plate{position:sticky;bottom:0;z-index:2;background:var(--s2)!important;border:1px solid var(--gold);box-shadow:0 -8px 24px rgba(0,0,0,.45)}
+.plate b{margin-inline-end:6px}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -725,7 +734,7 @@ function mealDone(day,m){const x=day.meals[m.id];return !!x&&((x.food||[]).lengt
 const mealsCount=(day,ms)=>(ms||reqMeals()).filter(m=>mealDone(day,m)).length;
 const hasData=d=>!!d&&(Object.keys(d.meals||{}).length>0||Object.values(d.h||{}).some(v=>Array.isArray(v)?v.length:!!v)||!!(d.note||"").trim());
 function mealLabel(day,m){const x=day.meals[m.id];if(!x)return null;if(x.skip)return {t:"דילגתי"};
-  const parts=Object.entries(x.sel||{}).map(([g,i])=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]:"").filter(Boolean);
+  const parts=Object.entries(x.sel||{}).flatMap(([g,v])=>selIdx(v).map(i=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]:"")).filter(Boolean);
   if(x.food&&x.food.length)parts.push(...x.food.map(f=>f.n));
   if(parts.length)return {t:parts.join(" + ")};if(x.x&&x.x.trim())return {t:x.x,other:true};if(x.ph)return {t:"צילום ארוחה"};return null}
 function hv(h,v){if(h.type==="toggle")return v?"✓":"—";if(h.type==="cups")return h.liters?`${Lit(v||0)} ל׳`:`${v||0}/${h.target||h.max}`;
@@ -846,7 +855,7 @@ function habitHTML(x,day){const v=day.h[x.id];
 const FOOD=[["קוטג׳ 5%",95,11,3.5,5],["קוטג׳ 3%",78,11,3,3],["גבינה לבנה 5%",98,9,4,5],["גבינה לבנה 3%",78,9.5,4,3],["יוגורט יווני 0%",57,10,3.6,0.2],["יוגורט יווני 3%",85,9,4,3],["יוגורט חלבון",60,10,4,0.5],["סקיר",63,11,4,0.2],["גבינה צהובה 28%",350,26,0.5,28],["גבינה צהובה 9%",235,31,1,9],["בולגרית 5%",120,17,2,5],["צפתית 5%",110,16,2,5],["ריקוטה 5%",110,10,4,5],["חלומי",320,22,2,25],["מוצרלה",280,22,2,20],["פרמזן",392,36,3,26],["חלב 1%",42,3.4,5,1],["חלב 3%",60,3.3,4.8,3],["משקה שקדים לא ממותק",15,0.5,0.3,1.1],
 ["ביצה",143,12.6,0.7,9.5],["חלבון ביצה",52,11,0.7,0.2],["טופו קשה",120,13,2,7],["רוטב סויה ללא גלוטן (טמארי)",60,10,6,0.1],
 ["עדשים מבושלות",116,9,20,0.4],["עדשים יבשות",352,25,60,1],["חומוס מבושל",164,8.9,27,2.6],["שעועית לבנה מבושלת",139,9.7,25,0.4],["שעועית אדומה מבושלת",127,8.7,23,0.5],["אפונה ירוקה",81,5.4,14,0.4],["ממרח חומוס",250,7,13,19],["קמח חומוס",387,22,58,6.7],["קמח עדשים",350,25,57,1.5],["קמח אורז",366,6,80,1.4],["קמח כוסמת",335,12.6,70,3],["קמח שקדים",571,21,21,50],["עמילן תירס",381,0.3,91,0.1],
-["אורז לבן מבושל",130,2.7,28,0.3],["אורז מלא מבושל",112,2.6,23,0.9],["קינואה מבושלת",120,4.4,21,1.9],["כוסמת מבושלת",92,3.4,20,0.6],["דוחן מבושל",119,3.5,23,1],["פסטת עדשים מבושלת",150,11,23,1],["פסטת חומוס מבושלת",155,8,24,2.5],["פסטת אורז מלא מבושלת",140,3,30,1],["אטריות אורז מבושלות",108,1.8,24,0.2],["תפוח אדמה מבושל",87,1.9,20,0.1],["בטטה אפויה",90,2,21,0.2],["תירס",96,3.4,21,1.5],["שיבולת שועל ללא גלוטן",380,13,60,7],["גרנולה ללא גלוטן",450,10,60,18],["לחם ללא גלוטן",250,4,45,6],["פריכית אורז",387,8,81,3],["פריכית תירס",380,8,80,3],["טורטיית תירס",218,5.7,45,2.9],
+["אורז לבן מבושל",130,2.7,28,0.3],["אורז מלא מבושל",112,2.6,23,0.9],["קינואה מבושלת",120,4.4,21,1.9],["כוסמת מבושלת",92,3.4,20,0.6],["דוחן מבושל",119,3.5,23,1],["פסטת עדשים מבושלת",150,11,23,1],["פסטת חומוס מבושלת",155,8,24,2.5],["פסטת אורז מלא מבושלת",140,3,30,1],["אטריות אורז מבושלות",108,1.8,24,0.2],["תפוח אדמה מבושל",87,1.9,20,0.1],["בטטה אפויה",90,2,21,0.2],["תירס",96,3.4,21,1.5],["שיבולת שועל ללא גלוטן",380,13,60,7],["גרנולה ללא גלוטן",450,10,60,18],["לחם ללא גלוטן",250,4,45,6],["פריכית אורז",387,8,81,3],["פריכית תירס",380,8,80,3],["דף אורז",340,6,77,0.6],["גבינה צהובה 9%",210,31,0.5,9],["טורטיית תירס",218,5.7,45,2.9],
 ["תפוח",52,0.3,14,0.2],["בננה",89,1.1,23,0.3],["תפוז",47,0.9,12,0.1],["אגס",57,0.4,15,0.1],["ענבים",69,0.7,18,0.2],["תותים",32,0.7,7.7,0.3],["פירות יער",50,0.7,12,0.3],["אבטיח",30,0.6,7.6,0.2],["מלון",34,0.8,8,0.2],["אפרסק",39,0.9,10,0.3],["מנגו",60,0.8,15,0.4],["קיווי",61,1.1,15,0.5],["תמר מג׳הול",277,1.8,75,0.2],
 ["מלפפון",15,0.7,3.6,0.1],["עגבנייה",18,0.9,3.9,0.2],["חסה ועלים",15,1.4,2.9,0.2],["גזר",41,0.9,10,0.2],["ברוקולי",35,2.4,7,0.4],["כרובית",25,1.9,5,0.3],["קישוא",17,1.2,3.1,0.3],["פטריות",22,3.1,3.3,0.3],["שעועית ירוקה",31,1.8,7,0.2],["בצל",40,1.1,9,0.1],["פלפל מבושל",28,1,6,0.2],["תרד",23,2.9,3.6,0.4],["דלעת",26,1,6.5,0.1],["כרוב",25,1.3,5.8,0.1],["סלק",43,1.6,10,0.2],["אבוקדו",160,2,8.5,14.7],["רוטב עגבניות",30,1.5,6,0.2],
 ["שמן זית",884,0,0,100],["טחינה גולמית",595,17,21,54],["טחינה מוכנה",300,8.5,10,27],["שקדים",579,21,22,50],["אגוזי מלך",654,15,14,65],["קשיו",553,18,30,44],["בוטנים",567,26,16,49],["חמאת בוטנים",588,25,20,50],["זרעי צ׳יה",486,17,42,31],["זרעי המפ",553,32,9,49],["זרעי דלעת",559,30,11,49],["זיתים",115,0.8,6,11],["חמאה",717,0.9,0.1,81],
@@ -857,7 +866,8 @@ const nut=(per,g)=>({k:per[0]*g/100,p:per[1]*g/100,c:per[2]*g/100,f:per[3]*g/100
 const sumF=a=>a.reduce((s,x)=>({k:s.k+(+x.k||0),p:s.p+(+x.p||0),c:s.c+(+x.c||0),f:s.f+(+x.f||0)}),{k:0,p:0,c:0,f:0});
 const dayFood=d=>Object.values(d.meals||{}).flatMap(x=>x.food||[]);
 /* menu items may carry nutrition as a 3rd element {k,p,c,f}: selected options count too */
-function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,i])=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2])o.push(it[2])});return o}
+const selIdx=v=>Array.isArray(v)?v:v==null?[]:[v];
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2])o.push(it[2])}));return o}
 const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
@@ -923,7 +933,8 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
   $("sheet").innerHTML=`<div class="grab"></div><h3>${esc(m.t)}</h3><p class="sub">${esc(m.k||"")}</p>
   <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
   ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
-  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}</h4>`:"<div style='height:12px'></div>"}<div class="opts">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`:""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,sl[gi]===ii)).join("")}</div>`).join("")}
+  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}${g.multi?` <small class="mh">· אפשר כמה</small>`:""}</h4>`:"<div style='height:12px'></div>"}<div class="opts${g.multi?" multi":""}">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?(g.multi?`${ri(it[2].k)} קק״ל`:`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`):""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,selIdx(sl[gi]).includes(ii))).join("")}</div>`).join("")}
+  ${Object.keys(sl).length&&(m.groups||[]).length>1?`<div class="note-k plate" style="margin-top:12px"><b>הצלחת שלך</b> ${macroLine(sumF(mealItems(m,x)))}</div>`:""}
   ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
   ${m.optional?`<div class="opts" style="margin-top:10px">${optBtn(m.skipText||"לא היה צורך","",`data-skip="1"`,x.skip)}</div>`:""}
   ${foodSection(m,x)}
@@ -938,7 +949,9 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
 $("sheet").addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b)return;const m=meals()[sheetMeal];
   updDay(sel,d=>{const y=d.meals[m.id]||{};y.sel=Object.assign({},y.sel||{});
     if(b.dataset.skip){y.skip=!y.skip;if(y.skip)y.sel={}}
-    else{const g=b.dataset.g,i=+b.dataset.i;y.skip=false;if(y.sel[g]===i)delete y.sel[g];else{y.sel[g]=i;(m.groups[g].excl||[]).forEach(o=>delete y.sel[o])}}
+    else{const g=b.dataset.g,i=+b.dataset.i,G=m.groups[g];y.skip=false;
+      if(G.multi){const a=selIdx(y.sel[g]),on=a.includes(i),n=on?a.filter(v=>v!==i):[...a,i];if(n.length)y.sel[g]=n;else delete y.sel[g];if(!on)(G.excl||[]).forEach(o=>delete y.sel[o])}
+      else if(y.sel[g]===i)delete y.sel[g];else{y.sel[g]=i;(G.excl||[]).forEach(o=>delete y.sel[o])}}
     d.meals[m.id]=y});drawSheet()});
 async function shrink(file){const url=URL.createObjectURL(file);
   const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
