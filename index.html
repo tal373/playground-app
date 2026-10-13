@@ -542,6 +542,10 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .lrec .fits{margin-top:12px;display:flex;flex-direction:column;gap:6px;font-size:13px}
 .lrec .fits div{display:flex;gap:8px;flex-wrap:wrap}.lrec .fits b{color:var(--gold)}.lrec .fits span{opacity:.8}
 .lrec .askb{margin-top:12px}
+.crb .imp{margin-top:16px;padding:14px;border:1px dashed var(--gold);border-radius:16px;display:flex;flex-direction:column;gap:8px}
+.crb .imp>b{color:var(--gold)}.crb .imp .chips button{font-size:13px;padding:7px 12px}.crb .imp textarea{margin-top:0}
+.imp-note{line-height:1.7}.imp-note b{color:var(--ink)}
+.crb .asg{margin-top:14px;display:flex;flex-direction:column;gap:8px}.crb .asg .chips button{font-size:13px;padding:7px 12px}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -660,7 +664,8 @@ const user={
     const {data}=await SB.from("docs").select("path,data").in("path",ids.map(i=>`t/${i}`));
     (data||[]).forEach(r=>{const id=idOf(r.path);out[id]={id,name:(r.data&&r.data.name)||"",email:(r.data&&r.data.email)||null}});
     ids.forEach(i=>{if(!out[i])out[i]={id:i,name:"",email:null}});return out}};
-window.pgAI={async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}}};
+window.pgAI={async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}},
+  async improve(o){try{const {data,error}=await SB.functions.invoke("recipe",{body:{mode:"improve",...o}});if(error||!data||!Array.isArray(data.items)||!data.items.length)return null;return data}catch(e){return null}}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
 /* push reminders */
 const VAPID="BGMEWrSIvSfh8ZyBAeIYV50p6mph3JzPCXlNKHKeSHni9_NzMOhuv-q78QKZeqYfG5zkIA2CuqgnG0jHh5C8byI";
@@ -1266,7 +1271,13 @@ function renderCoachRecipes(){const r=CR,t=sumF(r.items),lib=Object.entries(LIB)
     ${r.items.length?`<div class="ings">${r.items.map((x,i)=>`<div class="ing"><span><b>${esc(x.n)}</b><small>${x.src?`${esc(x.src)} · `:""}${ri(x.k)} קק״ל</small></span><label class="gin"><input type="number" inputmode="decimal" data-cg="${i}" value="${ri(x.g)}" aria-label="גרמים">ג׳</label><button type="button" data-cd="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>
     <label class="lbl">משקל כל המנה אחרי בישול (ג׳) · לא חובה<input id="crW" type="number" inputmode="decimal" value="${esc(r.cooked||"")}" placeholder="${ri(r.items.reduce((s,x)=>s+(+x.g||0),0))}"></label>
     <div class="tot"><b>כל המתכון</b><span>${macroLine(t)}</span><b>ל-100 ג׳</b><span id="crP">${macroLine(per100o(r))}</span></div>
-    <div class="askb"><button class="cta" type="button" id="crSave">${crEdit?"שמירת שינויים":"שמירה לספרייה"}</button><button class="ghost" type="button" id="crClr">ניקוי</button></div>`:""}
+    <div class="imp"><b>שיפור עם AI</b><span class="hint">כותבים מה לשנות, ו-Claude מתאים את הכמויות והרכיבים</span>
+      <div class="chips">${["יותר חלבון","פחות קלוריות","פחות שומן","פחות פחמימות","ללא גלוטן","צמחוני"].map(x=>`<button type="button" data-ci="${x}">${x}</button>`).join("")}</div>
+      <textarea id="crI" rows="2" placeholder="למשל: לפחות 15 ג׳ חלבון ל-100 ג׳, בלי לשנות את הטעם">${esc(r.ask||"")}</textarea>
+      <div class="askb"><button class="ghost" type="button" id="crImp">שיפור המתכון</button>${r.prev?`<button class="ghost" type="button" id="crUndo">חזרה לגרסה הקודמת</button>`:""}</div>
+      ${r.note?`<p class="hint imp-note">${r.note}</p>`:""}</div>
+    ${crEdit?"":`<div class="asg"><b>שיוך לתפריט של</b><div class="chips">${tg.map(u=>`<button type="button" data-cto="${u}" aria-pressed="${!!(r.to||{})[u]}">${esc(nameOf(u))}</button>`).join("")||`<span class="hint">אין מתאמנים עם תפריט</span>`}</div><span class="hint">אפשר לבחור כמה, או לשייך אחר כך מהספרייה</span></div>`}
+    <div class="askb"><button class="cta" type="button" id="crSave">${crEdit?"שמירת שינויים":Object.keys(r.to||{}).length?"שמירה ושיוך":"שמירה לספרייה"}</button><button class="ghost" type="button" id="crClr">ניקוי</button></div>`:""}
   </div>
   <div class="sh"><h2>הספרייה</h2><span>${lib.length?"לחיצה על שם משייכת או מורידה":""}</span></div>
   ${lib.length?lib.map(([id,x])=>{const p=recPer100(x),tot=sumF(x.items||[]),as=tg.filter(u=>C[u].recs&&C[u].recs["L"+id]);
@@ -1282,10 +1293,21 @@ function renderCoachRecipes(){const r=CR,t=sumF(r.items),lib=Object.entries(LIB)
   document.querySelectorAll("[data-cd]").forEach(b=>b.onclick=()=>{r.items.splice(+b.dataset.cd,1);renderCoachRecipes()});
   if($("crW"))$("crW").oninput=e=>{r.cooked=e.target.value;$("crP").textContent=macroLine(per100o(r))};
   if($("crClr"))$("crClr").onclick=()=>{CR={name:"",items:[],cooked:"",tx:""};crEdit=null;renderCoachRecipes()};
+  if($("crI"))$("crI").oninput=e=>r.ask=e.target.value;
+  document.querySelectorAll("[data-cto]").forEach(b=>b.onclick=()=>{const u=b.dataset.cto;r.to=r.to||{};if(r.to[u])delete r.to[u];else r.to[u]=1;renderCoachRecipes()});
+  document.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>{const v=b.dataset.ci,cur=(r.ask||"").trim();r.ask=cur?(cur.includes(v)?cur:cur+", "+v):v;$("crI").value=r.ask});
+  if($("crUndo"))$("crUndo").onclick=()=>{Object.assign(r,r.prev);r.prev=null;r.note="";renderCoachRecipes()};
+  if($("crImp"))$("crImp").onclick=async()=>{const ask=(r.ask||"").trim();if(!ask){toast("מה לשפר?");return}const b=$("crImp");b.disabled=true;b.textContent="משפר…";
+    const res=window.pgAI&&window.pgAI.improve?await window.pgAI.improve({name:r.name,cooked:+r.cooked||null,instruction:ask,items:r.items.map(x=>({n:x.n,g:x.g,per:[x.k,x.p,x.c,x.f].map(v=>r1(v*100/(x.g||1)))}))}):null;
+    if(!res){toast("לא הצלחתי לשפר כרגע. נסה שוב");b.disabled=false;b.textContent="שיפור המתכון";return}
+    const before=per100o(r),bt=sumF(r.items);r.prev={name:r.name,items:r.items.map(i=>({...i})),cooked:r.cooked};
+    r.items=res.items.map(x=>{const v=nut(x.per,x.g);return {n:x.n,g:x.g,src:x.src,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)}});if(res.name)r.name=res.name;const hadW=!!r.cooked;r.cooked="";
+    const after=per100o(r),at=sumF(r.items);
+    r.note=`${esc(res.note)}<br><b>ל-100 ג׳:</b> ${ri(before.k)} → ${ri(after.k)} קק״ל · ${r1(before.p)} → ${r1(after.p)} ג׳ חלבון<br><b>כל המתכון:</b> ${ri(bt.k)} → ${ri(at.k)} קק״ל · ${ri(bt.p)} → ${ri(at.p)} ג׳ חלבון${hadW?"<br>משקל אחרי בישול התאפס, כי המתכון השתנה":""}`;renderCoachRecipes()};
   if($("crSave"))$("crSave").onclick=async()=>{if(!r.name.trim()){toast("שם למתכון");return}const id=crEdit||("r"+Date.now()),o=recCopy({...r,name:r.name.trim()});delete o.from;
     try{await db.doc(`lib/recipes/${id}`).set(o);LIB[id]=o;
-      const as=recTarget().filter(u=>C[u].recs&&C[u].recs["L"+id]);for(const u of as){const c=recCopy(o);await db.doc(`t/${u}/recipes/L${id}`).set(c);C[u].recs["L"+id]=c}
-      toast(crEdit?`עודכן${as.length?` · גם אצל ${as.length} מתאמנים`:""}`:"נשמר בספרייה");CR={name:"",items:[],cooked:"",tx:""};crEdit=null;renderCoachRecipes()}catch(e){fail(e)}};
+      const as=recTarget().filter(u=>(C[u].recs&&C[u].recs["L"+id])||(r.to||{})[u]);for(const u of as){const c=recCopy(o);await db.doc(`t/${u}/recipes/L${id}`).set(c);C[u].recs=C[u].recs||{};C[u].recs["L"+id]=c}
+      toast(crEdit?`עודכן${as.length?` · גם אצל ${as.length} מתאמנים`:""}`:as.length?`נשמר ושויך ל${as.map(nameOf).join(", ")}`:"נשמר בספרייה");CR={name:"",items:[],cooked:"",tx:""};crEdit=null;renderCoachRecipes()}catch(e){fail(e)}};
   document.querySelectorAll("[data-ra]").forEach(b=>b.onclick=async()=>{const id=b.dataset.ra,u=b.dataset.u,on=b.getAttribute("aria-pressed")==="true",path=`t/${u}/recipes/L${id}`;C[u].recs=C[u].recs||{};
     try{if(on){await db.doc(path).delete();delete C[u].recs["L"+id];toast(`הוסר מ${nameOf(u)}`)}else{const c=recCopy(LIB[id]);await db.doc(path).set(c);C[u].recs["L"+id]=c;toast(`שויך ל${nameOf(u)}`)}renderCoachRecipes()}catch(e){fail(e)}});
   document.querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const x=LIB[b.dataset.re];crEdit=b.dataset.re;CR={name:x.name,items:(x.items||[]).map(i=>({...i})),cooked:x.cooked||"",tx:""};renderCoachRecipes();window.scrollTo(0,0)});
