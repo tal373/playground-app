@@ -546,6 +546,10 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .crb .imp>b{color:var(--gold)}.crb .imp .chips button{font-size:13px;padding:7px 12px}.crb .imp textarea{margin-top:0}
 .imp-note{line-height:1.7}.imp-note b{color:var(--ink)}
 .crb .asg{margin-top:14px;display:flex;flex-direction:column;gap:8px}.crb .asg .chips button{font-size:13px;padding:7px 12px}
+/* pick-N workout blocks */
+.pickb{display:inline-block;margin-inline-end:8px;margin-bottom:4px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--s2);font-size:12px;font-weight:700;color:var(--muted);vertical-align:middle}
+.pickb[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+.ex-row.unpicked{opacity:.5}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -1063,23 +1067,25 @@ async function handlePhoto(f,mid){if(!f)return;toast("מעלה את הצילום
 /* ===== WORKOUT ===== */
 function lastLog(wid,before){const ks=Object.keys(wlog).filter(k=>k.startsWith(wid+"_")&&k.slice(wid.length+1)<before).sort();return ks.length?wlog[ks[ks.length-1]]:null}
 function curWorkout(){const l=woList();return (woSel&&W[woSel])?{id:woSel,...W[woSel]}:l[0]}
-const getLog=(wid,date)=>Object.assign({sets:{},pain:{},done:false,feel:0,note:""},JSON.parse(JSON.stringify(wlog[logId(wid,date)]||{})));
+const getLog=(wid,date)=>Object.assign({sets:{},pain:{},pick:{},done:false,feel:0,note:""},JSON.parse(JSON.stringify(wlog[logId(wid,date)]||{})));
+/* pick blocks: b.pick = how many to choose (0 = bonus). Active = chosen ones, else the first b.pick */
+function activeIdx(b,bi,lg){const all=(b.items||[]).map((_,i)=>i);if(b.pick==null)return all;const ch=all.filter(i=>(lg.pick||{})[bi+"-"+i]);return ch.length?ch:all.slice(0,b.pick)}
 function setLog(wid,date,fn){const l=getLog(wid,date);fn(l);l.wid=wid;l.date=date;wlog[logId(wid,date)]=l;saveDoc(tp("wlog",logId(wid,date)),l)}
 function renderWorkout(){const list=woList();
   if(!list.length){$("v-workout").innerHTML=`<div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>האימונים שלך</small><h2>טל עוד לא העלה אימון</h2><p>כשיעלה אימון הוא יופיע כאן, עם סרטון לכל תרגיל.</p></div>`;return}
   const w=curWorkout(),lg=getLog(w.id,TODAY),prev=lastLog(w.id,TODAY);
-  const totalSets=(w.blocks||[]).reduce((a,b)=>a+(b.items||[]).reduce((s,it)=>s+(it.sets||0),0),0);
+  const totalSets=(w.blocks||[]).reduce((a,b,bi)=>a+activeIdx(b,bi,lg).reduce((s,i)=>s+(b.items[i].sets||0),0),0);
   const doneSets=Object.values(lg.sets).reduce((a,arr)=>a+(arr||[]).filter(s=>s&&s.ok).length,0);
   $("v-workout").innerHTML=`
   <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
     ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
     ${totalSets?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
-  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.rest?` · מנוחה ${b.rest>=60?Math.floor(b.rest/60)+":"+pad(b.rest%60):b.rest+" שנ׳"}`:""}</small></div></div>
-    ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
-      return `<div class="ex-row"><div><b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
+  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${b.rest?` · מנוחה ${b.rest>=60?Math.floor(b.rest/60)+":"+pad(b.rest%60):b.rest+" שנ׳"}`:""}</small></div></div>
+    ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pk=b.pick!=null,chosen=!!(lg.pick||{})[key],nCh=pk?(b.items||[]).filter((_,j)=>(lg.pick||{})[bi+"-"+j]).length:0,hideSets=pk&&b.pick>0&&nCh>=b.pick&&!chosen,pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
+      return `<div class="ex-row${hideSets?" unpicked":""}"><div>${pk?`<button class="pickb" type="button" data-pick="${key}" aria-pressed="${chosen}">${chosen?"✓ בחרתי":"בחירה"}</button>`:""}<b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
       ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
-      ${it.sets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow"><span>סט ${si+1}</span><input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}"><input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
-      ${prof.painScale?`<div class="painsel">כאב בתרגיל (0–10)<select data-pain="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${String(lg.pain[key]??"")===String(v)?"selected":""}>${v===""?"—":v}</option>`).join("")}</select></div>`:""}`}).join("")}</div>`).join("")}
+      ${it.sets&&!hideSets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow"><span>סט ${si+1}</span><input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}"><input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
+      ${prof.painScale&&!hideSets?`<div class="painsel">כאב בתרגיל (0–10)<select data-pain="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${String(lg.pain[key]??"")===String(v)?"selected":""}>${v===""?"—":v}</option>`).join("")}</select></div>`:""}`}).join("")}</div>`).join("")}
   <div class="card"><b>איך היה האימון?</b>
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
     <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
@@ -1089,7 +1095,8 @@ function renderWorkout(){const list=woList();
   const g=$("guided");if(g)g.onclick=()=>openPlayer(w)}
 const vids=it=>{const v=it.v||[];if(!v.length)return "";return `<span style="display:flex;flex-direction:column;gap:6px;flex:none">${v.map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</span>`};
 $("v-workout").addEventListener("click",ev=>{const t=ev.target,w=curWorkout();if(!w)return;
-  const ok=t.closest("[data-ok]");if(ok){const k=ok.dataset.ok,s=+ok.dataset.s;setLog(w.id,TODAY,l=>{const a=(l.sets[k]||[]).slice();a[s]=Object.assign({},a[s]||{},{ok:!(a[s]&&a[s].ok)});l.sets[k]=a});render();return}
+  const pkb=t.closest("[data-pick]");if(pkb){const k=pkb.dataset.pick;setLog(w.id,TODAY,l=>{l.pick=l.pick||{};if(l.pick[k])delete l.pick[k];else l.pick[k]=true});render();return}
+  const ok=t.closest("[data-ok]");if(ok){const k=ok.dataset.ok,s=+ok.dataset.s,bk=(w.blocks||[])[+k.split("-")[0]];setLog(w.id,TODAY,l=>{const a=(l.sets[k]||[]).slice();a[s]=Object.assign({},a[s]||{},{ok:!(a[s]&&a[s].ok)});l.sets[k]=a;if(bk&&bk.pick!=null&&a[s].ok){l.pick=l.pick||{};l.pick[k]=true}});render();return}
   const fe=t.closest("[data-feel]");if(fe){setLog(w.id,TODAY,l=>{l.feel=+fe.dataset.feel});[...fe.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===fe));return}
   const wo=t.closest("[data-wo]");if(wo){woSel=wo.dataset.wo;render();window.scrollTo(0,0)}});
 $("v-workout").addEventListener("input",ev=>{const t=ev.target,w=curWorkout();if(!w)return;
@@ -1102,7 +1109,7 @@ $("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();i
 
 /* guided player */
 let PL=null,timer=null,left=0,full=0,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
-function openPlayer(w){const steps=[];(w.blocks||[]).forEach((b,bi)=>(b.items||[]).forEach((it,ii)=>{for(let s=0;s<(it.sets||0);s++)steps.push({bi,ii,s,b,it})}));
+function openPlayer(w){const steps=[],lg0=getLog(w.id,TODAY);(w.blocks||[]).forEach((b,bi)=>activeIdx(b,bi,lg0).forEach(ii=>{const it=b.items[ii];for(let s=0;s<(it.sets||0);s++)steps.push({bi,ii,s,b,it})}));
   if(!steps.length)return;const lg=getLog(w.id,TODAY);let i=steps.findIndex(st=>!((lg.sets[st.bi+"-"+st.ii]||[])[st.s]||{}).ok);if(i<0)i=0;
   PL={w,steps,i};$("player").classList.add("open");showStep();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
 function closePlayer(){$("player").classList.remove("open");clearInterval(timer);try{lock&&lock.release()}catch(e){}PL=null;render()}
