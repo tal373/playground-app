@@ -809,7 +809,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
     strip+=`<button class="dy ${hasData(days[k])||Object.keys(wlog).some(x=>x.endsWith("_"+k)&&wlog[x].done)?"has":""}" type="button" data-day="${k}" aria-pressed="${k===sel}"><small>${i===0?"היום":DN[d.getDay()]}</small><b>${d.getDate()}</b><i></i></button>`}
   const msgs=Object.keys(MSG).map(id=>({id,...MSG[id]})).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
   const wo=todayWorkout(),wl=wo&&wlog[logId(wo.id,sel)],hs=habits().filter(x=>!x.dow||x.dow.includes(dow));
-  const facts=[];const ft=sumF(dayFood(day)),kt=prof.menu&&prof.menu.kcal,pt=prof.menu&&prof.menu.protein;
+  const facts=[];const ft=dayTot(day),kt=prof.menu&&prof.menu.kcal,pt=prof.menu&&prof.menu.protein;
   if(ft.k>0||kt)facts.push(["var(--gold)","קלוריות",`${ri(ft.k).toLocaleString("he-IL")}${kt?" / "+kt.toLocaleString("he-IL"):""}`]);
   if(ft.p>0||pt)facts.push(["var(--gold)","חלבון",`${ri(ft.p)}${pt?" / "+pt:""} ג׳`]);
   if(rq.length)facts.push(["var(--food)","ארוחות",`${mc}/${rq.length}`]);
@@ -856,6 +856,9 @@ const r1=n=>Math.round(n*10)/10,ri=n=>Math.round(n);
 const nut=(per,g)=>({k:per[0]*g/100,p:per[1]*g/100,c:per[2]*g/100,f:per[3]*g/100});
 const sumF=a=>a.reduce((s,x)=>({k:s.k+(+x.k||0),p:s.p+(+x.p||0),c:s.c+(+x.c||0),f:s.f+(+x.f||0)}),{k:0,p:0,c:0,f:0});
 const dayFood=d=>Object.values(d.meals||{}).flatMap(x=>x.food||[]);
+/* menu items may carry nutrition as a 3rd element {k,p,c,f}: selected options count too */
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,i])=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2])o.push(it[2])});return o}
+const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
 function addFood(mid,item){updDay(sel,d=>{const y=d.meals[mid]||{};y.food=[...(y.food||[]),item];y.skip=false;d.meals[mid]=y})}
@@ -904,9 +907,9 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     const pv=()=>{$("ppv").textContent=macroLine(nut(per,+$("pg").value||0))};$("pg").oninput=pv;pv();
     $("pAdd").onclick=()=>{const g=+$("pg").value;if(!(g>0)){toast("כמה גרם?");return}const t=nut(per,g);addFood(m.id,{n:r.name,g,rec:SV.id,k:r1(t.k),p:r1(t.p),c:r1(t.c),f:r1(t.f)});SV=null;toast("נוסף");drawSheet()};
     $("svBack").onclick=()=>{SV={type:"recs"};drawFood()};return}}
-function foodSection(m,x){const fl=x.food||[],t=sumF(fl);
+function foodSection(m,x){const fl=x.food||[],t=sumF(mealItems(m,x));
   return `<h4>בגרמים · קלוריות וחלבון</h4>
-  ${fl.length?`<div class="ings">${fl.map((f,i)=>`<div class="ing"><span><b>${esc(f.n)}</b><small>${ri(f.g)} ג׳ · ${ri(f.k)} קק״ל · ${r1(f.p)} ג׳ חלבון</small></span><button type="button" data-fdel="${i}" aria-label="הסרה">×</button></div>`).join("")}</div><p class="hint">${macroLine(t)}</p>`:""}
+  ${fl.length?`<div class="ings">${fl.map((f,i)=>`<div class="ing"><span><b>${esc(f.n)}</b><small>${ri(f.g)} ג׳ · ${ri(f.k)} קק״ל · ${r1(f.p)} ג׳ חלבון</small></span><button type="button" data-fdel="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>`:""}${t.k>0?`<p class="hint">בארוחה הזו: ${macroLine(t)}</p>`:""}
   <div class="askb"><button class="ghost" type="button" id="fIng">+ רכיב</button><button class="ghost" type="button" id="fRec">+ מנה שהכנתי</button></div>`}
 
 /* meal sheet */
@@ -920,7 +923,7 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
   $("sheet").innerHTML=`<div class="grab"></div><h3>${esc(m.t)}</h3><p class="sub">${esc(m.k||"")}</p>
   <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
   ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
-  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}</h4>`:"<div style='height:12px'></div>"}<div class="opts">${g.items.map((it,ii)=>optBtn(it[0],it[1],`data-g="${gi}" data-i="${ii}"`,sl[gi]===ii)).join("")}</div>`).join("")}
+  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}</h4>`:"<div style='height:12px'></div>"}<div class="opts">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`:""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,sl[gi]===ii)).join("")}</div>`).join("")}
   ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
   ${m.optional?`<div class="opts" style="margin-top:10px">${optBtn(m.skipText||"לא היה צורך","",`data-skip="1"`,x.skip)}</div>`:""}
   ${foodSection(m,x)}
@@ -1142,7 +1145,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
     if((!d||!hasData(c.days[k]))&&!wl.length)return `<tr><td>${fmt(k)}</td><td colspan="4" style="color:var(--dim)">לא דווח</td></tr>`;
     const mc=d&&a.ms.length?mealsCount(d,a.ms):0,col=mc===a.ms.length?"var(--ok)":mc>=a.ms.length/2?"var(--warn)":"var(--bad)";
     const hsum=d?a.hs.map(h=>{const v=d.h[h.id];if(v==null||v===""||v===false||(Array.isArray(v)&&!v.length)||v===0)return "";return `${h.short||h.t}: ${hv(h,v)}`}).filter(Boolean).join(" · "):"";
-    return `<tr><td>${fmt(k)}</td><td>${a.ms.length?`<span class="dot" style="background:${col}"></span> ${mc}/${a.ms.length}`:"—"}${d&&dayFood(d).length?`<br><small>${ri(sumF(dayFood(d)).k)} קק״ל · ${ri(sumF(dayFood(d)).p)} ח׳</small>`:""}</td><td>${wl.map(l=>l.done?`✓ ${FEEL[l.feel]||""}`:"חלקי").join(", ")||"—"}</td><td style="white-space:normal;min-width:180px;text-align:right">${esc(hsum)||"—"}</td><td>${d&&d.note&&d.note.trim()?"✎":""}</td></tr>`}).join("");
+    return `<tr><td>${fmt(k)}</td><td>${a.ms.length?`<span class="dot" style="background:${col}"></span> ${mc}/${a.ms.length}`:"—"}${(()=>{const tt=d?dayTot(d,(p.menu&&p.menu.meals)||[]):null;return tt&&tt.k>0?`<br><small>${ri(tt.k)} קק״ל · ${ri(tt.p)} ח׳</small>`:""})()}</td><td>${wl.map(l=>l.done?`✓ ${FEEL[l.feel]||""}`:"חלקי").join(", ")||"—"}</td><td style="white-space:normal;min-width:180px;text-align:right">${esc(hsum)||"—"}</td><td>${d&&d.note&&d.note.trim()?"✎":""}</td></tr>`}).join("");
   const feed=[];[...Array(14)].map((_,i)=>addDays(TODAY,-i)).forEach(k=>{const d=D(k);if(!d)return;
     a.ms.concat(((p.menu&&p.menu.meals)||[]).filter(m=>m.optional)).forEach(m=>{const x=d.meals[m.id];if(x&&x.x&&x.x.trim())feed.push(`<div><em>${fmt(k)} · ${esc(m.t)} · משהו אחר</em>${esc(x.x)}</div>`)});
     if(d.note&&d.note.trim())feed.push(`<div><em>${fmt(k)} · הערה</em>${esc(d.note)}</div>`)});
