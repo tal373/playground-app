@@ -653,6 +653,7 @@ const user={
     const {data}=await SB.from("docs").select("path,data").in("path",ids.map(i=>`t/${i}`));
     (data||[]).forEach(r=>{const id=idOf(r.path);out[id]={id,name:(r.data&&r.data.name)||"",email:(r.data&&r.data.email)||null}});
     ids.forEach(i=>{if(!out[i])out[i]={id:i,name:"",email:null}});return out}};
+window.pgAI={async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
 /* push reminders */
 const VAPID="BGMEWrSIvSfh8ZyBAeIYV50p6mph3JzPCXlNKHKeSHni9_NzMOhuv-q78QKZeqYfG5zkIA2CuqgnG0jHh5C8byI";
@@ -973,10 +974,12 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     ${r.items.length?`<div class="tot"><b>כל המנה</b><span>${macroLine(t)}</span><b>ל-100 ג׳</b><span id="rper">${macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)))}</span>${mixFit(r)?`<b>כמה לאכול</b><span id="rmix">${mixFit(r)}</span>`:""}</div>`:""}
     <button class="cta" type="button" id="rSave" style="width:100%">שמירה</button>`;
     $("rn").oninput=e=>r.name=e.target.value;$("rtx").oninput=e=>r.tx=e.target.value;
-    $("rParse").onclick=()=>{const t=(r.tx||"").trim();if(!t){toast("כתבי קודם את הרכיבים");return}const res=parseRecipe(t,FOOD);
+    $("rParse").onclick=async()=>{const t=(r.tx||"").trim();if(!t){toast("כתבי קודם את הרכיבים");return}const bt=$("rParse");bt.disabled=true;bt.textContent="מפענח…";
+      let res=window.pgAI?await window.pgAI.recipe(t):null,ai=!!res;if(!res)res=parseRecipe(t,FOOD);
+      if(ai&&res.name&&!r.name.trim())r.name=res.name;
       res.items.forEach(x=>{const v=nut(x.per,x.g);r.items.push({n:x.n,g:x.g,src:x.src,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)})});
       if(!r.name.trim()){const fl=t.split(/\n/)[0];if(/:/.test(fl))r.name=fl.split(":")[0].trim()}
-      r.tx=res.bad.join("\n");r.msg=[res.items.length?`זיהיתי ${res.items.length} רכיבים. כדאי לעבור על הגרמים`:"",res.zero.length?`תבלינים לא נספרים: ${esc(res.zero.join(", "))}`:"",res.bad.length?`<b>לא זיהיתי מה שנשאר בתיבה.</b> אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״`:""].filter(Boolean).join("<br>");drawFood()};
+      r.tx=res.bad.join("\n");r.msg=[res.items.length?`זיהיתי ${res.items.length} רכיבים${ai?" (פוענח ע״י Claude)":""}. כדאי לעבור על הגרמים`:"",res.zero.length?`תבלינים לא נספרים: ${esc(res.zero.join(", "))}`:"",res.bad.length?`<b>לא זיהיתי מה שנשאר בתיבה.</b> אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״`:""].filter(Boolean).join("<br>");drawFood()};
     sh.querySelectorAll("[data-gi]").forEach(inp=>inp.onchange=()=>{const x=r.items[+inp.dataset.gi],g=+inp.value;if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].forEach(k=>x[k]=r1(x[k]*f));x.g=g;drawFood()});$("rw").oninput=e=>{r.cooked=e.target.value;const el=$("rper");if(el)el.textContent=macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)));const em=$("rmix");if(em)em.textContent=mixFit(r)};
     $("rAdd").onclick=()=>{SV={type:"recIng",rec:r};drawFood()};
     sh.querySelector(".ings").onclick=e=>{const b=e.target.closest("[data-del]");if(!b)return;r.items.splice(+b.dataset.del,1);drawFood()};
