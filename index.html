@@ -528,6 +528,13 @@ body{font-size:16px;letter-spacing:0}
 h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .plate{position:sticky;bottom:0;z-index:2;background:var(--s2)!important;border:1px solid var(--gold);box-shadow:0 -8px 24px rgba(0,0,0,.45)}
 .plate b{margin-inline-end:6px}
+/* recipe decoder */
+#rtx{width:100%;margin:10px 0;font:inherit;line-height:1.6}
+.rmsg{line-height:1.6}.rmsg b{color:var(--hot)}
+.ing .gin{display:flex;align-items:center;gap:4px;font-size:12px;opacity:.85}
+.ing .gin input{width:64px;padding:6px 8px;text-align:center;font:inherit;font-size:14px}
+.recbtn{display:flex;flex-direction:column;gap:4px;width:100%;text-align:start;border:1px solid var(--gold);cursor:pointer;color:inherit;font:inherit}
+.recbtn b{color:var(--gold);font-size:17px}.recbtn small{opacity:.75}
 /* login */
 .auth{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 70% 10%,#ff6b4a33,transparent 55%),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .auth[hidden]{display:none!important}
@@ -855,11 +862,62 @@ function habitHTML(x,day){const v=day.h[x.id];
 const FOOD=[["קוטג׳ 5%",95,11,3.5,5],["קוטג׳ 3%",78,11,3,3],["גבינה לבנה 5%",98,9,4,5],["גבינה לבנה 3%",78,9.5,4,3],["יוגורט יווני 0%",57,10,3.6,0.2],["יוגורט יווני 3%",85,9,4,3],["יוגורט חלבון",60,10,4,0.5],["סקיר",63,11,4,0.2],["גבינה צהובה 28%",350,26,0.5,28],["גבינה צהובה 9%",235,31,1,9],["בולגרית 5%",120,17,2,5],["צפתית 5%",110,16,2,5],["ריקוטה 5%",110,10,4,5],["חלומי",320,22,2,25],["מוצרלה",280,22,2,20],["פרמזן",392,36,3,26],["חלב 1%",42,3.4,5,1],["חלב 3%",60,3.3,4.8,3],["משקה שקדים לא ממותק",15,0.5,0.3,1.1],
 ["ביצה",143,12.6,0.7,9.5],["חלבון ביצה",52,11,0.7,0.2],["טופו קשה",120,13,2,7],["רוטב סויה ללא גלוטן (טמארי)",60,10,6,0.1],
 ["עדשים מבושלות",116,9,20,0.4],["עדשים יבשות",352,25,60,1],["חומוס מבושל",164,8.9,27,2.6],["שעועית לבנה מבושלת",139,9.7,25,0.4],["שעועית אדומה מבושלת",127,8.7,23,0.5],["אפונה ירוקה",81,5.4,14,0.4],["ממרח חומוס",250,7,13,19],["קמח חומוס",387,22,58,6.7],["קמח עדשים",350,25,57,1.5],["קמח אורז",366,6,80,1.4],["קמח כוסמת",335,12.6,70,3],["קמח שקדים",571,21,21,50],["עמילן תירס",381,0.3,91,0.1],
-["אורז לבן מבושל",130,2.7,28,0.3],["אורז מלא מבושל",112,2.6,23,0.9],["קינואה מבושלת",120,4.4,21,1.9],["כוסמת מבושלת",92,3.4,20,0.6],["דוחן מבושל",119,3.5,23,1],["פסטת עדשים מבושלת",150,11,23,1],["פסטת חומוס מבושלת",155,8,24,2.5],["פסטת אורז מלא מבושלת",140,3,30,1],["אטריות אורז מבושלות",108,1.8,24,0.2],["תפוח אדמה מבושל",87,1.9,20,0.1],["בטטה אפויה",90,2,21,0.2],["תירס",96,3.4,21,1.5],["שיבולת שועל ללא גלוטן",380,13,60,7],["גרנולה ללא גלוטן",450,10,60,18],["לחם ללא גלוטן",250,4,45,6],["פריכית אורז",387,8,81,3],["פריכית תירס",380,8,80,3],["דף אורז",340,6,77,0.6],["גבינה צהובה 9%",210,31,0.5,9],["טורטיית תירס",218,5.7,45,2.9],
+["אורז לבן מבושל",130,2.7,28,0.3],["אורז מלא מבושל",112,2.6,23,0.9],["קינואה מבושלת",120,4.4,21,1.9],["כוסמת מבושלת",92,3.4,20,0.6],["דוחן מבושל",119,3.5,23,1],["פסטת עדשים מבושלת",150,11,23,1],["פסטת חומוס מבושלת",155,8,24,2.5],["פסטת אורז מלא מבושלת",140,3,30,1],["אטריות אורז מבושלות",108,1.8,24,0.2],["תפוח אדמה מבושל",87,1.9,20,0.1],["בטטה אפויה",90,2,21,0.2],["תירס",96,3.4,21,1.5],["שיבולת שועל ללא גלוטן",380,13,60,7],["גרנולה ללא גלוטן",450,10,60,18],["לחם ללא גלוטן",250,4,45,6],["פריכית אורז",387,8,81,3],["פריכית תירס",380,8,80,3],["דף אורז",340,6,77,0.6],["טורטיית תירס",218,5.7,45,2.9],
 ["תפוח",52,0.3,14,0.2],["בננה",89,1.1,23,0.3],["תפוז",47,0.9,12,0.1],["אגס",57,0.4,15,0.1],["ענבים",69,0.7,18,0.2],["תותים",32,0.7,7.7,0.3],["פירות יער",50,0.7,12,0.3],["אבטיח",30,0.6,7.6,0.2],["מלון",34,0.8,8,0.2],["אפרסק",39,0.9,10,0.3],["מנגו",60,0.8,15,0.4],["קיווי",61,1.1,15,0.5],["תמר מג׳הול",277,1.8,75,0.2],
 ["מלפפון",15,0.7,3.6,0.1],["עגבנייה",18,0.9,3.9,0.2],["חסה ועלים",15,1.4,2.9,0.2],["גזר",41,0.9,10,0.2],["ברוקולי",35,2.4,7,0.4],["כרובית",25,1.9,5,0.3],["קישוא",17,1.2,3.1,0.3],["פטריות",22,3.1,3.3,0.3],["שעועית ירוקה",31,1.8,7,0.2],["בצל",40,1.1,9,0.1],["פלפל מבושל",28,1,6,0.2],["תרד",23,2.9,3.6,0.4],["דלעת",26,1,6.5,0.1],["כרוב",25,1.3,5.8,0.1],["סלק",43,1.6,10,0.2],["אבוקדו",160,2,8.5,14.7],["רוטב עגבניות",30,1.5,6,0.2],
 ["שמן זית",884,0,0,100],["טחינה גולמית",595,17,21,54],["טחינה מוכנה",300,8.5,10,27],["שקדים",579,21,22,50],["אגוזי מלך",654,15,14,65],["קשיו",553,18,30,44],["בוטנים",567,26,16,49],["חמאת בוטנים",588,25,20,50],["זרעי צ׳יה",486,17,42,31],["זרעי המפ",553,32,9,49],["זרעי דלעת",559,30,11,49],["זיתים",115,0.8,6,11],["חמאה",717,0.9,0.1,81],
 ["אבקת חלבון אפונה",380,80,5,6],["אבקת חלבון מי גבינה",390,78,6,6],["דבש",304,0.3,82,0],["שוקולד מריר 70%",600,8,46,43]];
+/* recipe text → ingredients in grams (approximate, editable) */
+const EXTRA_FOOD=[["עגבניות שרי",18,0.9,3.9,0.2],["שום",149,6.4,33,0.5],["מיץ לימון",22,0.4,7,0.2],["סוכר",400,0,100,0],["שמן",884,0,0,100],["שמנת לבישול 15%",160,2.5,4,15],["חלב קוקוס",197,2,3,21],["קמח לבן",364,10,76,1],["בצל ירוק",32,1.8,7,0.2],["פטרוזיליה",36,3,6,0.8],["כוסברה",23,2,3.7,0.5],["שמיר",43,3.5,7,1.1],["נענע",44,3.3,8,0.7],["חציל",25,1,6,0.2],["פלפל",28,1,6,0.2],["רסק עגבניות",82,4.3,19,0.5],["אבקת קקאו",228,20,58,14],["קמח תירס",361,7,77,3.9],["פסטה ללא גלוטן מבושלת",150,3,32,1]];
+const ZERO=["מלח","פלפל שחור","תבלין","תבלינים","כמון","פפריקה","כורכום","אורגנו","קינמון","מים","אבקת אפייה","סודה לשתייה","וניל","הל","ציפורן","זעפרן","קארי","ג׳ינג׳ר טחון","אגוז מוסקט","תימין","רוזמרין","בזיליקום יבש","צ׳ילי","פלפל לבן","ממתיק","סטיביה","חומץ"];
+const NUMW={"חצי":.5,"רבע":.25,"שליש":1/3,"אחד":1,"אחת":1,"שתי":2,"שתיים":2,"שתים":2,"שני":2,"שניים":2,"שנים":2,"שלוש":3,"שלושה":3,"ארבע":4,"ארבעה":4,"חמש":5,"חמישה":5,"שש":6,"שישה":6,"שבע":7,"שבעה":7,"שמונה":8,"תשע":9,"תשעה":9,"עשר":10,"עשרה":10,"זוג":2,"כמה":3};
+const KW_SKIP=new Set(["מבושל","מבושלת","מבושלות","מבושלים","ללא","גלוטן","אפויה","אפוי","לא","ממותק","מוכנה","גולמית"]);
+const stem=w=>{let p;do{p=w;if(w.length>3)w=w.replace(/(ים|ות|ה|ת|י)$/,"")}while(w!==p&&w.length>3);return w};
+const H=s=>s.replace(/[״"]/g,"״").replace(/['׳`]/g,"׳");
+const words=s=>H(s).replace(/\([^)]*\)/g," ").split(/[^֐-׿׳״a-z]+/i).filter(Boolean);
+function matchFood(text,FOOD,pct){const ws=words(text),tw=[...ws,...ws.filter(w=>/^[והב]/.test(w)&&w.length>3).map(w=>w.slice(1))].map(stem),tws=new Set(tw);let best=null,bs=0;
+  for(const f of FOOD){const kws=words(f[0]).filter(w=>!KW_SKIP.has(w)).map(stem);if(!kws.length)continue;
+    const hit=kws.filter(k=>tws.has(k)||tw.some(w=>w.length>=3&&k.length>=3&&(w.startsWith(k)||k.startsWith(w))&&Math.abs(w.length-k.length)<=1)).length;if(!hit)continue;
+    let sc=hit-0.5*(kws.length-hit);const fp=(f[0].match(/(\d+(?:\.\d+)?)%/)||[])[1];if(pct&&fp)sc+=pct===fp?.6:-.3;
+    if(sc>bs+1e-9){bs=sc;best=f}}
+  return bs>0?best:null}
+const UNITW=[["שרי",15],["חלבון ביצה",33],["ביצ",55],["בצל ירוק",15],["בצל",150],["עגבני",120],["מלפפון",120],["גזר",80],["תפוח אדמה",170],["בטטה",200],["קישוא",200],["חציל",300],["פלפל",150],["תפוח",180],["בננה",120],["תפוז",180],["אגס",170],["קיווי",75],["אפרסק",150],["תמר",20],["אבוקדו",140],["שום",5],["לחם",30],["פריכית",9],["טורטיי",30],["דף אורז",9],["זית",4],["שקד",1.2],["אגוז",5],["קשיו",1.6],["קוטג׳",250],["יוגורט",150],["סקיר",150],["לימון",40],["פטרי",15],["גבינה צהובה",20],["תות",15],["מנגו",250]];
+const SPOON=[["שמן",13],["חמאה",14],["קמח",9],["עמילן",8],["סוכר",12],["דבש",21],["טחינה",15],["חמאת",16],["זרעי",10],["אבקת",8],["קקאו",7],["רוטב",15],["רסק",16],["שיבולת",6]];
+const CUP=[["ברוקולי",90],["כרובית",100],["קישוא",120],["גזר",110],["פטרי",70],["בצל",160],["עגבני",180],["תירס",160],["אפונה",145],["שעועית ירוקה",110],["קמח",120],["שיבולת",90],["עמילן",120],["סוכר",200],["אורז",180],["קינואה",180],["עדשים יבשות",190],["חלב",240],["משקה",240],["מים",240],["שמן",218],["יוגורט",240],["תרד",30],["חסה",50],["פירות יער",140],["תות",150],["אגוזי",100],["שקדים",140],["גבינה צהובה",110],["רוטב",250]];
+const pick=(tbl,name,def)=>{for(const [k,v] of tbl)if(name.includes(k))return v;return def};
+function parseQty(s){s=" "+s.replace(/(\d)([א-ת])/g,"$1 $2").replace(/([א-ת])(\d)/g,"$1 $2")+" ";
+  s=s.replace(/\d+(?:\.\d+)?\s*%/g," ");let q=null,m;
+  if(m=s.match(/(\d+(?:[.,]\d+)?)\s*[-–]\s*(\d+(?:[.,]\d+)?)/))q=(+m[1].replace(",",".")+ +m[2].replace(",","."))/2;
+  else if(m=s.match(/(\d+)\s*\/\s*(\d+)/))q=+m[1]/+m[2];
+  else if(m=s.match(/(\d+(?:[.,]\d+)?)/))q=+m[1].replace(",",".");
+  else if(/[½]/.test(s))q=.5;else if(/[¼]/.test(s))q=.25;else if(/[¾]/.test(s))q=.75;
+  else{for(const w of s.trim().split(/\s+/)){if(w==="וחצי")continue;const x=w.replace(/^ו/,"");if(NUMW[w]!=null||NUMW[x]!=null){q=NUMW[w]??NUMW[x];break}}}
+  if(/\sוחצי\s/.test(s))q=(q==null?1:q)+.5;
+  const u=(re)=>re.test(s);let unit=null;
+  if(u(/\s(ק״ג|קג|ק"ג|קילו)\s/))unit="kg";else if(u(/\s(גרם|גר׳?|ג׳|ג'|ג|גר')\s/))unit="g";else if(u(/\s(מ״ל|מל|מ"ל|מיליליטר|סמ״ק)\s/))unit="g";else if(u(/\sליטר\s/))unit="l";
+  else if(u(/\sכפיו?ת\s/))unit="tsp";else if(u(/\sכפו?ת?\s/)||u(/\sכף\s/))unit="tbsp";else if(u(/\sכוסו?ת?\s/)||u(/\sכוס\s/))unit="cup";
+  else if(u(/\s(שן|שיני)\s/))unit="clove";else if(u(/\s(פרוסה|פרוסות)\s/))unit="slice";else if(u(/\s(קורט|קמצוץ|מעט|טיפה)\s/))unit="pinch";
+  else if(u(/\s(גביע|גביעים)\s/))unit="cup_y";else if(u(/\s(קופסה|קופסת|פחית)\s/))unit="can";else if(u(/\sחופן\s/))unit="handful";else if(u(/\s(חבילה|חבילת|חבילות|מגש)\s/))unit="pack";
+  const rest=s.replace(/\d+(?:[.,]\d+)?|[½¼¾\-–\/]/g," ").split(/\s+/).filter(w=>w&&!["גרם","גר","ג׳","ג'","ג","ק״ג","קג","קילו","מ״ל","מל","ליטר","כף","כפות","כפית","כפיות","כוס","כוסות","שן","שיני","פרוסה","פרוסות","קורט","קמצוץ","גביע","גביעים","קופסה","קופסת","פחית","חופן","חבילה","חבילת","חבילות","מגש","של","עם","וחצי","בערך","כ"].includes(w)&&NUMW[w]==null&&NUMW[w.replace(/^ו/,"")]==null).join(" ");
+  return {q,unit,rest}}
+function parseRecipe(text,FOODS){const FOOD=FOODS;const out=[],bad=[],zero=[];
+  const segs=H(text).split(/\n|,|;|\+|•|·/).map(x=>x.replace(/^[^:\d]*:\s*/,"").replace(/^\s*[-*\d]+[.)]\s+/,"").trim()).filter(Boolean);
+  for(const seg of segs){const {q,unit,rest}=parseQty(seg);const name=rest.trim();
+    if(!name){bad.push(seg);continue}
+    let left=H(name);if(ZERO.some(z=>left.includes(z))){[...ZERO].sort((a,b)=>b.length-a.length).forEach(z=>left=left.split(z).join(" "));if(!left.split(/\s+/).map(w=>w.replace(/^ו/,"")).filter(w=>w&&!["קצת","לפי","הטעם","טעם","מעט"].includes(w)).length){zero.push(seg);continue}}
+    if(unit==="pinch"){zero.push(seg);continue}
+    const pct=(H(seg).match(/(\d+(?:\.\d+)?)\s*%/)||[])[1];const f=matchFood(name,FOOD,pct);if(!f){bad.push(seg);continue}
+    const n=f[0],qq=q==null?1:q;let g,guess=false;
+    if(unit==="g")g=qq;else if(unit==="kg")g=qq*1000;else if(unit==="l")g=qq*1000;
+    else if(unit==="tsp")g=qq*pick(SPOON,n,15)/3;else if(unit==="tbsp")g=qq*pick(SPOON,n,15);else if(unit==="cup")g=qq*pick(CUP,n,200);
+    else if(unit==="clove")g=qq*5;else if(unit==="slice")g=qq*pick([["לחם",30],["גבינה",20],["חלומי",30]],n,25);else if(unit==="cup_y")g=qq*pick([["קוטג׳",250],["גבינה לבנה",250]],n,150);
+    else if(unit==="can")g=qq*pick([["חומוס",240],["שעועית",240],["תירס",200],["עגבני",400],["קוקוס",400],["רסק",100]],n,240);else if(unit==="handful")g=qq*30;else if(unit==="pack")g=qq*pick([["טופו",300],["קוטג׳",250],["גבינה",200],["תרד",250],["פטרי",250],["עגבניות שרי",250]],n,250);
+    else{const uw=pick(UNITW,n,0)||pick(UNITW,name,0);g=uw?qq*uw:(q!=null&&q>=20?q:null);guess=!uw}
+    if(g==null){bad.push(seg);continue}
+    g=Math.round(g);out.push({src:seg,n,g,per:f.slice(1)})}
+  return {items:out,bad,zero}}
+FOOD.push(...EXTRA_FOOD);
+
 const recipes={};let SV=null;
 const r1=n=>Math.round(n*10)/10,ri=n=>Math.round(n);
 const nut=(per,g)=>({k:per[0]*g/100,p:per[1]*g/100,c:per[2]*g/100,f:per[3]*g/100});
@@ -896,25 +954,34 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     $("oUse").onclick=()=>{const n=$("on").value.trim(),k=+$("ok").value;if(!n||!(k>=0)){toast("שם וקלוריות ל-100 ג׳");return}SV.pick={n,per:[k,+$("op").value||0,+$("oc").value||0,+$("of").value||0],g:100};drawFood()};
     $("svBack").onclick=()=>{SV=forRec?{type:"rec",rec:SV.rec}:null;SV?drawFood():drawSheet()};return}
   if(SV.type==="recs"){const list=Object.entries(recipes).sort((a,b)=>(b[1].at||"").localeCompare(a[1].at||""));
-    sh.innerHTML=`<div class="grab"></div><button class="back" type="button" id="svBack">→ חזרה</button><h3>מיקס או מנה שהכנתי</h3><p class="sub">בוחרים מהשמורים או בונים חדש. האפליקציה אומרת כמה לקחת.</p>
-    <button class="cta" type="button" id="recNew" style="width:100%">+ מיקס חדש</button>
+    sh.innerHTML=`<div class="grab"></div><button class="back" type="button" id="svBack">→ חזרה</button><h3>המתכונים שלי</h3><p class="sub">בוחרים מהשמורים או בונים חדש. האפליקציה אומרת כמה לקחת.</p>
+    <button class="cta" type="button" id="recNew" style="width:100%">+ מתכון חדש</button>
     <div class="flist">${list.map(([id,r])=>{const p=recPer100(r);return `<button class="fi" type="button" data-rec="${id}"><b>${esc(r.name)}</b><small>${isMixMeal(m)?`לארוחה הזו כ-${mixGrams(r,m)} ג׳ · `:""}${ri(p[0])} קק״ל · ${r1(p[1])} ג׳ חלבון ל-100 ג׳</small></button>`}).join("")||`<div class="hint">עוד אין מתכונים שמורים.</div>`}</div>`;
     $("recNew").onclick=()=>{SV={type:"rec",rec:{name:"",items:[],cooked:""}};drawFood()};
     sh.querySelector(".flist").onclick=e=>{const b=e.target.closest("[data-rec]");if(!b)return;SV={type:"portion",id:b.dataset.rec};drawFood()};
     $("svBack").onclick=()=>{SV=null;drawSheet()};return}
   if(SV.type==="rec"){const r=SV.rec,t=sumF(r.items),raw=r.items.reduce((s,x)=>s+(+x.g||0),0);
-    sh.innerHTML=`<div class="grab"></div><button class="back" type="button" id="svBack">→ חזרה</button><h3>מיקס חופשי</h3><p class="sub">מערבבים מה שרוצים, כל רכיב בגרמים. האפליקציה מחשבת קלוריות וערכים, ואומרת כמה מזה לאכול בכל ארוחה</p>
-    <input id="rn" placeholder="שם, למשל סלט עדשים וגבינה" value="${esc(r.name)}">
-    <div class="ings">${r.items.map((x,i)=>`<div class="ing"><span><b>${esc(x.n)}</b><small>${ri(x.g)} ג׳ · ${ri(x.k)} קק״ל</small></span><button type="button" data-del="${i}" aria-label="הסרה">×</button></div>`).join("")||`<div class="hint">עוד אין רכיבים</div>`}</div>
-    <button class="ghost" type="button" id="rAdd" style="width:100%">+ רכיב</button>
+    sh.innerHTML=`<div class="grab"></div><button class="back" type="button" id="svBack">→ חזרה</button><h3>מתכון או מיקס</h3><p class="sub">כותבים את המתכון במילים, כמו בהודעה. האפליקציה מפענחת, מחשבת קלוריות וערכים, ואומרת כמה מזה לאכול בכל ארוחה</p>
+    <input id="rn" placeholder="שם, למשל פשטידת ברוקולי" value="${esc(r.name)}">
+    <textarea id="rtx" rows="5" placeholder="למשל:&#10;4 ביצים&#10;300 גרם ברוקולי&#10;חצי כוס קמח חומוס&#10;כף שמן זית&#10;100 גרם בולגרית 5%">${esc(r.tx||"")}</textarea>
+    <button class="cta" type="button" id="rParse" style="width:100%">פענוח וחישוב</button>
+    ${r.msg?`<p class="hint rmsg">${r.msg}</p>`:""}
+    ${r.items.length?`<h4>הרכיבים · אפשר לתקן גרמים</h4>`:""}
+    <div class="ings">${r.items.map((x,i)=>`<div class="ing"><span><b>${esc(x.n)}</b><small>${x.src?`${esc(x.src)} · `:""}${ri(x.k)} קק״ל</small></span><label class="gin"><input type="number" inputmode="decimal" data-gi="${i}" value="${ri(x.g)}" aria-label="גרמים">ג׳</label><button type="button" data-del="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>
+    <button class="ghost" type="button" id="rAdd" style="width:100%">+ רכיב מהרשימה</button>
     <label class="lbl">משקל כל המנה אחרי בישול (ג׳) · לא חובה, אבל מדייק<input id="rw" type="number" inputmode="decimal" value="${esc(r.cooked||"")}" placeholder="${ri(raw)||""}"></label>
     ${r.items.length?`<div class="tot"><b>כל המנה</b><span>${macroLine(t)}</span><b>ל-100 ג׳</b><span id="rper">${macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)))}</span>${mixFit(r)?`<b>כמה לאכול</b><span id="rmix">${mixFit(r)}</span>`:""}</div>`:""}
     <button class="cta" type="button" id="rSave" style="width:100%">שמירה</button>`;
-    $("rn").oninput=e=>r.name=e.target.value;$("rw").oninput=e=>{r.cooked=e.target.value;const el=$("rper");if(el)el.textContent=macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)));const em=$("rmix");if(em)em.textContent=mixFit(r)};
+    $("rn").oninput=e=>r.name=e.target.value;$("rtx").oninput=e=>r.tx=e.target.value;
+    $("rParse").onclick=()=>{const t=(r.tx||"").trim();if(!t){toast("כתבי קודם את הרכיבים");return}const res=parseRecipe(t,FOOD);
+      res.items.forEach(x=>{const v=nut(x.per,x.g);r.items.push({n:x.n,g:x.g,src:x.src,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)})});
+      if(!r.name.trim()){const fl=t.split(/\n/)[0];if(/:/.test(fl))r.name=fl.split(":")[0].trim()}
+      r.tx=res.bad.join("\n");r.msg=[res.items.length?`זיהיתי ${res.items.length} רכיבים. כדאי לעבור על הגרמים`:"",res.zero.length?`תבלינים לא נספרים: ${esc(res.zero.join(", "))}`:"",res.bad.length?`<b>לא זיהיתי מה שנשאר בתיבה.</b> אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״`:""].filter(Boolean).join("<br>");drawFood()};
+    sh.querySelectorAll("[data-gi]").forEach(inp=>inp.onchange=()=>{const x=r.items[+inp.dataset.gi],g=+inp.value;if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].forEach(k=>x[k]=r1(x[k]*f));x.g=g;drawFood()});$("rw").oninput=e=>{r.cooked=e.target.value;const el=$("rper");if(el)el.textContent=macroLine((p=>({k:p[0],p:p[1],c:p[2],f:p[3]}))(recPer100(r)));const em=$("rmix");if(em)em.textContent=mixFit(r)};
     $("rAdd").onclick=()=>{SV={type:"recIng",rec:r};drawFood()};
     sh.querySelector(".ings").onclick=e=>{const b=e.target.closest("[data-del]");if(!b)return;r.items.splice(+b.dataset.del,1);drawFood()};
     $("rSave").onclick=()=>{if(!r.name.trim()){toast("שם למנה");return}if(!r.items.length){toast("צריך לפחות רכיב אחד");return}
-      const id="r"+Date.now(),o={name:r.name.trim(),items:r.items.map(x=>({...x,k:r1(x.k),p:r1(x.p),c:r1(x.c),f:r1(x.f)})),cooked:+r.cooked||null,at:new Date().toISOString()};
+      const id="r"+Date.now(),o={name:r.name.trim(),items:r.items.map(({src,...x})=>({...x,k:r1(x.k),p:r1(x.p),c:r1(x.c),f:r1(x.f)})),cooked:+r.cooked||null,at:new Date().toISOString()};
       recipes[id]=o;saveDoc(tp("recipes",id),o);SV={type:"portion",id};drawFood()};
     $("svBack").onclick=()=>{SV={type:"recs"};drawFood()};return}
   if(SV.type==="portion"){const r=recipes[SV.id];if(!r){SV={type:"recs"};return drawFood()}const per=recPer100(r);
@@ -928,7 +995,7 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
 function foodSection(m,x){const fl=x.food||[],t=sumF(mealItems(m,x));
   return `<h4>בגרמים · קלוריות וחלבון</h4>
   ${fl.length?`<div class="ings">${fl.map((f,i)=>`<div class="ing"><span><b>${esc(f.n)}</b><small>${ri(f.g)} ג׳ · ${ri(f.k)} קק״ל · ${r1(f.p)} ג׳ חלבון</small></span><button type="button" data-fdel="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>`:""}${t.k>0?`<p class="hint">בארוחה הזו: ${macroLine(t)}</p>`:""}
-  <div class="askb"><button class="ghost" type="button" id="fIng">+ רכיב</button><button class="ghost" type="button" id="fRec">+ מיקס חופשי</button></div>`}
+  <div class="askb"><button class="ghost" type="button" id="fIng">+ רכיב</button><button class="ghost" type="button" id="fRec">+ מתכון שלי</button></div>`}
 
 /* meal sheet */
 let sheetMeal=null;
@@ -941,7 +1008,7 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
   $("sheet").innerHTML=`<div class="grab"></div><h3>${esc(m.t)}</h3><p class="sub">${esc(m.k||"")}</p>
   <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
   ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
-  ${isMixMeal(m)?`<h4>המיקסים שלי <small class="mh">· הכמות מחושבת לארוחה הזו</small></h4>${recList().length?`<div class="opts">${recList().map(([id,r])=>{const g=mixGrams(r,m),t=nut(recPer100(r),g);return optBtn(r.name,`${g} ג׳ · ${ri(t.k)} קק״ל · ${ri(t.p)} ג׳ חלבון`,`data-mix="${id}"`,(x.food||[]).some(f=>f.rec===id))}).join("")}</div>`:""}<button class="ghost" type="button" id="mixNew" style="width:100%;margin-top:8px">+ מיקס חופשי חדש</button>`:""}
+  ${isMixMeal(m)?`<h4>המתכונים שלי <small class="mh">· הכמות מחושבת לארוחה הזו</small></h4>${recList().length?`<div class="opts">${recList().map(([id,r])=>{const g=mixGrams(r,m),t=nut(recPer100(r),g);return optBtn(r.name,`${g} ג׳ · ${ri(t.k)} קק״ל · ${ri(t.p)} ג׳ חלבון`,`data-mix="${id}"`,(x.food||[]).some(f=>f.rec===id))}).join("")}</div>`:""}<button class="ghost" type="button" id="mixNew" style="width:100%;margin-top:8px">+ מתכון חדש · כותבים והאפליקציה מחשבת</button>`:""}
   ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}${g.multi?` <small class="mh">· אפשר כמה</small>`:""}</h4>`:"<div style='height:12px'></div>"}<div class="opts${g.multi?" multi":""}">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?(g.multi?`${ri(it[2].k)} קק״ל`:`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`):""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,selIdx(sl[gi]).includes(ii))).join("")}</div>`).join("")}
   ${Object.keys(sl).length&&(m.groups||[]).length>1?`<div class="note-k plate" style="margin-top:12px"><b>הצלחת שלך</b> ${macroLine(sumF(mealItems(m,x)))}</div>`:""}
   ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
@@ -1044,10 +1111,12 @@ function renderMenu(){const mn=prof.menu;
   if(!mn){$("v-menu").innerHTML=`<div class="sh"><h2>התפריט</h2></div><div class="card"><div class="empty">בתכנית שלך אין כרגע תפריט</div></div>`;return}
   const li=a=>a.map(([t,d])=>`<li>${esc(t)}${d?` <small>· ${esc(d)}</small>`:""}</li>`).join("");
   $("v-menu").innerHTML=`<div class="sh"><h2>התפריט שלך</h2><span>מאת טל</span></div>
+  ${meals().some(isMixMeal)?`<button class="card recbtn" type="button" id="menuRec"><b>מפענח מתכונים</b><small>כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב</small></button>`:""}
   ${(mn.goals||[]).length?`<div class="goal">${mn.goals.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join("")}</div>`:""}
   ${(mn.intro||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
-  ${mn.meals.map(m=>`<div class="msec"><h3>${esc(m.t)}</h3><span class="k">${esc(m.k||"")}</span>${(m.groups||[]).map(g=>`${g.h?`<h4>${esc(g.h)}</h4>`:""}<ul>${li(g.items)}</ul>`).join("")}${isMixMeal(m)&&recList().length?`<h4>המיקסים שלי</h4><ul>${recList().map(([,r])=>`<li>${esc(r.name)} <small>· כ-${mixGrams(r,m)} ג׳ · ${ri(nut(recPer100(r),mixGrams(r,m)).k)} קק״ל</small></li>`).join("")}</ul>`:""}${m.note?`<h4>שימו לב</h4><ul><li>${esc(m.note)}</li></ul>`:""}</div>`).join("")}
-  ${(mn.rules||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`}
+  ${mn.meals.map(m=>`<div class="msec"><h3>${esc(m.t)}</h3><span class="k">${esc(m.k||"")}</span>${(m.groups||[]).map(g=>`${g.h?`<h4>${esc(g.h)}</h4>`:""}<ul>${li(g.items)}</ul>`).join("")}${isMixMeal(m)&&recList().length?`<h4>המתכונים שלי</h4><ul>${recList().map(([,r])=>`<li>${esc(r.name)} <small>· כ-${mixGrams(r,m)} ג׳ · ${ri(nut(recPer100(r),mixGrams(r,m)).k)} קק״ל</small></li>`).join("")}</ul>`:""}${m.note?`<h4>שימו לב</h4><ul><li>${esc(m.note)}</li></ul>`:""}</div>`).join("")}
+  ${(mn.rules||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`;
+  const mr=$("menuRec");if(mr)mr.onclick=()=>{const i=meals().findIndex(isMixMeal);sheetMeal=i;SV={type:"rec",rec:{name:"",items:[],cooked:""}};drawFood();$("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").scrollTop=0}}
 
 /* ===== MEASURES ===== */
 function lineChart(pts,base){const Wd=340,H=140,Lf=30,R=12,T=14,B=22,vals=pts.map(p=>p.v).concat(base!=null?[base]:[]);
