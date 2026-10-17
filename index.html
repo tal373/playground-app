@@ -589,6 +589,51 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .dseg{display:flex;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:4px;gap:4px}
 .dseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:700;font-size:14px;color:var(--muted)}
 .dseg button[aria-pressed="true"]{background:var(--ink);color:var(--navy)}
+.bf{--pA:#5ee6d0;--pB:#ffc857;--pC:#ff6b4a;--pD:#9d8cff;display:flex;flex-direction:column;gap:16px}
+.bf .n{display:inline-block;background:color-mix(in srgb,var(--c,var(--hot)) 22%,transparent);color:var(--c,var(--hot));border-radius:7px;padding:0 6px;font-weight:700}
+.bf-hero{background:linear-gradient(160deg,var(--s2),var(--navy) 65%);border:1px solid var(--line);border-radius:26px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.bf-tag{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--pA)}
+.bf-hero h1{margin:6px 0 0;font-size:26px;line-height:1.1;font-weight:800}
+.bf-en{display:block;direction:ltr;text-align:right;font-size:14px;color:var(--muted);font-weight:600;margin-top:6px}
+.bf-ring{width:88px;height:88px;position:relative}.bf-ring svg,.bf-rr svg{width:100%;height:100%;transform:rotate(-90deg)}
+.bf-ring .tr,.bf-rr .tr{fill:none;stroke:var(--s3);stroke-width:9}.bf-ring .br{fill:none;stroke:var(--hot);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .6s}
+.bf-ring .in,.bf-rr .in{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.bf-ring b{font-size:19px;font-weight:800}.bf-ring small{font-size:10px;color:var(--muted)}
+.bf-lede{grid-column:1/-1;margin:0;color:#c9d4e4;font-size:15px}.bf-lede b{color:var(--ink)}
+.bf-hb{grid-column:1/-1;display:flex}
+.bf-clock{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.bf-crow{display:flex;align-items:center;gap:10px}.bf-t{font-size:30px;font-weight:800;direction:ltr;font-variant-numeric:tabular-nums}
+.bf-now{flex:1;min-width:0}.bf-now small{display:block;color:var(--muted);font-size:12px}.bf-now b{font-size:14px;line-height:1.3;display:block}
+.bf-cb{width:42px;height:42px;border-radius:50%;background:var(--s2);font-weight:800;flex:none}.bf-cb.play{background:var(--hot);color:var(--navy)}
+.bf-tl{position:relative;display:flex;gap:3px;height:11px}.bf-tl i{border-radius:6px;background:var(--c);opacity:.35}.bf-tl i.cur{opacity:1;box-shadow:0 0 12px var(--c)}.bf-tl i.past{opacity:.8}
+.bf-tl .mk{position:absolute;top:-5px;width:3px;height:21px;border-radius:2px;background:var(--ink);right:0;transition:right 1s linear}
+.bf-leg{display:grid;gap:6px}.bf-leg button{display:flex;align-items:center;gap:10px;background:var(--s2);border-radius:12px;padding:8px 12px;text-align:right;font-size:14px}
+.bf-leg i{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}.bf-leg em{font-style:normal;color:var(--muted);font-size:12px;margin-inline-start:auto;direction:ltr}.bf-leg button.cur{outline:1.5px solid var(--c)}
+.bf-blk{display:flex;flex-direction:column;gap:10px;margin-top:12px;scroll-margin-top:70px}
+.bf-bh{display:flex;align-items:center;gap:12px}.bf-bh .k{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:18px;color:var(--navy);background:var(--c)}
+.bf-bh h2{margin:0;font-size:18px;direction:ltr;text-align:right}.bf-bh small{display:block;color:var(--c);font-size:12.5px;font-weight:600;direction:ltr;text-align:right}
+.bf-why{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 16%,transparent),transparent);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);border-radius:18px;padding:12px 14px;font-size:14.5px;color:#c9d4e4}.bf-why b{color:var(--ink)}
+.bf-lift{background:linear-gradient(160deg,var(--s2),var(--navy));border:1px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bf-lift .k2{font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--c)}.bf-lift h3{margin:0;font-size:18px;direction:ltr;text-align:right}.bf-lift p{margin:0;font-size:14.5px;color:#c9d4e4}.bf-lift p b{color:var(--ink)}
+.bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bf-grid div{background:#ffffff0d;border:1px solid var(--line);border-radius:14px;padding:9px 11px}.bf-grid small{display:block;color:var(--muted);font-size:11.5px}.bf-grid b{direction:ltr;display:block;text-align:right;font-size:15px}
+.bf-lad{display:grid;gap:6px}.bf-lad div{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;background:#ffffff0a;border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:14px}.bf-lad span:first-child{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--s3);font-weight:800;color:var(--c)}
+.bf-rest{background:var(--c);color:var(--navy);border-radius:16px;padding:13px;font-weight:800}
+.bf-ex{background:var(--s1);border:1px solid var(--line);border-radius:20px;overflow:hidden}.bf-ex.open{border-color:color-mix(in srgb,var(--c) 45%,transparent)}
+.bf-exh{display:flex;align-items:center;gap:12px;padding:10px;width:100%;text-align:right}
+.bf-ex .tile{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:800;background:color-mix(in srgb,var(--c) 22%,var(--s2))}.bf-ex.done .tile{background:var(--c);color:var(--navy)}
+.bf-ex .nm{flex:1;min-width:0;font-weight:600;font-size:14.5px;line-height:1.35;direction:ltr;text-align:right;unicode-bidi:isolate}.bf-ex .chev{color:var(--muted);font-size:11px}
+.bf-exb{padding:0 12px 12px;display:flex;flex-direction:column;gap:10px}
+.bf-vids{display:flex;gap:8px;flex-wrap:wrap}.bf-vids a{display:inline-flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:5px 13px 5px 5px;color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px;direction:ltr}
+.bf-vids a span{width:24px;height:24px;border-radius:50%;background:var(--hot);display:grid;place-items:center;font-size:10px;color:#fff}
+.bf-cue,.bf-err{border-radius:16px;padding:11px 13px;font-size:14.5px}.bf-cue{background:var(--s2)}.bf-err{background:#ff5a5a14;border:1px solid #ff5a5a40;color:#e7d6d6}
+.bf-cue>b,.bf-err>b{display:block;font-size:12px;margin-bottom:2px}.bf-cue>b{color:var(--c)}.bf-err>b{color:var(--bad)}
+.bf-tabs{display:flex;background:var(--s2);border-radius:12px;padding:3px;gap:3px}.bf-tabs button{flex:1;padding:8px 4px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted)}.bf-tabs button[aria-pressed="true"]{background:var(--ink);color:var(--navy)}
+.bf-pane{font-size:14.5px;color:#c9d4e4;background:#ffffff08;border-radius:12px;padding:11px 13px}.bf-pane b{color:var(--ink)}
+.bf-mark{border:1.5px dashed color-mix(in srgb,var(--c) 60%,transparent);color:var(--c);border-radius:12px;padding:10px;font-weight:700;font-size:14px}.bf-ex.done .bf-mark{background:var(--c);color:var(--navy);border-style:solid}
+.bf-lg ul{margin:0;padding-inline-start:18px;color:#c9d4e4;font-size:14.5px}.bf-lg li b{color:var(--ink)}
+.bf-rs{position:fixed;inset:0;z-index:60;background:#000b;display:none;align-items:flex-end;justify-content:center}.bf-rs.open{display:flex}
+.bf-sheet{width:100%;max-width:520px;background:var(--s1);border-radius:28px 28px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.bf-sheet small{color:var(--muted)}.bf-sheet .grab{width:44px;height:5px;border-radius:3px;background:var(--s3)}
+.bf-rr{width:min(60vw,220px);aspect-ratio:1;position:relative}.bf-rr .br{fill:none;stroke:var(--hot);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}.bf-rr b{font-size:54px;font-weight:800;direction:ltr}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -600,6 +645,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <section class="view" id="v-measure" hidden></section>
   <section class="view" id="v-coach" hidden></section>
   <section class="view" id="v-claude" hidden></section>
+  <section class="view" id="v-brief" hidden></section>
   <section class="view" id="v-class" hidden></section>
   <section class="view" id="v-studio" hidden></section>
   <section class="view" id="v-coaches" hidden></section>
@@ -611,6 +657,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>אימון</button>
   <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
+  <button class="nb" type="button" data-tab="brief" hidden><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>בריף</button>
   <button class="nb" type="button" data-tab="class" hidden><svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM6 6h3M15 6h3v15H6V6M9 12h6M9 16h4"/></svg>שיעור</button>
     <button class="nb" type="button" data-tab="claude" hidden><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>Claude</button>
   <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>דשבורד</button>
@@ -821,7 +868,7 @@ function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
 function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
@@ -1438,7 +1485,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;["today","workout","menu","measure","coach","claude","class","studio","coaches"].forEach(v=>$("v-"+v).hidden=v!==t);if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){tab=t;["today","workout","menu","measure","coach","claude","class","studio","coaches","brief"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
@@ -1657,15 +1704,90 @@ $("v-coaches").addEventListener("click",async ev=>{const t=ev.target;
   const d=t.closest("[data-codel]");if(d){const m=d.dataset.codel;if(coaDel!==m){coaDel=m;render();return}coaDel=null;try{await db.delCoach(m);COA=null;toast("הוסר");loadCoaches()}catch(e){toast("לא הוסר")}return}
   const c=t.closest("[data-coa]");if(c){coaOpen=coaOpen===c.dataset.coa?null:c.dataset.coa;coaDel=null;render()}});
 
+/* ---------- coach brief (in-app, from b/<date>-<type>) ---------- */
+const BRF={},BDONE={},BOPEN=new Set();let bfLoaded=false,bfLoading=false,bfSel=null,bfAll=false,bfT=0,bfRun=null,rsT=0,rsTot=0,rsRun=null,rsPause=false;
+const BPH={mob:"var(--pA)",core:"var(--pB)",mainA:"var(--pC)",main:"var(--pC)",mainB:"var(--pD)",met:"var(--pD)",buyout:"var(--hot)"};
+const BKEY={mob:"M",core:"C",mainA:"A",main:"A",mainB:"B",met:"X",buyout:"+"};
+const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+async function loadBriefs(){if(!db||bfLoading)return;bfLoading=true;
+  try{const s=await db.collection("b").where("date",">=",addDays(TODAY,-1)).get();fill(BRF,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
+    try{const d=JSON.parse(localStorage.pgBDone||"{}");Object.keys(d).forEach(k=>BDONE[k]=new Set(d[k]))}catch(e){}bfLoaded=true}catch(e){setSave("שגיאה בטעינה","err")}
+  bfLoading=false;if(tab==="brief")render()}
+const bdSave=()=>{try{localStorage.pgBDone=JSON.stringify(Object.fromEntries(Object.entries(BDONE).map(([k,v])=>[k,[...v]])))}catch(e){}};
+function renderBrief(){const v=$("v-brief");
+  if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
+  const ids=Object.keys(BRF).sort();
+  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>בריף מאמנים</small><b>אין בריף עדיין</b></div></div><div class="card"><div class="empty">הבריף של השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>`;return}
+  if(!bfSel||!BRF[bfSel])bfSel=ids.find(id=>BRF[id].date===TODAY)||ids.find(id=>BRF[id].date>TODAY)||ids[ids.length-1];
+  const b=BRF[bfSel],dn=BDONE[bfSel]||new Set(),blocks=b.blocks||[],tot=blocks.reduce((a,x)=>a+(x.x||[]).length,0),tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;
+  let n=0;const HC=2*Math.PI*45;
+  v.innerHTML=`<div class="bf">
+  ${ids.length>1?`<div class="chips">${ids.map(id=>`<button type="button" data-bsel="${esc(id)}" aria-pressed="${id===bfSel}">${esc(fmt(BRF[id].date))} · ${esc(BRF[id].cls||"")}</button>`).join("")}</div>`:""}
+  <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div>
+    <div class="bf-ring"><svg viewBox="0 0 108 108"><circle class="tr" cx="54" cy="54" r="45"/><circle class="br" cx="54" cy="54" r="45" style="stroke-dasharray:${HC};stroke-dashoffset:${HC*(1-(tot?dn.size/tot:0))}"/></svg><div class="in"><b>${dn.size}/${tot}</b><small>עברת עליהם</small></div></div>
+    <p class="bf-lede">${b.lede||""}</p>
+    <div class="bf-hb"><button class="cta" type="button" data-ball>${bfAll?"סגור הכול":"פתח את כל התרגילים"}</button></div></section>
+  <div class="sh"><h2>שעון שיעור</h2><span>לוחצים ▶ כשמתחילים</span></div>
+  <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
+    <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
+    <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
+    <div class="bf-leg">${tl.map(([id,l,s,e])=>`<button type="button" style="--c:${BPH[id]||"var(--hot)"}" data-bgo="${esc(id)}" data-s="${s}" data-e="${e}"><i></i>${esc(l)}<em>${s}–${e}</em></button>`).join("")}</div></section>
+  ${blocks.map(x=>{const c=BPH[x.id]||"var(--hot)";return `<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${c}">
+    <div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${x.h}</h2><small>${esc(x.f||"")}</small></div></div>
+    <div class="bf-why">${x.w||""}</div>
+    ${x.l?`<div class="bf-lift"><div class="k2">${esc(x.l.k||"")}</div><h3>${esc(x.l.t||"")}</h3><div class="bf-grid">${(x.l.s||[]).map(([k,val])=>`<div><small>${esc(k)}</small><b>${esc(val)}</b></div>`).join("")}</div>
+      ${(x.l.fl||[]).map(f=>Array.isArray(f)?`<div class="bf-lad">${f.map((s,i)=>`<div><span>${i+1}</span><span>${esc(s)}</span></div>`).join("")}</div>`:`<p>${f}</p>`).join("")}
+      ${x.l.r&&x.l.r.length?`<button class="bf-rest" type="button" data-brest="${x.l.r.join(",")}" data-bnx="${esc(x.l.nx||"")}">⏱ טיימר מנוחה · ${esc(x.l.rl||"")}</button>`:""}</div>`:""}
+    ${(x.x||[]).map(e=>{n++;const k=bfSel+"|"+n,op=bfAll||BOPEN.has(k),d=dn.has(n);return `<article class="bf-ex${op?" open":""}${d?" done":""}">
+      <button class="bf-exh" type="button" data-bex="${esc(k)}"><span class="tile">${d?"✓":String(n).padStart(2,"0")}</span><span class="nm">${e.n}</span><span class="chev">${op?"▲":"▼"}</span></button>
+      ${op?`<div class="bf-exb"><div class="bf-vids">${(e.v||[]).map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener"><span>▶</span>${esc(l)}</a>`).join("")}</div>
+        <div class="bf-cue"><b>קיו</b>${e.c||""}</div><div class="bf-err"><b>הטעות</b>${e.e||""}</div>
+        <div class="bf-tabs" data-bt="${n}">${[["p","הריון"],["i","פציעות"],["t","למאמן"]].filter(([q])=>e[q]).map(([q,l],j)=>`<button type="button" data-btab="${q}" aria-pressed="${j===0}">${l}</button>`).join("")}</div>
+        ${[["p"],["i"],["t"]].filter(([q])=>e[q]).map(([q],j)=>`<div class="bf-pane" data-bpane="${q}"${j?" hidden":""}>${e[q]}</div>`).join("")}
+        <button class="bf-mark" type="button" data-bdone="${n}">${d?"✓ סומן":"✓ עברתי על התרגיל"}</button></div>`:""}</article>`}).join("")}
+  </section>`}).join("")}
+  <div class="sh"><h2>לוגיסטיקה</h2></div>
+  ${(b.logi||[]).map(([h,li])=>`<div class="card bf-lg"><b>${esc(h)}</b><ul>${li.map(t=>`<li>${t}</li>`).join("")}</ul></div>`).join("")}
+  </div>`;
+  bfDraw()}
+function bfDraw(){const T=$("bfT");if(!T)return;T.textContent=mmss(bfT).padStart(5,"0");const m=bfT/60,b=BRF[bfSel]||{},tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;let cur=null;
+  document.querySelectorAll("#bfTl i").forEach((s,i)=>{const a=+s.dataset.s,e=+s.dataset.e,on=m>=a&&m<e;s.classList.toggle("cur",on);s.classList.toggle("past",m>=e);if(on)cur=tl[i]});
+  document.querySelectorAll(".bf-leg button").forEach(x=>x.classList.toggle("cur",m>=+x.dataset.s&&m<+x.dataset.e));
+  const mk=$("bfMk");if(mk)mk.style.right=Math.min(100,bfT/(end*60)*100)+"%";
+  $("bfNow").textContent=bfT===0?"לפני השיעור":cur?`${cur[1]} · נשארו ${mmss(cur[3]*60-bfT)}`:bfT>=end*60?"סוף השיעור":"מעבר"}
+function bfRestOpen(opts,nx){let o=$("bfRs");if(!o){o=document.createElement("div");o.id="bfRs";o.className="bf-rs";document.body.appendChild(o);
+    o.addEventListener("click",ev=>{const t=ev.target;if(t===o||t.closest("[data-rsx]")){clearInterval(rsRun);rsRun=null;o.classList.remove("open");return}
+      if(t.closest("[data-rsp]")){rsT+=15;rsTot=Math.max(rsTot,rsT);rsDraw();return}if(t.closest("[data-rspa]")){rsPause=!rsPause;t.textContent=rsPause?"המשך":"השהה";return}
+      const op=t.closest("[data-rso]");if(op){o.querySelectorAll("[data-rso]").forEach(x=>x.setAttribute("aria-pressed",x===op));rsStart(+op.dataset.rso)}})}
+  const C=2*Math.PI*90;o.innerHTML=`<div class="bf-sheet"><span class="grab"></span><small>מנוחה · הבא: ${esc(nx)}</small>
+    <div class="bf-rr"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="rsBar" cx="100" cy="100" r="90" style="stroke-dasharray:${C}"/></svg><div class="in"><b id="rsT">0:00</b><small id="rsS">נותרו</small></div></div>
+    <div class="chips">${opts.map((x,i)=>`<button type="button" data-rso="${x}" aria-pressed="${i===0}">${mmss(x)}</button>`).join("")}</div>
+    <div class="chips"><button type="button" data-rsp>+15 שנ׳</button><button type="button" data-rspa>השהה</button><button type="button" data-rsx>סגור</button></div></div>`;
+  o.classList.add("open");rsStart(opts[0])}
+function rsDraw(){const C=2*Math.PI*90,b=$("rsBar");if(!b)return;$("rsT").textContent=mmss(rsT);b.style.strokeDashoffset=C*(1-(rsTot?rsT/rsTot:0))}
+function rsStart(s){rsTot=s;rsT=s;rsPause=false;clearInterval(rsRun);rsDraw();$("rsS").textContent="נותרו";
+  rsRun=setInterval(()=>{if(rsPause)return;rsT--;rsDraw();if(rsT<=0){clearInterval(rsRun);rsRun=null;$("rsS").textContent="יוצאים לסבב!";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}},1000)}
+$("v-brief").addEventListener("click",ev=>{const t=ev.target;
+  const s=t.closest("[data-bsel]");if(s){bfSel=s.dataset.bsel;render();return}
+  if(t.closest("[data-ball]")){bfAll=!bfAll;if(!bfAll)BOPEN.clear();render();return}
+  const ex=t.closest("[data-bex]");if(ex){const k=ex.dataset.bex;if(bfAll){bfAll=false;BOPEN.clear()}BOPEN.has(k)?BOPEN.delete(k):BOPEN.add(k);render();return}
+  const tb=t.closest("[data-btab]");if(tb){const art=tb.closest(".bf-ex");art.querySelectorAll("[data-btab]").forEach(x=>x.setAttribute("aria-pressed",x===tb));art.querySelectorAll("[data-bpane]").forEach(p=>p.hidden=p.dataset.bpane!==tb.dataset.btab);return}
+  const dn=t.closest("[data-bdone]");if(dn){const i=+dn.dataset.bdone,S=BDONE[bfSel]=BDONE[bfSel]||new Set();if(S.has(i))S.delete(i);else{S.add(i);BOPEN.delete(bfSel+"|"+i)}bdSave();render();
+    const tot=(BRF[bfSel].blocks||[]).reduce((a,x)=>a+(x.x||[]).length,0);if(S.has(i))toast(S.size===tot?"מוכנים לשיעור 🔥":`${S.size} מתוך ${tot}`);return}
+  if(t.closest("[data-bclk]")){if(bfRun){clearInterval(bfRun);bfRun=null}else{bfRun=setInterval(()=>{bfT++;if(tab==="brief")bfDraw()},1000);toast("השיעור התחיל ⏱")}const b=t.closest("[data-bclk]");b.textContent=bfRun?"❚❚":"▶";return}
+  if(t.closest("[data-brst]")){bfT=0;bfDraw();return}
+  const g=t.closest("[data-bgo]");if(g){const el=$("bf-"+g.dataset.bgo);if(el)el.scrollIntoView({behavior:"smooth"});return}
+  const r=t.closest("[data-brest]");if(r){bfRestOpen(r.dataset.brest.split(",").map(Number),r.dataset.bnx);return}});
+
 /* ===== owner preview ===== */
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=subscribeAll();
-  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;
+  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(isCoach)NB("class").hidden=false;liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;go("coach")}
 $("pvbar").querySelector("button").onclick=exitPreview;
 
@@ -1691,9 +1813,9 @@ let liveU=[];
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
     db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
-    if(isCoach)NB("class").hidden=false;
+    if(isCoach){NB("class").hidden=false;NB("brief").hidden=false}
     ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);go("coach");return}
-  if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;setSave("מחובר ✓","ok");go("class");return}
+  if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;setSave("מחובר ✓","ok");go("brief");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
   const cw=await user.can("data.write");if(cw===false)readOnly=true;
