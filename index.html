@@ -586,6 +586,9 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .mini span{font-size:11.5px;font-weight:700;border-radius:8px;padding:1px 7px;background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c)}
 .known{font-size:12.5px;color:var(--warn);margin-top:2px}
 .addrow{display:flex;gap:8px}
+.dseg{display:flex;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:4px;gap:4px}
+.dseg button{flex:1;padding:10px 6px;border-radius:12px;font-weight:700;font-size:14px;color:var(--muted)}
+.dseg button[aria-pressed="true"]{background:var(--ink);color:var(--navy)}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -599,6 +602,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <section class="view" id="v-claude" hidden></section>
   <section class="view" id="v-class" hidden></section>
   <section class="view" id="v-studio" hidden></section>
+  <section class="view" id="v-coaches" hidden></section>
   <footer class="sig"><img src="pg-logo.png" alt=""><b>PLAYGROUND STUDIO</b><span>ליווי אישי של טל ליפשטט · אימון, תזונה ושיקום</span></footer>
 </div>
 
@@ -608,9 +612,8 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
   <button class="nb" type="button" data-tab="class" hidden><svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM6 6h3M15 6h3v15H6V6M9 12h6M9 16h4"/></svg>שיעור</button>
-  <button class="nb" type="button" data-tab="studio" hidden><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12M9 21v-7h6v7"/></svg>סטודיו</button>
-  <button class="nb" type="button" data-tab="claude" hidden><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>Claude</button>
-  <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>מתאמנים</button>
+    <button class="nb" type="button" data-tab="claude" hidden><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>Claude</button>
+  <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>דשבורד</button>
 </div></nav>
 
 <div class="scrim" id="scrim"></div>
@@ -682,6 +685,9 @@ function coll(path,filters=[]){return{
 const db={doc,collection:p=>coll(p),
   async removePrefix(p){const a=await SB.from("docs").delete().eq("path",p);if(a.error)throw E(a.error);const b=await SB.from("docs").delete().like("path",p+"/%");if(b.error)throw E(b.error)},
   async admins(){const [a,c]=await Promise.all([SB.from("admins").select("email"),SB.from("coaches").select("email")]);return [...(a.data||[]),...(c.data||[])].map(r=>String(r.email).toLowerCase())},
+  async coachList(){const {data,error}=await SB.from("coaches").select("email,name,added");if(error)throw E(error);return data||[]},
+  async addCoach(email,name){const {error}=await SB.from("coaches").upsert({email:email.toLowerCase(),name});if(error)throw E(error)},
+  async delCoach(email){const {error}=await SB.from("coaches").delete().eq("email",email);if(error)throw E(error)},
   async reports(since){const {data,error}=await SB.from("docs").select("path,data").like("parent","c/%/reports").gte("data->>date",since).limit(1000);if(error)throw E(error);return (data||[]).map(r=>({id:r.path,data:r.data}))}};
 const user={
   async id(){return me&&me.id},
@@ -815,7 +821,7 @@ function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio})[tab]()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
 function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
@@ -1421,7 +1427,8 @@ $("v-coach").addEventListener("click",ev=>{const t=ev.target;
 
 /* ===== today events ===== */
 document.addEventListener("click",ev=>{const t=ev.target;
-  const nb=t.closest("[data-tab]");if(nb&&!t.closest("#v-coach")){go(nb.dataset.tab);return}
+  const ds=t.closest("[data-dseg]");if(ds){dashLast=ds.dataset.dseg;go(dashLast);return}
+  const nb=t.closest("[data-tab]");if(nb&&!t.closest("#v-coach")){go(nb.dataset.tab==="coach"&&nb.classList.contains("nb")?dashLast:nb.dataset.tab);return}
   if(!$("v-today").contains(t))return;
   const dy=t.closest("[data-day]");if(dy){sel=dy.dataset.day;render();return}
   const ml=t.closest("[data-meal]");if(ml){openSheet(+ml.dataset.meal);return}
@@ -1431,8 +1438,8 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;["today","workout","menu","measure","coach","claude","class","studio"].forEach(v=>$("v-"+v).hidden=v!==t);if((t==="class"||t==="studio")&&stLoaded)loadStudio();
-  document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===t?"page":"false"));
+function go(t){tab=t;["today","workout","menu","measure","coach","claude","class","studio","coaches"].forEach(v=>$("v-"+v).hidden=v!==t);if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+  document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
 
@@ -1487,7 +1494,7 @@ async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&D
     if(isOwner&&db.reports){const rs=await db.reports(addDays(TODAY,-30));fill(REPS,Object.fromEntries(rs.map(r=>[r.id,r.data])))}
     if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime}}
     stLoaded=true;stAt=Date.now()}catch(e){setSave("שגיאה בטעינה","err")}
-  stLoading=false;if(tab==="class"||tab==="studio")render()}
+  stLoading=false;if(["class","studio","coaches"].includes(tab))render()}
 
 /* ---------- coach: class report ---------- */
 function renderClass(){const v=$("v-class");
@@ -1599,7 +1606,7 @@ function renderStudio(){const v=$("v-studio");
   <div class="sh"><h2>מתאמני הסטודיו</h2><span>${Object.keys(RO).length}</span></div>
   <input type="text" id="stQ" placeholder="חיפוש לפי שם" value="${esc(stQ)}">
   <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${r.inj?`<div class="known">⚠ ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
-  const s=$("stQ");s.oninput=()=>{stQ=s.value;const pos=s.selectionStart;dirty=false;renderStudio();const n=$("stQ");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
+  const s=$("stQ");s.oninput=()=>{stQ=s.value;const pos=s.selectionStart;dirty=false;renderStudio();dashSeg();const n=$("stQ");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
 
 async function openMember(id){stSel=id;stLogs=null;render();window.scrollTo(0,0);
   try{const s=await db.collection(`s/${id}/log`).get();stLogs=Object.fromEntries(s.docs.map(d=>[d.id,d.data()]))}catch(e){stLogs={}}if(tab==="studio"&&stSel===id)render()}
@@ -1620,15 +1627,45 @@ $("v-studio").addEventListener("click",ev=>{const t=ev.target;
   const rp=t.closest("[data-rep]");if(rp){repOpen=repOpen===rp.dataset.rep?null:rp.dataset.rep;render();return}
   const m=t.closest("[data-mem]");if(m){openMember(m.dataset.mem);return}});
 
+/* ---------- dashboard switcher + coaches dashboard ---------- */
+const DASH=["coach","studio","coaches"];let dashLast="coach",COA=null,coaOpen=null,coaDel=null;
+function dashSeg(){const v=$("v-"+tab);if(!v||v.querySelector(".dseg"))return;const d=document.createElement("div");d.className="dseg";
+  d.innerHTML=[["coach","ליווי אישי"],["studio","סטודיו"],["coaches","מאמנים"]].map(([k,l])=>`<button type="button" data-dseg="${k}" aria-pressed="${k===tab}">${l}</button>`).join("");v.prepend(d)}
+async function loadCoaches(){try{COA=await db.coachList()}catch(e){COA=[]}if(tab==="coaches")render()}
+function renderCoaches(){const v=$("v-coaches");
+  if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
+  if(!COA){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadCoaches();return}
+  const wk=addDays(TODAY,-6),reps=Object.entries(REPS).sort((a,b)=>((b[1].date||"")+(b[1].time||"")).localeCompare((a[1].date||"")+(a[1].time||"")));
+  const by=n=>reps.filter(([,r])=>(r.coach||"")===n);
+  const list=COA.slice().sort((a,b)=>by(b.name).filter(([,r])=>r.date>=wk).length-by(a.name).filter(([,r])=>r.date>=wk).length);
+  v.innerHTML=`
+  <div class="hello"><span class="avatar">מ</span><div><small>הצוות</small><b>מאמנים</b></div><button class="ghost" type="button" id="coRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
+  <div class="kpis"><div class="kpi"><b>${COA.length}</b><small>מאמנים באפליקציה</small></div><div class="kpi"><b>${reps.filter(([,r])=>r.date>=wk).length}</b><small>דיווחי שיעור השבוע</small></div></div>
+  <div class="flags">${list.map(c=>{const rs=by(c.name),w7=rs.filter(([,r])=>r.date>=wk),last=rs[0],flags=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).some(t=>t==="red"||t==="pain")).length,0),ppl=w7.reduce((a,[,r])=>a+(r.people||[]).length,0),op=coaOpen===c.email;
+    return `<div class="rp-p${op?" open":""}"><button class="rp-h" type="button" data-coa="${esc(c.email)}"><span class="av">${esc(ini(c.name||c.email))}</span><div style="flex:1;min-width:0"><b>${esc(c.name||c.email)}</b>
+      <div class="hint">${w7.length} שיעורים השבוע · ${ppl} מתאמנים${flags?` · ⚠ ${flags}`:""}</div><div class="hint">${last?"דיווח אחרון: "+esc(fmt(last[1].date))+" "+esc(last[1].time||""):"עוד לא דיווח"}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
+      ${op?`<div class="rp-b"><div class="hint" dir="ltr" style="text-align:right">${esc(c.email)}</div>
+        ${rs.slice(0,10).map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;return `<div class="flag" style="--c:${red?"var(--bad)":"var(--s3)"}"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}${r.tal?" · הודעה לטל":""}</div>${r.note?`<div class="hint">${esc(r.note)}</div>`:""}</div></div>`}).join("")||`<div class="empty">אין דיווחים עדיין</div>`}
+        <button class="ghost" type="button" data-codel="${esc(c.email)}" style="align-self:flex-start;padding:8px 14px;${coaDel===c.email?"color:var(--bad);border-color:var(--bad)":""}">${coaDel===c.email?"לחץ שוב להסרה":"הסרת המאמן מהאפליקציה"}</button></div>`:""}</div>`}).join("")||`<div class="card"><div class="empty">עוד אין מאמנים</div></div>`}</div>
+  <div class="sh"><h2>הוספת מאמן</h2></div>
+  <div class="card"><input type="text" id="coName" placeholder="שם, למשל שמעון"><input type="text" id="coMail" inputmode="email" dir="ltr" placeholder="email@gmail.com"><button class="cta" type="button" id="coAdd">הוספה</button>
+    <p class="hint">המאמן נרשם לאפליקציה עם המייל הזה ובוחר סיסמה. אחרי ההרשמה הוא רואה רק את מסך הדיווח.</p></div>`;
+  $("coRef").onclick=()=>{COA=null;loadStudio(true)};
+  $("coAdd").onclick=async()=>{const n=$("coName").value.trim(),m=$("coMail").value.trim().toLowerCase();if(!n||!/^\S+@\S+\.\S+$/.test(m)){toast("צריך שם ומייל תקין");return}
+    try{await db.addCoach(m,n);COA=null;toast("נוסף ✓");loadCoaches()}catch(e){toast("לא נוסף")}}}
+$("v-coaches").addEventListener("click",async ev=>{const t=ev.target;
+  const d=t.closest("[data-codel]");if(d){const m=d.dataset.codel;if(coaDel!==m){coaDel=m;render();return}coaDel=null;try{await db.delCoach(m);COA=null;toast("הוסר");loadCoaches()}catch(e){toast("לא הוסר")}return}
+  const c=t.closest("[data-coa]");if(c){coaOpen=coaOpen===c.dataset.coa?null:c.dataset.coa;coaDel=null;render()}});
+
 /* ===== owner preview ===== */
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=subscribeAll();
-  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("studio").hidden=true;NB("class").hidden=true;
+  ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){NB("studio").hidden=false;if(isCoach)NB("class").hidden=false;liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(isCoach)NB("class").hidden=false;liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;go("coach")}
 $("pvbar").querySelector("button").onclick=exitPreview;
 
@@ -1654,7 +1691,7 @@ let liveU=[];
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
     db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
-    NB("studio").hidden=false;if(isCoach)NB("class").hidden=false;
+    if(isCoach)NB("class").hidden=false;
     ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);go("coach");return}
   if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;setSave("מחובר ✓","ok");go("class");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
