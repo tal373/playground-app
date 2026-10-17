@@ -1512,7 +1512,7 @@ const fmtTime=iso=>{if(!iso)return "";const d=new Date(iso);return `${fmt(dk(d))
 
 /* ===== studio: coach end-of-class reports + Tal's studio view ===== */
 let isCoach=false,coachName="";
-const RO={},MYR={},WD={},REPS={};
+const RO={},MYR={},WD={},REPS={},RR={};
 let rDate=TODAY,rType=null,rTime=null,DR=null,openP=null,stLoaded=false,stLoading=false,stAt=0,stSel=null,stLogs=null,stQ="",repOpen=null;
 const TIMES=["06:30","08:00","09:00","10:00","11:00","17:30","18:00","18:30","19:00","19:30"];
 const TAGS=[["pain","כאב / פציעה","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
@@ -1534,8 +1534,9 @@ function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
 function blankDR(){return {cls:rType?typeOf(rType):"Power Lab",people:[],note:"",tal:""}}
 
 async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&Date.now()-stAt<60000)return;stLoading=true;
-  try{const [ro,ws,mr]=await Promise.all([db.collection("s").get(),db.collection("w").where("date",">=",addDays(TODAY,-3)).get(),
-      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]})]);
+  try{const [ro,ws,mr,rr]=await Promise.all([db.collection("s").get(),db.collection("w").where("date",">=",addDays(TODAY,-3)).get(),
+      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]}),db.collection("r").where("date",">=",addDays(TODAY,-2)).get().catch(()=>({docs:[]}))]);
+    fill(RR,Object.fromEntries(rr.docs.map(d=>[d.id,d.data()])));
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
     fill(MYR,Object.fromEntries(mr.docs.map(d=>[d.id,d.data()])));
     if(isOwner&&db.reports){const rs=await db.reports(addDays(TODAY,-30));fill(REPS,Object.fromEntries(rs.map(r=>[r.id,r.data])))}
@@ -1549,7 +1550,11 @@ function renderClass(){const v=$("v-class");
   const ws=Object.keys(WD).filter(id=>WD[id].date===rDate).sort();
   if(rType&&!WD[rType]&&!/^x-/.test(rType))rType=null;
   if(!rType)rType=ws[0]||"x-powerlab";
+  const rrDay=Object.values(RR).filter(r=>r.date===rDate).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+  if(!rTime&&rrDay.length){const nowT=`${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;const pick=rDate===TODAY?(rrDay.filter(r=>r.time<=nowT).pop()||rrDay[0]):rrDay[0];rTime=pick.time;const wt=ws.find(id=>typeOf(id)===(/method/i.test(pick.cls)?"Method":"Power Lab"));if(wt)rType=wt}
   if(!DR)DR=blankDR();DR.cls=typeOf(rType);
+  const rk=`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`,rrc=RR[rk];
+  if(rrc&&!DR.people.length&&DR.fromR!==rk){DR.fromR=rk;(rrc.names||[]).forEach(n=>{const hit=Object.entries(RO).find(([,r])=>(r.name||"").trim().toLowerCase()===String(n).trim().toLowerCase());DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,tags:[],pain:"",kg:{},score:"",note:""})});draftSave()}
   const w=WD[rType],exs=woEx(w),met=hasMet(w),key=rKey(),exist=!!MYR[key];
   const days=[[TODAY,"היום"],[addDays(TODAY,-1),"אתמול"],[addDays(TODAY,-2),fmt(addDays(TODAY,-2))]];
   const types=ws.length?ws.map(id=>[id,typeOf(id)]):[["x-powerlab","Power Lab"],["x-method","Method"]];
@@ -1561,12 +1566,13 @@ function renderClass(){const v=$("v-class");
     <span class="lbl">מתי</span><div class="chips">${days.map(([k,l])=>`<button type="button" data-rd="${k}" aria-pressed="${k===rDate}">${l}</button>`).join("")}</div>
     <span class="lbl">איזה שיעור</span><div class="chips">${types.map(([id,l])=>`<button type="button" data-rt="${id}" aria-pressed="${id===rType}">${l}</button>`).join("")}</div>
     ${w?`<p class="hint">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של היום עוד לא עלה לאפליקציה, אפשר לדווח בלי משקלים לפי תרגיל.</p>`}
-    <span class="lbl">שעה</span><div class="chips">${TIMES.map(t=>`<button type="button" data-rh="${t}" aria-pressed="${t===rTime}">${t}</button>`).join("")}</div>
+    <span class="lbl">שעה</span><div class="chips">${[...new Set([...TIMES,...rrDay.map(r=>r.time)])].sort().map(t=>{const c=rrDay.find(r=>r.time===t);return `<button type="button" data-rh="${t}" aria-pressed="${t===rTime}">${t}${c?` · ${(c.names||[]).length}`:""}</button>`}).join("")}</div>
     ${exist?`<p class="hint">כבר שלחת דיווח לשיעור הזה. אפשר לעדכן אותו.</p>`:""}
   </div>
   <div class="sh"><h2>מי היה בשיעור</h2><span>${DR.people.length||""}</span></div>
   <div class="card"><div class="addrow"><input type="text" id="rpAdd" list="rpNames" placeholder="שם מתאמן" autocomplete="off"><button class="cta" type="button" id="rpAddB" style="flex:none;padding:12px 18px">הוספה</button></div>
     <datalist id="rpNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
+    ${rrc?`<p class="hint">נמשך מארבוקס: ${(rrc.names||[]).length} רשומים${rrc.coach?" · "+esc(rrc.coach):""}. אפשר להוסיף או להסיר.</p>${rrc.names&&rrc.names.some(n=>!DR.people.some(p=>p.name===n))?`<button class="ghost" type="button" id="rpSync" style="padding:8px 14px;align-self:flex-start">הוספת הרשומים שחסרים</button>`:""}`:""}
     ${DR.people.length?"":`<p class="hint">מקלידים שם ובוחרים מהרשימה. מתאמן חדש נוסף לרשימה של הסטודיו אוטומטית.</p>`}</div>
   <div class="rplist">${DR.people.map((p,i)=>personCard(p,i,exs,met)).join("")}</div>
   <div class="card"><span class="lbl">איך היה השיעור (לא חובה)</span><textarea id="rpNote" rows="2" placeholder="אנרגיה, ציוד, מה עבד ומה לא">${esc(DR.note)}</textarea>
@@ -1614,14 +1620,16 @@ async function sendReport(){if(!DR.people.length){toast("הוסיפו לפחות
   catch(e){toast("לא נשלח, נסו שוב");b.disabled=false;b.textContent="שליחה לטל"}}
 
 $("v-class").addEventListener("click",ev=>{const t=ev.target;
-  const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;draftSave();render();return}
+  const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;rTime=null;if(DR&&DR.fromR&&!DR.people.some(p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||p.note)){DR.people=[];DR.fromR=null}draftSave();render();return}
   const ty=t.closest("[data-rt]");if(ty){rType=ty.dataset.rt;draftSave();render();return}
-  const h=t.closest("[data-rh]");if(h){rTime=h.dataset.rh;draftSave();render();return}
+  const h=t.closest("[data-rh]");if(h){rTime=h.dataset.rh;if(DR&&DR.fromR&&!DR.people.some(p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||p.note)){DR.people=[];DR.fromR=null}draftSave();render();return}
   const pp=t.closest("[data-pp]");if(pp){openP=openP===pp.dataset.pp?null:pp.dataset.pp;render();return}
   const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags.includes(k)?p.tags.filter(x=>x!==k):[...p.tags,k];draftSave();render();return}
   const rm=t.closest("[data-rm]");if(rm){DR.people.splice(+rm.dataset.rm,1);openP=null;draftSave();render();return}
   const my=t.closest("[data-myr]");if(my){loadMine(my.dataset.myr);return}
-  if(t.closest("#rpSend")){sendReport();return}});
+  if(t.closest("#rpSend")){sendReport();return}
+  if(t.closest("#rpSync")){const rk=`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`;((RR[rk]||{}).names||[]).forEach(n=>{if(!DR.people.some(p=>p.name===n))addPersonQuiet(n)});draftSave();render();return}});
+function addPersonQuiet(n){const hit=Object.entries(RO).find(([,r])=>(r.name||"").trim().toLowerCase()===n.trim().toLowerCase());DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,tags:[],pain:"",kg:{},score:"",note:""})}
 $("v-class").addEventListener("input",ev=>{const t=ev.target;if(!DR)return;
   if(t.id==="rpNote")DR.note=t.value;else if(t.id==="rpTal")DR.tal=t.value;
   else if(t.dataset.kg!=null){const p=DR.people[+t.dataset.i];p.kg=p.kg||{};p.kg[t.dataset.kg]=t.value}
