@@ -250,6 +250,7 @@ td:first-child,th:first-child{text-align:right}
 [hidden]{display:none!important}
 .sets{display:flex;flex-direction:column;gap:6px;padding:0 16px 12px}
 .setrow{display:grid;grid-template-columns:44px 1fr 1fr 44px;gap:8px;align-items:center}
+.setrow.nokg{grid-template-columns:44px 1fr 44px}
 .setrow span{font-size:12.5px;color:var(--muted)}
 .setrow input{padding:9px 10px;border-radius:12px;text-align:center}
 .setrow .ok{width:40px;height:40px;border-radius:12px;border:2px solid var(--s3);display:grid;place-items:center}
@@ -1190,7 +1191,7 @@ function renderWorkout(){const list=woList();
     ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pk=b.pick!=null,chosen=!!(lg.pick||{})[key],nCh=pk?(b.items||[]).filter((_,j)=>(lg.pick||{})[bi+"-"+j]).length:0,hideSets=pk&&b.pick>0&&nCh>=b.pick&&!chosen,pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
       return `<div class="ex-row${hideSets?" unpicked":""}"><div>${pk?`<button class="pickb" type="button" data-pick="${key}" aria-pressed="${chosen}">${chosen?"✓ בחרתי":"בחירה"}</button>`:""}<b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
       ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
-      ${it.sets&&!hideSets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow"><span>סט ${si+1}</span><input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}"><input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
+      ${it.sets&&!hideSets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow${it.nokg?" nokg":""}"><span>סט ${si+1}</span>${it.nokg?"":`<input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}">`}<input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
       ${prof.painScale&&!hideSets?`<div class="painsel">כאב בתרגיל (0–10)<select data-pain="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${String(lg.pain[key]??"")===String(v)?"selected":""}>${v===""?"—":v}</option>`).join("")}</select></div>`:""}`}).join("")}</div>`).join("")}
   <div class="card"><b>איך היה האימון?</b>
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
@@ -1226,10 +1227,10 @@ function showStep(){const {w,steps,i}=PL,st=steps[i],key=st.bi+"-"+st.ii,lg=getL
   $("pWork").innerHTML=`<div class="stage"><small>${esc(st.b.name)} · ${i+1}/${steps.length}</small><h2>${esc(st.it.n)}</h2>${st.it.d?`<p>${esc(st.it.d)}</p>`:""}
     <div class="vids">${(st.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div></div>
     <div class="meter"><div><small>סט</small><b>${st.s+1}/${st.it.sets}</b><small>${esc(st.it.reps||"")} חזרות</small></div>
-      <div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div></div>
+      ${st.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`}</div>
     <button class="big" type="button" id="pDone">סיימתי סט</button>
     <div class="pnav"><button type="button" id="pPrev" ${i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`;
-  $("pDone").onclick=()=>{const kg=$("pKg").value;setLog(w.id,TODAY,l=>{const a=(l.sets[key]||[]).slice();a[st.s]=Object.assign({},a[st.s]||{},{ok:true,kg:kg===""?null:+kg});l.sets[key]=a});
+  $("pDone").onclick=()=>{const kg=$("pKg")?$("pKg").value:"";setLog(w.id,TODAY,l=>{const a=(l.sets[key]||[]).slice();a[st.s]=Object.assign({},a[st.s]||{},{ok:true,kg:kg===""?null:+kg});l.sets[key]=a});
     if(i>=steps.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}
     startRest(st.b.rest||60)};
   $("pPrev").onclick=()=>{if(PL.i>0){PL.i--;showStep()}};$("pNext").onclick=()=>{if(PL.i<steps.length-1){PL.i++;showStep()}else closePlayer()}}
