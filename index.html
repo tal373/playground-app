@@ -681,6 +681,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .stp input{text-align:center;padding:10px 6px;font-size:17px;font-weight:700}.stp input.rp{font-size:14px;font-weight:600}
 .chipb.sg{align-self:flex-start;border-color:#5bb8ff66;color:var(--mes)}
 .rpe{display:flex;align-items:center;gap:8px}.rpe>span{font-size:12px;color:var(--muted);font-weight:700}
+.rpe>.chips{flex:1;flex-wrap:nowrap}.rpe>.chips button{min-width:34px}
 .rp-f{display:flex;gap:8px;justify-content:space-between}.rp-f .ghost{padding:8px 14px}
 .addrow.sm input{font-size:14px}.addrow.sm .ghost{padding:10px 16px}
 .remc{flex-direction:row;align-items:center;gap:10px}.remc>div{flex:1}
@@ -691,7 +692,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .rp-p>.qt{display:flex;gap:6px;padding:0 10px 10px}
 .rp-p>.qt button{flex:1;padding:8px 4px;border-radius:12px;background:var(--s2);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--muted)}
 .rp-p>.qt button[aria-pressed="true"]{background:color-mix(in srgb,var(--c) 22%,transparent);border-color:var(--c);color:var(--c)}
-.lbl.blk{margin-top:6px;font-weight:800;color:var(--ink);font-size:13.5px}
+.lbl.blk{margin-top:6px;font-weight:800;color:var(--ink);font-size:13.5px;border:0!important;background:none!important;padding:0!important;border-radius:0!important;direction:ltr;text-align:right}
 .chips.ver button[aria-pressed="true"]{background:var(--mes);border-color:var(--mes);color:var(--navy)}
 .spark{width:100%;height:44px;direction:ltr}.spark path{fill:none;stroke:var(--mes);stroke-width:2}.spark circle{fill:var(--mes)}
 </style></head><body>
@@ -1586,7 +1587,7 @@ let rDate=TODAY,rType=null,rTime=null,DR=null,openP=null,stLoaded=false,stLoadin
 const TIMES=["06:30","08:00","09:00","10:00","11:00","17:30","18:00","18:30","19:00","19:30"];
 const TAGS=[["pain","כאב / פציעה","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
 const TL=Object.fromEntries(TAGS.map(t=>[t[0],t]));
-const tagPills=a=>(a||[]).map(t=>TL[t]?`<span style="--c:${TL[t][2]}">${t==="red"?"🚩 ":""}${TL[t][1]}</span>`:"").join("");
+const tagPills=a=>(a||[]).map(t=>TL[t]?`<span style="--c:${TL[t][2]}">${TL[t][1]}</span>`:"").join("");
 const exClean=n=>String(n||"").replace(/^(Super Set|Buy In|Buy Out)\s*:\s*/i,"").replace(/^Min\s*\d+\s*:\s*/i,"").replace(/^[\d:\/\-\.]+(\s*(Reps|Cal|M))?\s+/i,"").trim();
 function woEx(w){const out=[];if(!w||!w.blocks)return out;
   w.blocks.forEach(b=>{if(/מוביליטי|mobility|קור|core/i.test(b.name||""))return;
@@ -1646,7 +1647,7 @@ function renderClass(){const v=$("v-class");
   const names=Object.entries(RO).filter(([id])=>!DR.people.some(p=>p.id===id)).map(([,r])=>r.name).sort((a,b)=>a.localeCompare(b,"he"));
   const mine=Object.entries(MYR).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
   const here=DR.people.filter(p=>!p.absent),cnt=k=>here.filter(p=>(p.tags||[]).includes(k)).length;
-  const sum=[[cnt("pain"),"כאב"],[cnt("hard"),"קושי"],[cnt("pr"),"שיא"],[cnt("red"),"🚩"]].filter(x=>x[0]).map(([n,l])=>`${n} ${l}`);
+  const sum=[[cnt("pain"),"כאב"],[cnt("hard"),"קושי"],[cnt("pr"),"שיא"],[cnt("red"),"דגל אדום"]].filter(x=>x[0]).map(([n,l])=>`${n} ${l}`);
   const abs=DR.people.length-here.length;if(abs)sum.push(`${abs} לא הגיעו`);
   const pr=prepRows();
   v.innerHTML=`
@@ -1681,7 +1682,7 @@ function renderClass(){const v=$("v-class");
     :`<button type="button" class="linkb" id="rpNotes">+ הערה על השיעור או הודעה לטל</button>`}</div>
   <div class="card remc" id="remC" hidden><div><b>תזכורת לדווח</b><p class="hint" id="remCH">התראה לטלפון 10 דקות אחרי כל שיעור שלך, עם קישור ישר לדיווח.</p></div><button type="button" class="chipb" id="remCB">הפעלה</button></div>
   ${mine.length?`<div class="sh"><h2>הדיווחים שלי</h2></div><div class="flags">${mine.map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;
-    return `<button class="flag" type="button" data-myr="${esc(k)}" style="--c:${red?"var(--bad)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}</div></div></button>`}).join("")}</div>`:""}
+    return `<button class="flag" type="button" data-myr="${esc(k)}" style="--c:${red?"var(--bad)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · ${red} דגל אדום`:""}</div></div></button>`}).join("")}</div>`:""}
   <div class="sendbar"><div class="sb-t"><b>${here.length} הגיעו${sum.length?"":" · כולם בסדר"}</b>${sum.length?`<small>${sum.join(" · ")}</small>`:""}</div>
     <button class="cta" type="button" id="rpSend">${exist?"עדכון הדיווח":"שליחה לטל"}</button></div>`;
   const inp=$("rpAdd");inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addPerson(inp.value)}};$("rpAddB").onclick=()=>addPerson(inp.value);
@@ -1727,13 +1728,15 @@ function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
   return bits.length?`<div class="prep"><b>${esc(p.name)}</b><div class="mini">${bits.join("")}</div></div>`:""}).join("")}
 const QT=[["pain","כאב","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
 const WIDE=()=>matchMedia("(min-width:820px)").matches;
+try{matchMedia("(min-width:820px)").addEventListener("change",()=>{if(tab==="class"&&!typing())render()})}catch(e){}
 function exBlocks(w){const out=[];if(!w||!w.blocks)return out;
   w.blocks.forEach(b=>{const nm=b.name||"";if(/מוביליטי|mobility|warm|חימום/i.test(nm))return;const items=[];
     (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!items.includes(n))items.push(n)});
     if(items.length)out.push({name:nm.split("·").pop().trim()||nm,items,str:/strength|main|כוח|מיין/i.test(nm)&&!/metcon|מטקון/i.test(nm)})});return out}
 const allEx=w=>{const a=[];exBlocks(w).forEach(b=>b.items.forEach(x=>{if(!a.includes(x))a.push(x)}));return a};
+const exName=x=>String(x).replace(/\s*\(Var\)\s*-.*$/i,"").replace(/\s*\([^)]*\/[^)]*\)\s*$/,"").trim()||x;
 function liftRow(p,i,x,r,str){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
-  return `<div class="lift-r"><label>${esc(x)}</label>
+  return `<div class="lift-r"><label>${esc(exName(x))}</label>
     ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
     <div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="${sg&&sg.kg?esc(sg.kg):"ק״ג"}"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
     ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג כמו שהוצע</button>`:""}
@@ -1872,20 +1875,20 @@ function renderStudio(){const v=$("v-studio");
   <div class="hello"><span class="avatar">ס</span><div><small>מה קורה בסטודיו</small><b>סטודיו</b></div><button class="ghost" type="button" id="stRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
   <div class="kpis"><div class="kpi"><b>${r7.length}</b><small>דיווחי שיעור השבוע</small></div><div class="kpi"><b>${new Set(ppl.map(p=>p.id)).size}</b><small>מתאמנים שדווחו</small></div>
     <div class="kpi"><b style="color:var(--bad)">${ppl.filter(p=>(p.tags||[]).includes("red")).length}</b><small>דגלים אדומים</small></div><div class="kpi"><b style="color:var(--warn)">${ppl.filter(p=>(p.tags||[]).includes("pain")).length}</b><small>כאב / פציעה</small></div></div>
-  ${(()=>{const of=Object.entries(RO).filter(([,r])=>r.flag&&r.flag.st!=="done").sort((a,b)=>(b[1].flag.date||"").localeCompare(a[1].flag.date||""));return of.length?`<div class="sh"><h2>דגלים פתוחים</h2><span>${of.length}</span></div><div class="flags">${of.map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.flag.st==="open"?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>🚩 ${esc(r.name)}</b> <span class="hint">${r.flag.st==="checked"?"נבדק בשיעור הבא":"ממתין"}</span><div class="hint">${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")} · ${esc(r.flag.text||"")}</div></div></button>`).join("")}</div>`:""})()}
+  ${(()=>{const of=Object.entries(RO).filter(([,r])=>r.flag&&r.flag.st!=="done").sort((a,b)=>(b[1].flag.date||"").localeCompare(a[1].flag.date||""));return of.length?`<div class="sh"><h2>דגלים פתוחים</h2><span>${of.length}</span></div><div class="flags">${of.map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.flag.st==="open"?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b> <span class="hint">${r.flag.st==="checked"?"נבדק בשיעור הבא":"ממתין"}</span><div class="hint">${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")} · ${esc(r.flag.text||"")}</div></div></button>`).join("")}</div>`:""})()}
   <div class="sh"><h2>דורש תשומת לב</h2><span>7 ימים</span></div>
   <div class="flags">${att.length?att.slice(0,15).map(p=>`<button class="flag" type="button" data-mem="${esc(p.id)}" style="--c:${(p.tags||[]).includes("red")?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(p.name)}</b> <span class="mini" style="display:inline-flex">${tagPills(p.tags)}</span>
     <div class="hint">${esc([p.pain,p.note].filter(Boolean).join(" · ")||"—")}</div><div class="hint">${esc(fmt(p.r.date))} · ${esc(p.r.cls||"")} ${esc(p.r.time||"")} · ${esc(p.r.coach||"")}</div></div></button>`).join(""):`<div class="card"><div class="empty">שקט. אין כאבים או דגלים השבוע.</div></div>`}</div>
   ${msgs.length?`<div class="sh"><h2>הודעות מהמאמנים</h2></div><div class="card feed">${msgs.map(([,r])=>`<div><em>${esc(r.coach||"")} · ${esc(fmt(r.date))} ${esc(r.time||"")} · ${esc(r.cls||"")}</em>${esc(r.tal)}</div>`).join("")}</div>`:""}
   <div class="sh"><h2>דיווחים אחרונים</h2><span>${reps.length?"":"עוד אין"}</span></div>
   <div class="flags">${reps.slice(0,12).map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length,op=repOpen===k;
-    return `<div class="rp-p${op?" open":""}"><button class="rp-h" type="button" data-rep="${esc(k)}"><span class="av" style="font-size:12px">${esc((r.time||"").slice(0,5))}</span><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.cls||"")}</b><div class="hint">${esc(r.coach||"")} · ${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
+    return `<div class="rp-p${op?" open":""}"><button class="rp-h" type="button" data-rep="${esc(k)}"><span class="av" style="font-size:12px">${esc((r.time||"").slice(0,5))}</span><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.cls||"")}</b><div class="hint">${esc(r.coach||"")} · ${(r.people||[]).length} מתאמנים${red?` · ${red} דגל אדום`:""}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
     ${op?`<div class="rp-b">${(r.people||[]).map(p=>`<button class="flag" type="button" data-mem="${esc(p.id)}" style="--c:${(p.tags||[]).includes("red")?"var(--bad)":(p.tags||[]).length?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(p.name)}</b> <span class="mini" style="display:inline-flex">${tagPills(p.tags)}</span>
       ${Object.keys(p.kg||{}).length?`<div class="hint" dir="ltr" style="text-align:right">${Object.entries(p.kg).map(([x,kg])=>`${esc(x)}: ${esc(kg)}`).join(" · ")}</div>`:""}${p.score?`<div class="hint">מטקון: ${esc(p.score)}</div>`:""}${[p.pain,p.note].filter(Boolean).length?`<div class="hint">${esc([p.pain,p.note].filter(Boolean).join(" · "))}</div>`:""}</div></button>`).join("")}
       ${r.note?`<p class="hint">על השיעור: ${esc(r.note)}</p>`:""}</div>`:""}</div>`}).join("")}</div>
   <div class="sh"><h2>מתאמני הסטודיו</h2><span>${Object.keys(RO).length}</span></div>
   <input type="text" id="stQ" placeholder="חיפוש לפי שם" value="${esc(stQ)}">
-  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${r.inj?`<div class="known">⚠ ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
+  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${r.inj?`<div class="known">רגישות: ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
   const s=$("stQ");s.oninput=()=>{stQ=s.value;const pos=s.selectionStart;dirty=false;renderStudio();dashSeg();const n=$("stQ");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
 
 async function openMember(id){stSel=id;stLogs=null;render();window.scrollTo(0,0);
@@ -1900,7 +1903,7 @@ function renderMember(v){const r=RO[stSel]||{name:"?"},logs=Object.entries(stLog
   const fl=r.flag;
   v.innerHTML=`<button class="back" type="button" id="stBack">→ חזרה לסטודיו</button>
   <div class="hello"><span class="avatar">${esc(ini(r.name))}</span><div><small>מתאמן סטודיו</small><b>${esc(r.name)}</b></div></div>
-  ${fl?`<div class="flag" style="--c:${fl.st==="open"?"var(--bad)":fl.st==="checked"?"var(--warn)":"var(--ok)"}"><div style="flex:1"><b>🚩 ${fl.st==="open"?"דגל פתוח":fl.st==="checked"?"נבדק בשיעור הבא":"טופל"}</b><div class="hint">${esc(fmt(fl.date))} · ${esc(fl.coach||"")} · ${esc(fl.text||"")}</div>${fl.chk?`<div class="hint">נבדק ${esc(fmt(fl.chk.date))} · ${esc(fl.chk.coach||"")}</div>`:""}</div>${fl.st!=="done"?`<button class="chipb" type="button" id="mFlag">סגור</button>`:""}</div>`:""}
+  ${fl?`<div class="flag" style="--c:${fl.st==="open"?"var(--bad)":fl.st==="checked"?"var(--warn)":"var(--ok)"}"><div style="flex:1"><b>${fl.st==="open"?"דגל פתוח":fl.st==="checked"?"נבדק בשיעור הבא":"טופל"}</b><div class="hint">${esc(fmt(fl.date))} · ${esc(fl.coach||"")} · ${esc(fl.text||"")}</div>${fl.chk?`<div class="hint">נבדק ${esc(fmt(fl.chk.date))} · ${esc(fl.chk.coach||"")}</div>`:""}</div>${fl.st!=="done"?`<button class="chipb" type="button" id="mFlag">סגור</button>`:""}</div>`:""}
   <div class="card"><span class="lbl">פציעות / רגישויות קבועות</span><input type="text" id="mInj" value="${esc(r.inj||"")}" placeholder="למשל: כתף שמאל, הריון שבוע 20, גב תחתון">
     <span class="lbl">הערה של טל</span><textarea id="mNote" rows="2" placeholder="רק אתה והמאמנים רואים">${esc(r.tnote||"")}</textarea><button class="cta" type="button" id="mSave">שמירה</button></div>
   <div class="sh"><h2>ליפטים</h2><span>${Object.keys(hist).length||""}</span></div>
@@ -1937,9 +1940,9 @@ function renderCoaches(){const v=$("v-coaches");
   <div class="kpis"><div class="kpi"><b>${COA.length}</b><small>מאמנים באפליקציה</small></div><div class="kpi"><b>${reps.filter(([,r])=>r.date>=wk).length}</b><small>דיווחי שיעור השבוע</small></div></div>
   <div class="flags">${list.map(c=>{const rs=by(c.name),w7=rs.filter(([,r])=>r.date>=wk),last=rs[0],flags=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).some(t=>t==="red"||t==="pain")).length,0),ppl=w7.reduce((a,[,r])=>a+(r.people||[]).length,0),op=coaOpen===c.email;
     return `<div class="rp-p${op?" open":""}"><button class="rp-h" type="button" data-coa="${esc(c.email)}"><span class="av">${esc(ini(c.name||c.email))}</span><div style="flex:1;min-width:0"><b>${esc(c.name||c.email)}</b>
-      <div class="hint">${(()=>{const ac=arb(c.name).length;return ac?`דיווח ${Math.min(w7.length,ac)}/${ac} שיעורים (${Math.round(Math.min(w7.length,ac)/ac*100)}%)`:`${w7.length} שיעורים השבוע`})()} · ${ppl} מתאמנים${flags?` · ⚠ ${flags}`:""}${(()=>{const pr=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).includes("pr")).length,0);return pr?` · 🏆 ${pr}`:""})()}</div><div class="hint">${last?"דיווח אחרון: "+esc(fmt(last[1].date))+" "+esc(last[1].time||""):"עוד לא דיווח"}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
+      <div class="hint">${(()=>{const ac=arb(c.name).length;return ac?`דיווח ${Math.min(w7.length,ac)}/${ac} שיעורים (${Math.round(Math.min(w7.length,ac)/ac*100)}%)`:`${w7.length} שיעורים השבוע`})()} · ${ppl} מתאמנים${flags?` · ${flags} דגלים`:""}${(()=>{const pr=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).includes("pr")).length,0);return pr?` · ${pr} שיאים`:""})()}</div><div class="hint">${last?"דיווח אחרון: "+esc(fmt(last[1].date))+" "+esc(last[1].time||""):"עוד לא דיווח"}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
       ${op?`<div class="rp-b"><div class="hint" dir="ltr" style="text-align:right">${esc(c.email)}</div>
-        ${rs.slice(0,10).map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;return `<div class="flag" style="--c:${red?"var(--bad)":"var(--s3)"}"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}${r.tal?" · הודעה לטל":""}</div>${r.note?`<div class="hint">${esc(r.note)}</div>`:""}</div></div>`}).join("")||`<div class="empty">אין דיווחים עדיין</div>`}
+        ${rs.slice(0,10).map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;return `<div class="flag" style="--c:${red?"var(--bad)":"var(--s3)"}"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · ${red} דגל אדום`:""}${r.tal?" · הודעה לטל":""}</div>${r.note?`<div class="hint">${esc(r.note)}</div>`:""}</div></div>`}).join("")||`<div class="empty">אין דיווחים עדיין</div>`}
         <button class="ghost" type="button" data-codel="${esc(c.email)}" style="align-self:flex-start;padding:8px 14px;${coaDel===c.email?"color:var(--bad);border-color:var(--bad)":""}">${coaDel===c.email?"לחץ שוב להסרה":"הסרת המאמן מהאפליקציה"}</button></div>`:""}</div>`}).join("")||`<div class="card"><div class="empty">עוד אין מאמנים</div></div>`}</div>
   <div class="sh"><h2>הוספת מאמן</h2></div>
   <div class="card"><input type="text" id="coName" placeholder="שם, למשל שמעון"><input type="text" id="coMail" inputmode="email" dir="ltr" placeholder="email@gmail.com"><button class="cta" type="button" id="coAdd">הוספה</button>
