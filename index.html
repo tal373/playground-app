@@ -242,6 +242,7 @@ td:first-child,th:first-child{text-align:right}
 .feel button{background:var(--s2);border-radius:12px;padding:10px 4px;font-size:12.5px;font-weight:600;line-height:1.2}
 .feel button[aria-pressed="true"]{background:var(--hot);color:var(--navy)}
 .past{display:flex;flex-direction:column;gap:8px}
+.wopick{display:flex;gap:8px;margin-bottom:12px}.wopick button{flex:1;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:11px 8px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.25}.wopick button[aria-pressed="true"]{background:var(--ink);color:var(--navy)}.wopick small{font-size:11px;color:var(--hot);font-weight:700}
 .past button{display:flex;justify-content:space-between;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px 14px;text-align:right;width:100%}
 .past button small{color:var(--muted)}
 .wk-ok{color:var(--ok);font-weight:700}
@@ -939,9 +940,12 @@ async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(
 
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
-const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||""));
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
 const logId=(wid,date)=>`${wid}_${date}`;
-function todayWorkout(){const l=woList();return l[0]||null}
+const fixedList=()=>woList().filter(x=>x.fixed);
+/* fixed workouts alternate: the next one is the one done least recently (never done first) */
+function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const last=id=>Object.keys(wlog).filter(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done).map(k=>k.slice(id.length+1)).sort().pop()||"";return f.slice().sort((a,b)=>last(a.id).localeCompare(last(b.id)))[0]}
+function todayWorkout(){const l=woList();return nextFixed()||l[0]||null}
 function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(prof.name||"").split(" ")[0];
@@ -967,7 +971,8 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
     <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
-  ${wo?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#ff6b4a55"><span class="ic" style="background:#ff6b4a22"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
+  ${(fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const xl=wlog[logId(x.id,sel)],nx=fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#ff6b4a55"><span class="ic" style="background:#ff6b4a22"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
+  ${false?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#ff6b4a55"><span class="ic" style="background:#ff6b4a22"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
     return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
@@ -1173,7 +1178,7 @@ async function handlePhoto(f,mid){if(!f)return;toast("מעלה את הצילום
 
 /* ===== WORKOUT ===== */
 function lastLog(wid,before){const ks=Object.keys(wlog).filter(k=>k.startsWith(wid+"_")&&k.slice(wid.length+1)<before).sort();return ks.length?wlog[ks[ks.length-1]]:null}
-function curWorkout(){const l=woList();return (woSel&&W[woSel])?{id:woSel,...W[woSel]}:l[0]}
+function curWorkout(){return (woSel&&W[woSel])?{id:woSel,...W[woSel]}:todayWorkout()}
 const getLog=(wid,date)=>Object.assign({sets:{},pain:{},pick:{},done:false,feel:0,note:""},JSON.parse(JSON.stringify(wlog[logId(wid,date)]||{})));
 /* pick blocks: b.pick = how many to choose (0 = bonus). Active = chosen ones, else the first b.pick */
 function activeIdx(b,bi,lg){const all=(b.items||[]).map((_,i)=>i);if(b.pick==null)return all;const ch=all.filter(i=>(lg.pick||{})[bi+"-"+i]);return ch.length?ch:all.slice(0,b.pick)}
@@ -1183,7 +1188,9 @@ function renderWorkout(){const list=woList();
   const w=curWorkout(),lg=getLog(w.id,TODAY),prev=lastLog(w.id,TODAY);
   const totalSets=(w.blocks||[]).reduce((a,b,bi)=>a+activeIdx(b,bi,lg).reduce((s,i)=>s+(b.items[i].sets||0),0),0);
   const doneSets=Object.values(lg.sets).reduce((a,arr)=>a+(arr||[]).filter(s=>s&&s.ok).length,0);
+  const fx=fixedList(),nx=nextFixed();
   $("v-workout").innerHTML=`
+  ${fx.length>1?`<div class="wopick">${fx.map(x=>`<button type="button" data-wo="${x.id}" aria-pressed="${x.id===w.id}">${esc(x.title)}${nx&&x.id===nx.id?"<small>התור הבא</small>":""}</button>`).join("")}</div>`:""}
   <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
     ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
     ${totalSets?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
@@ -1500,7 +1507,7 @@ $("v-coach").addEventListener("click",ev=>{const t=ev.target;
 /* ===== today events ===== */
 document.addEventListener("click",ev=>{const t=ev.target;
   const ds=t.closest("[data-dseg]");if(ds){dashLast=ds.dataset.dseg;go(dashLast);return}
-  const nb=t.closest("[data-tab]");if(nb&&!t.closest("#v-coach")){go(nb.dataset.tab==="coach"&&nb.classList.contains("nb")?dashLast:nb.dataset.tab);return}
+  const nb=t.closest("[data-tab]");if(nb&&!t.closest("#v-coach")){if(nb.dataset.wo)woSel=nb.dataset.wo;go(nb.dataset.tab==="coach"&&nb.classList.contains("nb")?dashLast:nb.dataset.tab);return}
   if(!$("v-today").contains(t))return;
   const dy=t.closest("[data-day]");if(dy){sel=dy.dataset.day;render();return}
   const ml=t.closest("[data-meal]");if(ml){openSheet(+ml.dataset.meal);return}
