@@ -656,6 +656,37 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .fu{display:flex;align-items:center;gap:10px;background:#ff5a5a14;border:1px solid #ff5a5a40;border-radius:14px;padding:10px;font-size:14px}.fu>div{flex:1}
 .lift-r{display:flex;flex-direction:column;gap:6px;background:var(--s2);border-radius:14px;padding:10px}.lift-r label{font-size:13.5px;direction:ltr;text-align:right;color:#c9d4e4}
 .lift-in{display:grid;grid-template-columns:76px 76px 1fr;gap:6px;align-items:center}.lift-in input{padding:9px 8px;text-align:center}.rpe{flex-wrap:nowrap}.rpe button{flex:1;padding:6px 0!important}
+.clsbar{gap:8px}.cb-row{display:flex;align-items:center;gap:10px}.cb-t{flex:1;min-width:0;display:flex;flex-direction:column}.cb-t b{font-size:19px;font-weight:800}.cb-t small{color:var(--muted);font-size:13px}
+.pick{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.clist{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cl{display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:9px 12px;text-align:right}
+.cl b{font-size:16px}.cl span{font-size:13px;font-weight:700}.cl small{font-size:12px;color:var(--muted)}
+.cl.me{border-color:#ff6b4a66}.cl[aria-pressed="true"]{background:var(--ink);color:var(--navy)}.cl[aria-pressed="true"] small{color:var(--navy)}
+.linkb{background:none;border:0;color:var(--mes);font-weight:700;font-size:14px;padding:4px 0;align-self:flex-start;text-align:right}
+.voice2{gap:10px}.vbig{width:100%;padding:16px;border-radius:18px;background:linear-gradient(135deg,#ff6b4a,#ff9a62);color:#1a0d06;font-weight:800;font-size:17px}
+.vbig.on{background:var(--bad);color:#fff;animation:vpulse 1.4s ease-in-out infinite}@keyframes vpulse{50%{opacity:.75}}
+.hint.lead{font-size:13.5px;margin:-4px 2px 0}
+.prep-h{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:right}.prep-h b{font-size:14.5px;color:var(--warn)}
+.rp-h{padding:10px 10px 10px 8px}
+.rp-h .av{border:2px solid transparent;font-size:16px}.rp-h .av.ok{background:#4fd18b22;color:var(--ok);border-color:#4fd18b55}.rp-h .av.t{background:#ffc85722;color:var(--warn);border-color:#ffc85766}
+.rp-h .av.x{background:var(--s2);color:var(--muted)}
+.rp-h .nm{flex:1;min-width:0;text-align:right;display:flex;flex-direction:column}
+.rp-h .qt{flex:none;display:flex;gap:4px}
+.rp-h .qt button{width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--line);font-size:16px;display:grid;place-items:center;filter:grayscale(1);opacity:.7}
+.rp-h .qt button[aria-pressed="true"]{filter:none;opacity:1;background:color-mix(in srgb,var(--c) 28%,transparent);border-color:var(--c)}
+.rp-p.abs{opacity:.55}.rp-p.abs .nm b{text-decoration:line-through}
+.painbox .bx{font-size:14px}.prb{background:#4fd18b10;border-color:#4fd18b44}
+.stp{direction:ltr;display:grid;grid-template-columns:84px 44px 1fr 44px;gap:6px;align-items:center}
+.stp button{height:44px;border-radius:12px;background:var(--s1);border:1px solid var(--line);font-size:22px;font-weight:700}
+.stp input{text-align:center;padding:10px 6px;font-size:17px;font-weight:700}.stp input.rp{font-size:14px;font-weight:600}
+.chipb.sg{align-self:flex-start;border-color:#5bb8ff66;color:var(--mes)}
+.rpe{display:flex;align-items:center;gap:8px}.rpe>span{font-size:12px;color:var(--muted);font-weight:700}
+.rp-f{display:flex;gap:8px;justify-content:space-between}.rp-f .ghost{padding:8px 14px}
+.addrow.sm input{font-size:14px}.addrow.sm .ghost{padding:10px 16px}
+.remc{flex-direction:row;align-items:center;gap:10px}.remc>div{flex:1}
+.sendbar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;align-items:center;gap:12px;background:#111b2cf2;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:10px 10px 10px 14px;box-shadow:0 10px 30px #0008}
+.sendbar .sb-t{flex:1;min-width:0;display:flex;flex-direction:column}.sendbar .sb-t b{font-size:15px}.sendbar .sb-t small{color:var(--muted);font-size:12.5px}
+.sendbar .cta{flex:none;padding:12px 18px}
 .spark{width:100%;height:44px;direction:ltr}.spark path{fill:none;stroke:var(--mes);stroke-width:2}.spark circle{fill:var(--mes)}
 </style></head><body>
 <div class="app">
@@ -1560,7 +1591,8 @@ const slug=t=>/method/i.test(t)?"method":"powerlab";
 const ini=n=>(String(n||"?").trim()[0]||"?");
 const newId=()=>"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const rKey=()=>`${rDate}_${(rTime||"").replace(":","")}-${slug(rType?typeOf(rType):(DR&&DR.cls)||"")}`;
-let DRS={};
+let DRS={},pickOpen=false,pickAll=false,vcOpen=false,prepOpen=false,notesOpen=false;
+const firstN=s=>String(s||"").trim().split(/\s+/)[0]||"";
 const lowN=x=>String(x||"").trim().toLowerCase();
 const touchedP=p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||Object.entries(p).some(([k,v])=>!["id","name","isNew","r","tags","kg"].includes(k)&&v!==""&&v!=null&&v!==false&&!(typeof v==="object"&&!Object.keys(v).length));
 function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).filter(Boolean),inR=new Set(names.map(lowN));
@@ -1568,6 +1600,8 @@ function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).f
   names.forEach(n=>{if(DR.people.some(p=>lowN(p.name)===lowN(n)))return;const hit=Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(n));if(hit&&DR.people.some(p=>p.id===hit[0]))return;
     DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
   DR.rAt=rrc.at||"1"}
+const RP=new URLSearchParams(location.search).get("rep");
+function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
 function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
@@ -1589,9 +1623,12 @@ function renderClass(){const v=$("v-class");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
   const ws=Object.keys(WD).filter(id=>WD[id].date===rDate).sort();
   if(rType&&!WD[rType]&&!/^x-/.test(rType))rType=null;
+  if(rType&&/^x-/.test(rType)){const real=ws.find(id=>typeOf(id)===typeOf(rType));if(real)rType=real}
   if(!rType)rType=ws[0]||"x-powerlab";
   const rrDay=Object.values(RR).filter(r=>r.date===rDate).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
-  if(!rTime&&rrDay.length){const nowT=`${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;const pick=rDate===TODAY?(rrDay.filter(r=>r.time<=nowT).pop()||rrDay[0]):rrDay[0];rTime=pick.time;const wt=ws.find(id=>typeOf(id)===(/method/i.test(pick.cls)?"Method":"Power Lab"));if(wt)rType=wt}
+  if(!rTime&&rrDay.length){const nowT=`${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`,mineR=rrDay.filter(r=>coachName&&firstN(r.coach)===firstN(coachName)),pool=mineR.length?mineR:rrDay;
+    const pick=rDate===TODAY?(pool.filter(r=>r.time<=nowT).pop()||pool[0]):pool[pool.length-1];rTime=pick.time;const ty2=typeOf(pick.cls);rType=ws.find(id=>typeOf(id)===ty2)||("x-"+slug(ty2))}
+  if(!rTime)pickOpen=true;
   const rk=`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`,rrc=RR[rk];
   if(DR&&DR.k==null)DR.k=rk;
   if(DR&&DR.k!==rk){if(DR.people.some(touchedP)||DR.note||DR.tal)DRS[DR.k]=DR;DR=DRS[rk]||null;delete DRS[rk]}
@@ -1599,36 +1636,56 @@ function renderClass(){const v=$("v-class");
   if(rrc&&!DR.edit&&DR.rAt!==(rrc.at||"1")){mergeRoster(rrc);draftSave()}
   if(stLoaded&&!stLoading&&Date.now()-stAt>300000&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||""))loadStudio(true);
   const w=WD[rType],exs=woEx(w),met=hasMet(w),key=rKey(),exist=!!MYR[key];
-  const days=[[TODAY,"היום"],[addDays(TODAY,-1),"אתמול"],[addDays(TODAY,-2),fmt(addDays(TODAY,-2))]];
+  const days=[[TODAY,"היום"],[addDays(TODAY,-1),"אתמול"],[addDays(TODAY,-2),fmt(addDays(TODAY,-2))]],dayL=(days.find(d=>d[0]===rDate)||[0,fmt(rDate)])[1];
   const types=ws.length?ws.map(id=>[id,typeOf(id)]):[["x-powerlab","Power Lab"],["x-method","Method"]];
   const names=Object.entries(RO).filter(([id])=>!DR.people.some(p=>p.id===id)).map(([,r])=>r.name).sort((a,b)=>a.localeCompare(b,"he"));
   const mine=Object.entries(MYR).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
+  const here=DR.people.filter(p=>!p.absent),cnt=k=>here.filter(p=>(p.tags||[]).includes(k)).length;
+  const sum=[[cnt("pain"),"כאב"],[cnt("hard"),"קושי"],[cnt("pr"),"שיא"],[cnt("red"),"🚩"]].filter(x=>x[0]).map(([n,l])=>`${n} ${l}`);
+  const abs=DR.people.length-here.length;if(abs)sum.push(`${abs} לא הגיעו`);
+  const pr=prepRows();
   v.innerHTML=`
   <div class="hello"><span class="avatar">${esc(ini(coachName))}</span><div><small>דיווח סוף שיעור</small><b>${esc(coachName||"מאמן")}</b></div></div>
-  <div class="card">
-    <span class="lbl">מתי</span><div class="chips">${days.map(([k,l])=>`<button type="button" data-rd="${k}" aria-pressed="${k===rDate}">${l}</button>`).join("")}</div>
-    <span class="lbl">איזה שיעור</span><div class="chips">${types.map(([id,l])=>`<button type="button" data-rt="${id}" aria-pressed="${id===rType}">${l}</button>`).join("")}</div>
-    ${w?`<p class="hint">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של היום עוד לא עלה לאפליקציה, אפשר לדווח בלי משקלים לפי תרגיל.</p>`}
-    <span class="lbl">שעה</span><div class="chips">${[...new Set([...TIMES,...rrDay.map(r=>r.time)])].sort().map(t=>{const c=rrDay.find(r=>r.time===t);return `<button type="button" data-rh="${t}" aria-pressed="${t===rTime}">${t}${c?` · ${(c.names||[]).length}`:""}</button>`}).join("")}</div>
-    ${exist?`<p class="hint">כבר שלחת דיווח לשיעור הזה. אפשר לעדכן אותו.</p>`:""}
+  <div class="card clsbar">
+    <div class="cb-row"><div class="cb-t"><b>${esc(typeOf(rType))} · ${esc(rTime||"בחרו שעה")}</b><small>${esc(dayL)}${rrc?` · ${(rrc.names||[]).length} רשומים בארבוקס`:""}${rrc&&rrc.coach?` · ${esc(rrc.coach)}`:""}</small></div>
+      <button type="button" class="chipb" id="rpPick">${pickOpen?"סגירה":"שינוי"}</button></div>
+    ${w?`<p class="hint en">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של השיעור הזה עוד לא עלה לאפליקציה. אפשר לדווח בלי משקלים.</p>`}
+    ${exist?`<p class="hint">כבר שלחת דיווח לשיעור הזה. שליחה נוספת תעדכן אותו.</p>`:""}
+    ${pickOpen?`<div class="pick">
+      <div class="chips">${days.map(([k,l])=>`<button type="button" data-rd="${k}" aria-pressed="${k===rDate}">${l}</button>`).join("")}</div>
+      ${rrDay.length&&!pickAll?`<div class="clist">${rrDay.map(r=>{const on=r.time===rTime&&typeOf(r.cls)===typeOf(rType),me=coachName&&firstN(r.coach)===firstN(coachName);
+          return `<button type="button" class="cl${me?" me":""}" data-rc="${esc(r.time)}|${esc(typeOf(r.cls))}" aria-pressed="${on}"><b>${esc(r.time)}</b><span>${esc(typeOf(r.cls))}</span><small>${esc(firstN(r.coach)||"")} · ${(r.names||[]).length}</small></button>`}).join("")}</div>
+        <button type="button" class="linkb" id="rpAll">שיעור שלא מופיע ברשימה</button>`
+      :`<span class="lbl">איזה שיעור</span><div class="chips">${types.map(([id,l])=>`<button type="button" data-rt="${id}" aria-pressed="${id===rType}">${l}</button>`).join("")}</div>
+        <span class="lbl">שעה</span><div class="chips">${[...new Set([...TIMES,...rrDay.map(r=>r.time)])].sort().map(t=>`<button type="button" data-rh="${t}" aria-pressed="${t===rTime}">${t}</button>`).join("")}</div>
+        ${rrDay.length?`<button type="button" class="linkb" id="rpAll">חזרה לשיעורים מארבוקס</button>`:""}`}</div>`:""}
   </div>
-  <div class="sh"><h2>מי היה בשיעור</h2><span>${DR.people.length||""}</span></div>
-  <div class="card"><div class="addrow"><input type="text" id="rpAdd" list="rpNames" placeholder="שם מתאמן" autocomplete="off"><button class="cta" type="button" id="rpAddB" style="flex:none;padding:12px 18px">הוספה</button></div>
-    <datalist id="rpNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
-    ${rrc?`<p class="hint">נמשך מארבוקס: ${(rrc.names||[]).length} רשומים${rrc.coach?" · "+esc(rrc.coach):""}. אפשר להוסיף או להסיר.</p>${rrc.names&&rrc.names.some(n=>!DR.people.some(p=>p.name===n))?`<button class="ghost" type="button" id="rpSync" style="padding:8px 14px;align-self:flex-start">הוספת הרשומים שחסרים</button>`:""}`:""}
-    ${DR.people.length?"":`<p class="hint">מקלידים שם ובוחרים מהרשימה. מתאמן חדש נוסף לרשימה של הסטודיו אוטומטית.</p>`}</div>
-  ${DR.people.length&&prepRows()?`<div class="card prepc"><b>לפני השיעור · מה לדעת</b>${prepRows()}</div>`:""}
-  <div class="card voice"><div class="vh"><b>🎙 דיווח בהקלטה</b>${SRC?`<button type="button" class="chipb" id="vcRec">${vcOn?"⏹ עצור":"🎙 הקלטה"}</button>`:""}</div>
-    <textarea id="vcTxt" rows="3" placeholder="מדברים חופשי: ״דבי, כאב בכתף שמאל 4 מתוך 10 בלחיצה, ירדנו ללנדמיין. פרונט סקוואט 30 קילו 8 חזרות RPE 8…״">${esc(vcText)}</textarea>
-    <button class="ghost" type="button" id="vcGo" style="padding:10px 14px">מלא את הדיווח מההקלטה</button>
-    <p class="hint">${SRC?"לוחצים הקלטה, מדברים, ואז ״מלא״.":"אפשר להקליד או להשתמש במיקרופון של המקלדת."} Claude ממלא תגיות, כאב, ליפטים והערות. בודקים ושולחים.</p></div>
+  <div class="card voice2">
+    ${SRC?`<button type="button" class="vbig${vcOn?" on":""}" id="vcRec">${vcOn?"⏹ סיימתי לדבר":"🎙 ספר מה היה בשיעור"}</button>`:""}
+    ${vcOn||vcText||vcOpen||!SRC?`<textarea id="vcTxt" rows="3" placeholder="למשל: ״דבי, כאב בכתף שמאל 4 מתוך 10 בלחיצה, ירדנו ללנדמיין. רון שיא בסקוואט 80 קילו…״">${esc(vcText)}</textarea>
+      <button class="ghost" type="button" id="vcGo">מלא את הדיווח מזה</button>`:`<button type="button" class="linkb" id="vcType">או לכתוב חופשי</button>`}
+    <p class="hint">מספרים רק על מי שהיה איתו משהו. Claude ממלא את הדיווח, אתה בודק ושולח.</p></div>
+  <div class="sh"><h2>מי היה בשיעור</h2><span>${here.length}${abs?` מתוך ${DR.people.length}`:""}</span></div>
+  ${DR.people.length?`<p class="hint lead">כולם מסומנים ✓ בסדר. נוגעים רק במי שהיה איתו משהו: 🤕 כאב · 😓 קושי · 🏆 שיא · 🚩 דגל אדום. לחיצה על העיגול = לא הגיע.</p>`:`<p class="hint lead">${rrc?"אין רשומים לשיעור הזה בארבוקס.":"אין רשימה מארבוקס לשיעור הזה."} מוסיפים מתאמנים למטה.</p>`}
+  ${pr?`<div class="card prepc"><button type="button" class="prep-h" id="rpPrep"><b>⚠ לפני השיעור · מה לדעת</b><span class="chev">${prepOpen?"▲":"▼"}</span></button>${prepOpen?pr:""}</div>`:""}
   <div class="rplist">${DR.people.map((p,i)=>personCard(p,i,exs,met)).join("")}</div>
-  <div class="card"><span class="lbl">איך היה השיעור (לא חובה)</span><textarea id="rpNote" rows="2" placeholder="אנרגיה, ציוד, מה עבד ומה לא">${esc(DR.note)}</textarea>
-    <span class="lbl">משהו שטל צריך לדעת</span><textarea id="rpTal" rows="2" placeholder="נשלח לטל כהתראה לטלפון">${esc(DR.tal)}</textarea></div>
-  <button class="cta" type="button" id="rpSend">${exist?"עדכון הדיווח":"שליחה לטל"}</button>
+  <div class="addrow sm"><input type="text" id="rpAdd" list="rpNames" placeholder="+ הוספת מתאמן שלא ברשימה" autocomplete="off"><button class="ghost" type="button" id="rpAddB">הוספה</button></div>
+  <datalist id="rpNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
+  <div class="card notes">${notesOpen||DR.note||DR.tal?`<span class="lbl">איך היה השיעור (לא חובה)</span><textarea id="rpNote" rows="2" placeholder="אנרגיה, ציוד, מה עבד ומה לא">${esc(DR.note)}</textarea>
+    <span class="lbl">משהו שטל צריך לדעת</span><textarea id="rpTal" rows="2" placeholder="נשלח לטל כהתראה לטלפון">${esc(DR.tal)}</textarea>`
+    :`<button type="button" class="linkb" id="rpNotes">+ הערה על השיעור או הודעה לטל</button>`}</div>
+  <div class="card remc" id="remC" hidden><div><b>🔔 תזכורת לדווח</b><p class="hint" id="remCH">התראה לטלפון 10 דקות אחרי כל שיעור שלך, עם קישור ישר לדיווח.</p></div><button type="button" class="chipb" id="remCB">הפעלה</button></div>
   ${mine.length?`<div class="sh"><h2>הדיווחים שלי</h2></div><div class="flags">${mine.map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;
-    return `<button class="flag" type="button" data-myr="${esc(k)}" style="--c:${red?"var(--bad)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}</div></div></button>`}).join("")}</div>`:""}`;
-  const inp=$("rpAdd");inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addPerson(inp.value)}};$("rpAddB").onclick=()=>addPerson(inp.value)}
+    return `<button class="flag" type="button" data-myr="${esc(k)}" style="--c:${red?"var(--bad)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}</div></div></button>`}).join("")}</div>`:""}
+  <div class="sendbar"><div class="sb-t"><b>${here.length} הגיעו${sum.length?"":" · כולם בסדר"}</b>${sum.length?`<small>${sum.join(" · ")}</small>`:""}</div>
+    <button class="cta" type="button" id="rpSend">${exist?"עדכון הדיווח":"שליחה לטל"}</button></div>`;
+  const inp=$("rpAdd");inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addPerson(inp.value)}};$("rpAddB").onclick=()=>addPerson(inp.value);
+  wireCoachRemind()}
+async function wireCoachRemind(){const c=$("remC"),b=$("remCB"),h=$("remCH");if(!c||!window.pgPush)return;
+  let s="unsupported";try{s=await pgPush.state()}catch(e){}if(s==="on"||s==="unsupported")return;c.hidden=false;
+  if(s==="needs-home"){h.textContent="באייפון ההתראות עובדות רק מהאייקון במסך הבית: שיתוף ← ״הוסף למסך הבית״, ואז נכנסים מהאייקון ולוחצים כאן.";b.hidden=true}
+  if(s==="denied"){h.textContent="ההתראות חסומות. פותחים אותן בהגדרות הטלפון ← התראות ← פלייגראונד.";b.hidden=true}
+  b.onclick=async()=>{b.disabled=true;try{const v=await pgPush.enable();if(v==="on"){toast("התזכורות הופעלו ✓");c.hidden=true}else wireCoachRemind()}catch(e){toast("לא הצלחנו להפעיל")}finally{b.disabled=false}}}
 
 /* ---------- pro report helpers ---------- */
 const AREAS=["צוואר","כתף","מרפק","שורש כף יד","גב עליון","גב תחתון","אגן / ירך","ברך","קרסול / כף רגל","אחר"];
@@ -1649,31 +1706,42 @@ function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
   if(r.lastPain&&r.lastPain.d>=addDays(rDate,-21))bits.push(`<span style="--c:var(--bad)">כאב ${esc(r.lastPain.d===TODAY?"היום":fmt(r.lastPain.d))}: ${esc([r.lastPain.area,r.lastPain.lvl?r.lastPain.lvl+"/10":""].filter(Boolean).join(" "))}</span>`);
   const lx=Object.entries(r.lx||{}).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||""))[0];if(lx)bits.push(`<span style="--c:var(--mes)">${esc(lx[0].slice(0,22))}: ${esc(lx[1].kg||"")}${lx[1].ver?" · "+esc(lx[1].ver):""}</span>`);
   return bits.length?`<div class="prep"><b>${esc(p.name)}</b><div class="mini">${bits.join("")}</div></div>`:""}).join("")}
-function personCard(p,i,exs,met){const r=RO[p.id]||{},op=openP===p.id,pn=p.pn||{},lx=p.lx||{},mis=op?mistakesFor(exs):[];
-  const flagOpen=r.flag&&r.flag.st==="open";
-  return `<div class="rp-p${op?" open":""}">
-  <button class="rp-h" type="button" data-pp="${esc(p.id)}"><span class="av">${esc(ini(p.name))}</span><div style="flex:1;min-width:0"><b>${esc(p.name)}</b>
-    ${r.inj?`<div class="known">⚠ ${esc(r.inj)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">🚩 מעקב פתוח${p.fu?" · נבדק ✓":""}</div>`:""}
-    <div class="mini">${tagPills(p.tags)}${Object.values(lx).filter(x=>x&&x.kg).length?`<span style="--c:var(--mes)">${Object.values(lx).filter(x=>x&&x.kg).length} ליפטים</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
+const QT=[["pain","🤕","כאב / פציעה","var(--bad)"],["hard","😓","קושי","var(--warn)"],["pr","🏆","שיא","var(--ok)"],["red","🚩","דגל אדום","var(--bad)"]];
+function mainEx(w){const out=[];if(!w||!w.blocks)return out;
+  w.blocks.forEach(b=>{if(!/strength|main|כוח|מיין/i.test(b.name||"")||/metcon|מטקון/i.test(b.name||""))return;
+    (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!out.includes(n))out.push(n)})});return out}
+function liftRow(p,i,x,r){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
+  return `<div class="lift-r"><label>${esc(x)}</label>
+    ${vs.length?`<div class="chips sm">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
+    <div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="ק״ג"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
+    ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">✓ ${esc(sg.kg)} ק״ג כמו שהוצע</button>`:""}
+    <div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>
+    ${sg?`<div class="hint">${esc(sg.t)}</div>`:""}</div>`}
+function personCard(p,i,exs,met){const r=RO[p.id]||{},op=openP===p.id&&!p.absent,pn=p.pn||{},lx=p.lx||{},tags=p.tags||[];
+  const flagOpen=r.flag&&r.flag.st==="open",nl=Object.values(lx).filter(x=>x&&x.kg).length;
+  const mx=op?mainEx(WD[rType]):[],rest=op?exs.filter(x=>!mx.includes(x)):[],shown=mx.length?mx:exs,others=mx.length?rest:[],mis=op?mistakesFor(exs):[];
+  const avc=p.absent?" x":tags.length?" t":" ok",avt=p.absent?"✕":tags.length?esc(ini(p.name)):"✓";
+  return `<div class="rp-p${op?" open":""}${p.absent?" abs":""}">
+  <div class="rp-h"><button type="button" class="av${avc}" data-ab="${i}" aria-label="${p.absent?"סימון שהגיע":"סימון שלא הגיע"}">${avt}</button>
+    <button type="button" class="nm" data-pp="${esc(p.id)}"><b>${esc(p.name)}</b>
+      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">⚠ ${esc(r.inj)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">🚩 מעקב פתוח${p.fu?" · נבדק ✓":""}</div>`:""}
+      <div class="mini">${tags.length?tagPills(tags):`<span style="--c:var(--ok)">✓ בסדר</span>`}${nl?`<span style="--c:var(--mes)">${nl} משקלים</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}${(p.note||"").trim()?`<span style="--c:var(--muted)">הערה</span>`:""}</div>`}</button>
+    ${p.absent?"":`<div class="qt">${QT.map(([k,e,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" aria-pressed="${tags.includes(k)}" aria-label="${l}" title="${l}" style="--c:${c}">${e}</button>`).join("")}</div>`}</div>
   ${op?`<div class="rp-b">
     ${flagOpen?`<div class="fu"><div><b>מעקב מדגל קודם</b> · ${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")}<div class="hint">${esc(r.flag.text||"")}</div></div><button type="button" class="chipb${p.fu?" on":""}" data-fu="${i}">${p.fu?"✓ בדקתי":"שאלתי איך מרגיש"}</button></div>`:""}
-    <div class="chips tg">${TAGS.map(([k,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" style="--c:${c}" aria-pressed="${(p.tags||[]).includes(k)}">${k==="red"?"🚩 ":""}${l}</button>`).join("")}</div>
-    ${(p.tags||[]).includes("pain")?`<div class="painbox"><span class="lbl">עוצמה</span><div class="chips sm">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-pl="${n}" data-i="${i}" aria-pressed="${pn.lvl===n}" style="--c:${n>=7?"var(--bad)":n>=4?"var(--warn)":"var(--ok)"}">${n}</button>`).join("")}</div>
-      <span class="lbl">איפה</span><div class="chips sm">${AREAS.map(a=>`<button type="button" data-pa="${esc(a)}" data-i="${i}" aria-pressed="${pn.area===a}">${a}</button>`).join("")}</div>
+    ${tags.includes("pain")?`<div class="painbox"><b class="bx">🤕 כאב</b><span class="lbl">איפה</span><div class="chips sm">${AREAS.map(a=>`<button type="button" data-pa="${esc(a)}" data-i="${i}" aria-pressed="${pn.area===a}">${a}</button>`).join("")}</div>
       <div class="chips sm">${["ימין","שמאל","שני הצדדים"].map(s=>`<button type="button" data-ps="${s}" data-i="${i}" aria-pressed="${pn.side===s}">${s}</button>`).join("")}</div>
+      <span class="lbl">כמה חזק (1–10)</span><div class="chips sm lvl">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-pl="${n}" data-i="${i}" aria-pressed="${pn.lvl===n}" style="--c:${n>=7?"var(--bad)":n>=4?"var(--warn)":"var(--ok)"}">${n}</button>`).join("")}</div>
       ${exs.length?`<span class="lbl">באיזה תרגיל</span><div class="chips sm">${exs.map(x=>`<button type="button" data-px="${esc(x)}" data-i="${i}" aria-pressed="${pn.ex===x}" class="en">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>`:""}
       <input type="text" data-pm="${i}" value="${esc(pn.mod||"")}" placeholder="מה שינית? למשל: ירדנו ל-Goblet, טווח חלקי"></div>`:""}
-    ${exs.length?`<span class="lbl">ליפטים</span>${exs.map(x=>{const L=lx[x]||{},sg=sugg(r,x),vs=varsOf(x);return `<div class="lift-r">
-      <label>${esc(x)}</label>
-      ${vs.length?`<div class="chips sm">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
-      <div class="lift-in"><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="${sg&&sg.kg?esc(sg.kg):"ק״ג"}"><input type="text" inputmode="numeric" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות">
-        <div class="chips sm rpe">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>
-      ${sg?`<div class="hint">${esc(sg.t)}</div>`:""}</div>`}).join("")}<p class="hint">RPE: 10 = לא נשאר כלום, 8 = נשארו 2 חזרות.</p>`:""}
+    ${tags.includes("pr")&&exs.length?`<div class="painbox prb"><b class="bx">🏆 שיא</b><span class="lbl">באיזה תרגיל</span><div class="chips sm">${exs.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>${p.prx&&!shown.includes(p.prx)?liftRow(p,i,p.prx,r):""}</div>`:""}
+    ${shown.length?`<span class="lbl">משקלי עבודה</span>${shown.map(x=>liftRow(p,i,x,r)).join("")}
+      ${others.length?(p.more?others.filter(x=>x!==p.prx).map(x=>liftRow(p,i,x,r)).join("")+`<button type="button" class="linkb" data-more="${i}">פחות תרגילים</button>`:`<button type="button" class="linkb" data-more="${i}">+ עוד ${others.length} תרגילים</button>`):""}`:""}
     ${mis.length?`<span class="lbl">מה תיקנת (מהבריף)</span><div class="chips sm">${mis.map(m=>`<button type="button" data-er="${esc(m)}" data-i="${i}" aria-pressed="${(p.err||[]).includes(m)}">${esc(m)}</button>`).join("")}</div>`:""}
     ${met?`<div class="kg"><label>תוצאה במטקון</label><input type="text" data-f="score" data-i="${i}" value="${esc(p.score||"")}" placeholder="זמן / סבבים"></div>`:""}
-    <textarea rows="2" data-f="note" data-i="${i}" placeholder="${(p.tags||[]).includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
+    <textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
     <input type="text" data-f="inj" data-i="${i}" value="${esc(p.inj!=null?p.inj:(r.inj||""))}" placeholder="פציעות / רגישויות קבועות (נשמר בכרטיס שלו)">
-    <button class="ghost" type="button" data-rm="${i}" style="align-self:flex-start;padding:8px 14px">הסרה מהשיעור</button>
+    <div class="rp-f"><button class="ghost" type="button" data-pp="${esc(p.id)}">סגירה</button><button class="ghost" type="button" data-rm="${i}">הסרה מהשיעור</button></div>
   </div>`:""}</div>`}
 
 function addPerson(raw){const n=String(raw||"").trim();if(!n)return;
@@ -1683,20 +1751,20 @@ function addPerson(raw){const n=String(raw||"").trim();if(!n)return;
   setTimeout(()=>{const x=$("rpAdd");if(x)x.focus()},30)}
 
 function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType=Object.keys(WD).find(id=>WD[id].date===r.date&&typeOf(id)===r.cls)||("x-"+slug(r.cls));
-  DR={cls:r.cls,people:JSON.parse(JSON.stringify(r.people||[])),note:r.note||"",tal:r.tal||"",edit:1,k:`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`};openP=null;draftSave();render();window.scrollTo(0,0)}
+  DR={cls:r.cls,people:[...JSON.parse(JSON.stringify(r.people||[])),...(r.absent||[]).map(n=>{const hit=Object.entries(RO).find(([,o])=>lowN(o.name)===lowN(n));return {id:hit?hit[0]:newId(),name:n,absent:true,tags:[]}})],note:r.note||"",tal:r.tal||"",edit:1,k:`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`};openP=null;draftSave();render();window.scrollTo(0,0)}
 
-async function sendReport(){if(!DR.people.length){toast("הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
-  const miss=DR.people.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
+async function sendReport(){const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
+  const miss=pres.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
   const b=$("rpSend");b.disabled=true;b.textContent="שולח…";
   try{const key=rKey(),cls=typeOf(rType),path=`c/${uid}/reports/${key}`;
-    const people=DR.people.map(p=>{const lx=Object.fromEntries(Object.entries(p.lx||{}).filter(([,v])=>v&&(String(v.kg||"").trim()||v.reps||v.rpe||v.ver)));
+    const people=pres.map(p=>{const lx=Object.fromEntries(Object.entries(p.lx||{}).filter(([,v])=>v&&(String(v.kg||"").trim()||v.reps||v.rpe||v.ver)));
       const kg=Object.fromEntries(Object.entries(lx).filter(([,v])=>String(v.kg||"").trim()).map(([x,v])=>[x,String(v.kg).trim()]));
       const hasPain=(p.tags||[]).includes("pain"),pn=hasPain?(p.pn||{}):null;
       const painTxt=hasPain?[pn.area,pn.side,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" ")||(p.pain||""):"";
-      return {id:p.id,name:p.name,tags:p.tags||[],pain:painTxt,pn,kg,lx,err:p.err||[],fu:!!p.fu,score:p.score||"",note:(p.note||"").trim()}});
-    const rep={date:rDate,time:rTime,cls,w:WD[rType]?rType:null,coach:coachName,people,note:(DR.note||"").trim(),tal:(DR.tal||"").trim(),at:new Date().toISOString()};
+      return {id:p.id,name:p.name,tags:p.tags||[],pain:painTxt,pn,kg,lx,err:p.err||[],fu:!!p.fu,score:p.score||"",note:(p.note||"").trim(),...((p.tags||[]).includes("pr")&&p.prx?{prx:p.prx}:{})}});
+    const rep={date:rDate,time:rTime,cls,w:WD[rType]?rType:null,coach:coachName,people,absent:DR.people.filter(p=>p.absent).map(p=>p.name),note:(DR.note||"").trim(),tal:(DR.tal||"").trim(),at:new Date().toISOString()};
     await db.doc(path).set(rep);
-    await Promise.all(DR.people.map(async(p,i)=>{const q=people[i],cur=RO[p.id]||{name:p.name,added:TODAY,by:coachName};
+    await Promise.all(pres.map(async(p,i)=>{const q=people[i],cur=RO[p.id]||{name:p.name,added:TODAY,by:coachName};
       const up={...cur,name:cur.name||p.name,seen:rDate,last:{...(cur.last||{}),...q.kg},lx:{...(cur.lx||{})}};
       Object.entries(q.lx).forEach(([x,v])=>{up.lx[x]={...v,d:rDate,pain:!!(q.pn&&q.pn.ex===x)}});
       if(q.pn)up.lastPain={d:rDate,area:[q.pn.area,q.pn.side].filter(Boolean).join(" "),lvl:q.pn.lvl||null,ex:q.pn.ex||"",mod:q.pn.mod||""};
@@ -1712,8 +1780,8 @@ const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;let vcOn=fals
 function vcToggle(){if(!SRC)return;if(vcOn){try{vcRec.stop()}catch(e){}return}
   vcRec=new SRC();vcRec.lang="he-IL";vcRec.continuous=true;vcRec.interimResults=true;const base=vcText?vcText+" ":"";
   vcRec.onresult=e=>{let s="";for(let k=0;k<e.results.length;k++)s+=e.results[k][0].transcript;vcText=base+s;const t=$("vcTxt");if(t)t.value=vcText};
-  vcRec.onend=()=>{vcOn=false;const b=$("vcRec");if(b)b.textContent="🎙 הקלטה"};vcRec.onerror=()=>{vcOn=false;toast("המיקרופון לא זמין, אפשר להקליד או להשתמש בהכתבה של המקלדת")};
-  try{vcRec.start();vcOn=true;const b=$("vcRec");if(b)b.textContent="⏹ עצור"}catch(e){toast("לא הצלחתי להפעיל הקלטה")}}
+  vcRec.onend=()=>{vcOn=false;if(tab==="class")render()};vcRec.onerror=()=>{vcOn=false;toast("המיקרופון לא זמין, אפשר להקליד או להשתמש בהכתבה של המקלדת")};
+  try{vcRec.start();vcOn=true;if(tab==="class")render()}catch(e){toast("לא הצלחתי להפעיל הקלטה")}}
 async function vcParse(exs){const txt=(vcText||"").trim();if(!txt){toast("אין טקסט לפענח");return}if(vcBusy)return;vcBusy=true;const b=$("vcGo");if(b)b.textContent="מפענח…";
   const res=window.pgAI&&window.pgAI.report?await window.pgAI.report({text:txt,people:DR.people.map(p=>p.name),exercises:exs,areas:AREAS,mistakes:mistakesFor(exs)}):null;vcBusy=false;
   if(!res||!Array.isArray(res.people)){toast("לא הצלחתי לפענח, נסו שוב");render();return}
@@ -1728,13 +1796,25 @@ async function vcParse(exs){const txt=(vcText||"").trim();if(!txt){toast("אין
 
 $("v-class").addEventListener("click",ev=>{const t=ev.target;
   const fresh=()=>{if(Date.now()-stAt>20000)loadStudio(true)};
+  if(t.closest("#rpPick")){pickOpen=!pickOpen;render();return}
+  if(t.closest("#rpAll")){pickAll=!pickAll;render();return}
+  const rc=t.closest("[data-rc]");if(rc){const [tm,ct]=rc.dataset.rc.split("|");rTime=tm;rType=Object.keys(WD).find(id=>WD[id].date===rDate&&typeOf(id)===ct)||("x-"+slug(ct));pickOpen=false;pickAll=false;render();draftSave();fresh();window.scrollTo(0,0);return}
+  if(t.closest("#vcType")){vcOpen=true;render();setTimeout(()=>{const x=$("vcTxt");if(x)x.focus()},30);return}
+  if(t.closest("#rpPrep")){prepOpen=!prepOpen;render();return}
+  if(t.closest("#rpNotes")){notesOpen=true;render();setTimeout(()=>{const x=$("rpNote");if(x)x.focus()},30);return}
+  const ab=t.closest("[data-ab]");if(ab){const p=DR.people[+ab.dataset.ab];p.absent=!p.absent;if(p.absent&&openP===p.id)openP=null;draftSave();render();return}
+  const st=t.closest("[data-st]");if(st){const p=DR.people[+st.dataset.i],x=st.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},sg=sugg(RO[p.id]||{},x);
+    const cur=parseFloat(String(L.kg||"").replace(",",".")),sk=parseFloat((sg&&sg.kg)||""),base=isFinite(cur)?cur:isFinite(sk)?sk:0,step=base>=20?2.5:1;L.kg=String(Math.max(0,Math.round((base+(+st.dataset.st)*step)*100)/100));draftSave();render();return}
+  const sgb=t.closest("[data-sg]");if(sgb){const p=DR.people[+sgb.dataset.i],x=sgb.dataset.lx;p.lx=p.lx||{};(p.lx[x]=p.lx[x]||{}).kg=sgb.dataset.sg;draftSave();render();return}
+  const prx=t.closest("[data-prx]");if(prx){const p=DR.people[+prx.dataset.i];p.prx=p.prx===prx.dataset.prx?"":prx.dataset.prx;draftSave();render();return}
+  const mo=t.closest("[data-more]");if(mo){const p=DR.people[+mo.dataset.more];p.more=!p.more;render();return}
   const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;rTime=null;render();draftSave();fresh();return}
   const ty=t.closest("[data-rt]");if(ty){rType=ty.dataset.rt;render();draftSave();fresh();return}
   const h=t.closest("[data-rh]");if(h){rTime=h.dataset.rh;const at=Object.values(RR).filter(r=>r.date===rDate&&r.time===rTime);
     if(at.length&&!at.some(r=>typeOf(r.cls)===typeOf(rType))){const ty2=typeOf(at[0].cls);rType=Object.keys(WD).find(id=>WD[id].date===rDate&&typeOf(id)===ty2)||("x-"+slug(ty2))}
     render();draftSave();fresh();return}
   const pp=t.closest("[data-pp]");if(pp){openP=openP===pp.dataset.pp?null:pp.dataset.pp;render();return}
-  const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags.includes(k)?p.tags.filter(x=>x!==k):[...p.tags,k];draftSave();render();return}
+  const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags||[];const on=!p.tags.includes(k);p.tags=on?[...p.tags,k]:p.tags.filter(x=>x!==k);if(on&&k!=="hard")openP=p.id;draftSave();render();return}
   const rm=t.closest("[data-rm]");if(rm){DR.people.splice(+rm.dataset.rm,1);openP=null;draftSave();render();return}
   const my=t.closest("[data-myr]");if(my){loadMine(my.dataset.myr);return}
   if(t.closest("#rpSend")){sendReport();return}
@@ -1981,8 +2061,8 @@ let liveU=[];
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
     db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
     if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}
-    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);go("coach");return}
-  if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false;setSave("מחובר ✓","ok");go("brief");return}
+    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(!(isCoach&&openRep()))go("coach");return}
+  if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false;setSave("מחובר ✓","ok");if(!openRep())go("brief");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
   const cw=await user.can("data.write");if(cw===false)readOnly=true;
