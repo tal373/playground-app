@@ -1560,8 +1560,16 @@ const slug=t=>/method/i.test(t)?"method":"powerlab";
 const ini=n=>(String(n||"?").trim()[0]||"?");
 const newId=()=>"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const rKey=()=>`${rDate}_${(rTime||"").replace(":","")}-${slug(rType?typeOf(rType):(DR&&DR.cls)||"")}`;
+let DRS={};
+const lowN=x=>String(x||"").trim().toLowerCase();
+const touchedP=p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||Object.entries(p).some(([k,v])=>!["id","name","isNew","r","tags","kg"].includes(k)&&v!==""&&v!=null&&v!==false&&!(typeof v==="object"&&!Object.keys(v).length));
+function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).filter(Boolean),inR=new Set(names.map(lowN));
+  DR.people=DR.people.filter(p=>!(p.r&&!inR.has(lowN(p.name))&&!touchedP(p)));
+  names.forEach(n=>{if(DR.people.some(p=>lowN(p.name)===lowN(n)))return;const hit=Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(n));if(hit&&DR.people.some(p=>p.id===hit[0]))return;
+    DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
+  DR.rAt=rrc.at||"1"}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
-function draftSave(){try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime})}catch(e){}}
+function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
 function blankDR(){return {cls:rType?typeOf(rType):"Power Lab",people:[],note:"",tal:""}}
 
@@ -1572,7 +1580,7 @@ async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&D
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
     fill(MYR,Object.fromEntries(mr.docs.map(d=>[d.id,d.data()])));
     if(isOwner&&db.reports){const rs=await db.reports(addDays(TODAY,-30));fill(REPS,Object.fromEntries(rs.map(r=>[r.id,r.data])))}
-    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime}}
+    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime;DRS=d.DRS||{}}}
     stLoaded=true;stAt=Date.now()}catch(e){setSave("שגיאה בטעינה","err")}
   stLoading=false;if(["class","studio","coaches","prog"].includes(tab))render()}
 
@@ -1584,9 +1592,12 @@ function renderClass(){const v=$("v-class");
   if(!rType)rType=ws[0]||"x-powerlab";
   const rrDay=Object.values(RR).filter(r=>r.date===rDate).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
   if(!rTime&&rrDay.length){const nowT=`${pad(new Date().getHours())}:${pad(new Date().getMinutes())}`;const pick=rDate===TODAY?(rrDay.filter(r=>r.time<=nowT).pop()||rrDay[0]):rrDay[0];rTime=pick.time;const wt=ws.find(id=>typeOf(id)===(/method/i.test(pick.cls)?"Method":"Power Lab"));if(wt)rType=wt}
-  if(!DR)DR=blankDR();DR.cls=typeOf(rType);
   const rk=`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`,rrc=RR[rk];
-  if(rrc&&!DR.people.length&&DR.fromR!==rk){DR.fromR=rk;(rrc.names||[]).forEach(n=>{const hit=Object.entries(RO).find(([,r])=>(r.name||"").trim().toLowerCase()===String(n).trim().toLowerCase());DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,tags:[],pain:"",kg:{},score:"",note:""})});draftSave()}
+  if(DR&&DR.k==null)DR.k=rk;
+  if(DR&&DR.k!==rk){if(DR.people.some(touchedP)||DR.note||DR.tal)DRS[DR.k]=DR;DR=DRS[rk]||null;delete DRS[rk]}
+  if(!DR){DR=blankDR();DR.k=rk}DR.cls=typeOf(rType);
+  if(rrc&&!DR.edit&&DR.rAt!==(rrc.at||"1")){mergeRoster(rrc);draftSave()}
+  if(stLoaded&&!stLoading&&Date.now()-stAt>300000&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||""))loadStudio(true);
   const w=WD[rType],exs=woEx(w),met=hasMet(w),key=rKey(),exist=!!MYR[key];
   const days=[[TODAY,"היום"],[addDays(TODAY,-1),"אתמול"],[addDays(TODAY,-2),fmt(addDays(TODAY,-2))]];
   const types=ws.length?ws.map(id=>[id,typeOf(id)]):[["x-powerlab","Power Lab"],["x-method","Method"]];
@@ -1672,7 +1683,7 @@ function addPerson(raw){const n=String(raw||"").trim();if(!n)return;
   setTimeout(()=>{const x=$("rpAdd");if(x)x.focus()},30)}
 
 function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType=Object.keys(WD).find(id=>WD[id].date===r.date&&typeOf(id)===r.cls)||("x-"+slug(r.cls));
-  DR={cls:r.cls,people:JSON.parse(JSON.stringify(r.people||[])),note:r.note||"",tal:r.tal||""};openP=null;draftSave();render();window.scrollTo(0,0)}
+  DR={cls:r.cls,people:JSON.parse(JSON.stringify(r.people||[])),note:r.note||"",tal:r.tal||"",edit:1,k:`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`};openP=null;draftSave();render();window.scrollTo(0,0)}
 
 async function sendReport(){if(!DR.people.length){toast("הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
   const miss=DR.people.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
@@ -1694,7 +1705,7 @@ async function sendReport(){if(!DR.people.length){toast("הוסיפו לפחות
       if(p.inj!=null)up.inj=p.inj.trim();
       RO[p.id]=up;await db.doc(`s/${p.id}`).set(up);
       await db.doc(`s/${p.id}/log/${key}`).set({date:rDate,time:rTime,cls,coach:coachName,tags:q.tags,pain:q.pain,pn:q.pn,kg:q.kg,lx:q.lx,err:q.err,fu:q.fu,score:q.score,note:q.note,rep:path})}));
-    MYR[key]=rep;DR=null;openP=null;draftClear();toast("נשלח לטל ✓");render();window.scrollTo(0,0)}
+    MYR[key]=rep;if(DR&&DR.k)delete DRS[DR.k];DR=null;openP=null;draftSave();toast("נשלח לטל ✓");render();window.scrollTo(0,0)}
   catch(e){toast("לא נשלח, נסו שוב");b.disabled=false;b.textContent="שליחה לטל"}}
 /* voice */
 const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;let vcOn=false,vcRec=null,vcText="",vcBusy=false;
@@ -1716,9 +1727,12 @@ async function vcParse(exs){const txt=(vcText||"").trim();if(!txt){toast("אין
   vcText="";draftSave();render();toast("מולא מההקלטה. עברו ושלחו")}
 
 $("v-class").addEventListener("click",ev=>{const t=ev.target;
-  const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;rTime=null;if(DR&&DR.fromR&&!DR.people.some(p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||p.note)){DR.people=[];DR.fromR=null}draftSave();render();return}
-  const ty=t.closest("[data-rt]");if(ty){rType=ty.dataset.rt;draftSave();render();return}
-  const h=t.closest("[data-rh]");if(h){rTime=h.dataset.rh;if(DR&&DR.fromR&&!DR.people.some(p=>(p.tags||[]).length||Object.keys(p.kg||{}).length||p.note)){DR.people=[];DR.fromR=null}draftSave();render();return}
+  const fresh=()=>{if(Date.now()-stAt>20000)loadStudio(true)};
+  const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;rTime=null;render();draftSave();fresh();return}
+  const ty=t.closest("[data-rt]");if(ty){rType=ty.dataset.rt;render();draftSave();fresh();return}
+  const h=t.closest("[data-rh]");if(h){rTime=h.dataset.rh;const at=Object.values(RR).filter(r=>r.date===rDate&&r.time===rTime);
+    if(at.length&&!at.some(r=>typeOf(r.cls)===typeOf(rType))){const ty2=typeOf(at[0].cls);rType=Object.keys(WD).find(id=>WD[id].date===rDate&&typeOf(id)===ty2)||("x-"+slug(ty2))}
+    render();draftSave();fresh();return}
   const pp=t.closest("[data-pp]");if(pp){openP=openP===pp.dataset.pp?null:pp.dataset.pp;render();return}
   const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags.includes(k)?p.tags.filter(x=>x!==k):[...p.tags,k];draftSave();render();return}
   const rm=t.closest("[data-rm]");if(rm){DR.people.splice(+rm.dataset.rm,1);openP=null;draftSave();render();return}
