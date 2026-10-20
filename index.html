@@ -687,32 +687,12 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .sendbar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:15;display:flex;align-items:center;gap:12px;background:#111b2cf2;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:10px 10px 10px 14px;box-shadow:0 10px 30px #0008}
 .sendbar .sb-t{flex:1;min-width:0;display:flex;flex-direction:column}.sendbar .sb-t b{font-size:15px}.sendbar .sb-t small{color:var(--muted);font-size:12.5px}
 .sendbar .cta{flex:none;padding:12px 18px}
-body.liveOn .app{max-width:1280px}
-.vlive{width:100%;padding:12px;border-radius:14px;background:#4fd18b14;border:1px solid #4fd18b66;color:var(--ok);font-weight:800;font-size:15px}
-.lv{display:flex;flex-direction:column;gap:12px}
-.lv-top{position:sticky;top:0;z-index:16;display:flex;align-items:center;gap:12px;background:#111b2cf2;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:20px;padding:10px 12px}
-.lv-t{flex:1;min-width:0;display:flex;flex-direction:column}.lv-t b{font-size:18px;font-weight:800}.lv-t small{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lv-clk{display:flex;flex-direction:column;align-items:center;min-width:70px;text-align:center}.lv-clk b{font-size:18px;color:#ff8a62}.lv-clk small{font-size:11.5px;color:var(--muted)}
-.lv-top .cta{flex:none;padding:10px 14px}
-.lv-body{display:grid;grid-template-columns:1fr;gap:14px}
-.lv-wo{display:flex;flex-direction:column;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:12px}
-@media (min-width:820px){.lv-body{grid-template-columns:290px 1fr;align-items:start}.lv-wo{position:sticky;top:84px;max-height:calc(100vh - 200px);overflow:auto}}
-@media (max-width:819px){.lv-wo{display:none}}
-.lv-blk{display:flex;flex-direction:column;gap:4px}.lv-blk>b{font-size:13px;color:var(--muted)}.lv-blk>small{font-size:11.5px;color:var(--muted)}
-.lv-it{direction:ltr;text-align:left;font-size:13px;padding:7px 9px;border-radius:10px;background:var(--s2);border:1px solid transparent}.lv-it:disabled{opacity:.55;background:transparent}.lv-it.on{border-color:var(--ok);background:#4fd18b22}
-.lv-main{display:flex;flex-direction:column;gap:12px;min-width:0}.lv-exs{display:flex;flex-direction:column;gap:6px}
-.lv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.lv-c{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px}
-.lv-c.abs{opacity:.5}.lv-c.abs .lv-n b{text-decoration:line-through}
-.lv-ch{display:flex;align-items:center;gap:10px}
-.lv-ch .av{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:16px;border:2px solid transparent;background:var(--s2)}
-.lv-ch .av.ok{background:#4fd18b22;color:var(--ok);border-color:#4fd18b55}.lv-ch .av.t{background:#ffc85722;color:var(--warn);border-color:#ffc85766}.lv-ch .av.x{color:var(--muted)}
-.lv-n{flex:1;min-width:0;display:flex;flex-direction:column}.lv-n b{font-size:16px}.lv-n small{font-size:12px;color:var(--warn)}
-.lv-nb{flex:none;width:40px;height:40px;border-radius:50%;background:var(--s2);border:1px solid var(--line);opacity:.65}.lv-nb.on{opacity:1;border-color:var(--mes)}
-.lv-c .qt{display:flex;gap:6px}.lv-c .qt button{flex:1;height:44px;border-radius:12px;background:var(--s2);border:1px solid var(--line);font-size:19px;filter:grayscale(1);opacity:.7}
-.lv-c .qt button[aria-pressed="true"]{filter:none;opacity:1;background:color-mix(in srgb,var(--c) 28%,transparent);border-color:var(--c)}
-.lv-sg{font-size:12px;color:var(--muted)}
-.lv-add{display:flex;gap:6px;align-items:center;border:1px dashed var(--line);border-radius:18px;padding:10px}.lv-add input{flex:1;min-width:0}.lv-add .ghost{padding:10px 14px}
+@media (min-width:820px){body.clsOn .app{max-width:1180px}body.clsOn .rplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;align-items:start}}
+.rp-p>.qt{display:flex;gap:6px;padding:0 10px 10px}
+.rp-p>.qt button{flex:1;padding:8px 4px;border-radius:12px;background:var(--s2);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--muted)}
+.rp-p>.qt button[aria-pressed="true"]{background:color-mix(in srgb,var(--c) 22%,transparent);border-color:var(--c);color:var(--c)}
+.lbl.blk{margin-top:6px;font-weight:800;color:var(--ink);font-size:13.5px}
+.chips.ver button[aria-pressed="true"]{background:var(--mes);border-color:var(--mes);color:var(--navy)}
 .spark{width:100%;height:44px;direction:ltr}.spark path{fill:none;stroke:var(--mes);stroke-width:2}.spark circle{fill:var(--mes)}
 </style></head><body>
 <div class="app">
@@ -1574,7 +1554,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;document.body.classList.toggle("liveOn",typeof live!=="undefined"&&live&&t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
@@ -1647,7 +1627,7 @@ async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&D
 /* ---------- coach: class report ---------- */
 function renderClass(){const v=$("v-class");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
-  if(!rTime&&!live)autoPick();
+  if(!rTime)autoPick();
   const ws=Object.keys(WD).filter(id=>WD[id].date===rDate).sort();
   if(rType&&!WD[rType]&&!/^x-/.test(rType))rType=null;
   if(rType&&/^x-/.test(rType)){const real=ws.find(id=>typeOf(id)===typeOf(rType));if(real)rType=real}
@@ -1659,7 +1639,6 @@ function renderClass(){const v=$("v-class");
   if(DR&&DR.k!==rk){if(DR.people.some(touchedP)||DR.note||DR.tal)DRS[DR.k]=DR;DR=DRS[rk]||null;delete DRS[rk]}
   if(!DR){DR=blankDR();DR.k=rk}DR.cls=typeOf(rType);
   if(rrc&&!DR.edit&&DR.rAt!==(rrc.at||"1")){mergeRoster(rrc);draftSave()}
-  if(live){renderLive(v);return}
   if(stLoaded&&!stLoading&&Date.now()-stAt>300000&&!/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||""))loadStudio(true);
   const w=WD[rType],exs=woEx(w),met=hasMet(w),key=rKey(),exist=!!MYR[key];
   const days=[[addDays(TODAY,1),"מחר"],[TODAY,"היום"],[addDays(TODAY,-1),"אתמול"],[addDays(TODAY,-2),fmt(addDays(TODAY,-2))]],dayL=(days.find(d=>d[0]===rDate)||[0,fmt(rDate)])[1];
@@ -1677,7 +1656,6 @@ function renderClass(){const v=$("v-class");
       <button type="button" class="chipb" id="rpPick">${pickOpen?"סגירה":"שינוי"}</button></div>
     ${w?`<p class="hint en">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של השיעור הזה עוד לא עלה לאפליקציה. אפשר לדווח בלי משקלים.</p>`}
     ${exist?`<p class="hint">כבר שלחת דיווח לשיעור הזה. שליחה נוספת תעדכן אותו.</p>`:""}
-    <button type="button" class="vlive" id="lvGo">▶ מצב שיעור חי · ממלאים תוך כדי האימון</button>
     ${pickOpen?`<div class="pick">
       <div class="chips">${days.map(([k,l])=>`<button type="button" data-rd="${k}" aria-pressed="${k===rDate}">${l}</button>`).join("")}</div>
       ${rrDay.length&&!pickAll?`<div class="clist">${rrDay.map(r=>{const on=r.time===rTime&&typeOf(r.cls)===typeOf(rType),me=coachName&&firstN(r.coach)===firstN(coachName);
@@ -1688,20 +1666,20 @@ function renderClass(){const v=$("v-class");
         ${rrDay.length?`<button type="button" class="linkb" id="rpAll">חזרה לשיעורים מארבוקס</button>`:""}`}</div>`:""}
   </div>
   <div class="card voice2">
-    ${SRC?`<button type="button" class="vbig${vcOn?" on":""}" id="vcRec">${vcOn?"⏹ סיימתי לדבר":"🎙 ספר מה היה בשיעור"}</button>`:""}
+    ${SRC?`<button type="button" class="vbig${vcOn?" on":""}" id="vcRec">${vcOn?"סיימתי לדבר":"הקלטה: ספר מה היה בשיעור"}</button>`:""}
     ${vcOn||vcText||vcOpen||!SRC?`<textarea id="vcTxt" rows="3" placeholder="למשל: ״דבי, כאב בכתף שמאל 4 מתוך 10 בלחיצה, ירדנו ללנדמיין. רון שיא בסקוואט 80 קילו…״">${esc(vcText)}</textarea>
       <button class="ghost" type="button" id="vcGo">מלא את הדיווח מזה</button>`:`<button type="button" class="linkb" id="vcType">או לכתוב חופשי</button>`}
     <p class="hint">מספרים רק על מי שהיה איתו משהו. Claude ממלא את הדיווח, אתה בודק ושולח.</p></div>
   <div class="sh"><h2>מי היה בשיעור</h2><span>${here.length}${abs?` מתוך ${DR.people.length}`:""}</span></div>
-  ${DR.people.length?`<p class="hint lead">כולם מסומנים ✓ בסדר. נוגעים רק במי שהיה איתו משהו: 🤕 כאב · 😓 קושי · 🏆 שיא · 🚩 דגל אדום. לחיצה על העיגול = לא הגיע.</p>`:`<p class="hint lead">${rrc?"אין רשומים לשיעור הזה בארבוקס.":"אין רשימה מארבוקס לשיעור הזה."} מוסיפים מתאמנים למטה.</p>`}
-  ${pr?`<div class="card prepc"><button type="button" class="prep-h" id="rpPrep"><b>⚠ לפני השיעור · מה לדעת</b><span class="chev">${prepOpen?"▲":"▼"}</span></button>${prepOpen?pr:""}</div>`:""}
+  ${DR.people.length?`<p class="hint lead">כולם מסומנים כ״בסדר״. מסמנים רק את מי שהיה איתו משהו, ובכל מתאמן ממלאים גרסה ומשקל לכל תרגיל. לחיצה על העיגול = לא הגיע.</p>`:`<p class="hint lead">${rrc?"אין רשומים לשיעור הזה בארבוקס.":"אין רשימה מארבוקס לשיעור הזה."} מוסיפים מתאמנים למטה.</p>`}
+  ${pr?`<div class="card prepc"><button type="button" class="prep-h" id="rpPrep"><b>לפני השיעור · מה לדעת</b><span class="chev">${prepOpen?"▲":"▼"}</span></button>${prepOpen?pr:""}</div>`:""}
   <div class="rplist">${DR.people.map((p,i)=>personCard(p,i,exs,met)).join("")}</div>
   <div class="addrow sm"><input type="text" id="rpAdd" list="rpNames" placeholder="+ הוספת מתאמן שלא ברשימה" autocomplete="off"><button class="ghost" type="button" id="rpAddB">הוספה</button></div>
   <datalist id="rpNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
   <div class="card notes">${notesOpen||DR.note||DR.tal?`<span class="lbl">איך היה השיעור (לא חובה)</span><textarea id="rpNote" rows="2" placeholder="אנרגיה, ציוד, מה עבד ומה לא">${esc(DR.note)}</textarea>
     <span class="lbl">משהו שטל צריך לדעת</span><textarea id="rpTal" rows="2" placeholder="נשלח לטל כהתראה לטלפון">${esc(DR.tal)}</textarea>`
     :`<button type="button" class="linkb" id="rpNotes">+ הערה על השיעור או הודעה לטל</button>`}</div>
-  <div class="card remc" id="remC" hidden><div><b>🔔 תזכורת לדווח</b><p class="hint" id="remCH">התראה לטלפון 10 דקות אחרי כל שיעור שלך, עם קישור ישר לדיווח.</p></div><button type="button" class="chipb" id="remCB">הפעלה</button></div>
+  <div class="card remc" id="remC" hidden><div><b>תזכורת לדווח</b><p class="hint" id="remCH">התראה לטלפון 10 דקות אחרי כל שיעור שלך, עם קישור ישר לדיווח.</p></div><button type="button" class="chipb" id="remCB">הפעלה</button></div>
   ${mine.length?`<div class="sh"><h2>הדיווחים שלי</h2></div><div class="flags">${mine.map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;
     return `<button class="flag" type="button" data-myr="${esc(k)}" style="--c:${red?"var(--bad)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · 🚩 ${red}`:""}</div></div></button>`}).join("")}</div>`:""}
   <div class="sendbar"><div class="sb-t"><b>${here.length} הגיעו${sum.length?"":" · כולם בסדר"}</b>${sum.length?`<small>${sum.join(" · ")}</small>`:""}</div>
@@ -1714,8 +1692,7 @@ async function wireCoachRemind(){const c=$("remC"),b=$("remCB"),h=$("remCH");if(
   if(s==="denied"){h.textContent="ההתראות חסומות. פותחים אותן בהגדרות הטלפון ← התראות ← פלייגראונד.";b.hidden=true}
   b.onclick=async()=>{b.disabled=true;try{const v=await pgPush.enable();if(v==="on"){toast("התזכורות הופעלו ✓");c.hidden=true}else wireCoachRemind()}catch(e){toast("לא הצלחנו להפעיל")}finally{b.disabled=false}}}
 
-/* ---------- live class mode (tablet during class) ---------- */
-let live=false,lvEx=null,lvNote=null,lvTick=null,wakeL=null;
+/* ---------- auto-pick the class ---------- */
 const toMin=t=>{const m=String(t||"").match(/(\d\d):(\d\d)/);return m?+m[1]*60+ +m[2]:0};
 const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
 function autoPick(ws){const mineF=a=>{const m=a.filter(r=>coachName&&firstN(r.coach)===firstN(coachName));return m.length?m:a};
@@ -1729,46 +1706,6 @@ function autoPick(ws){const mineF=a=>{const m=a.filter(r=>coachName&&firstN(r.co
   const next=today.find(r=>toMin(r.time)>n);if(next)return set(next);
   const tm=day(addDays(TODAY,1));if(tm.length)return set(tm[0]);
   if(today.length)return set(today[today.length-1]);return false}
-async function wakeOn(){try{if("wakeLock" in navigator&&!wakeL){wakeL=await navigator.wakeLock.request("screen");wakeL.addEventListener("release",()=>{wakeL=null})}}catch(e){}}
-function wakeOff(){try{if(wakeL)wakeL.release()}catch(e){}wakeL=null}
-document.addEventListener("visibilitychange",()=>{if(live&&document.visibilityState==="visible")wakeOn()});
-function setLive(on){live=on;document.body.classList.toggle("liveOn",on);clearInterval(lvTick);lvTick=null;lvNote=null;
-  if(on){wakeOn();lvTick=setInterval(()=>{const c=$("lvClk");if(c&&tab==="class")c.innerHTML=clockHTML()},20000)}else wakeOff();render();window.scrollTo(0,0)}
-function clockHTML(){if(rDate!==TODAY)return `<b>${esc(rDate===addDays(TODAY,1)?"מחר":fmt(rDate))}</b><small>${esc(rTime||"")}</small>`;
-  const el=nowMin()-toMin(rTime),b=BRF[`${rDate}-${slug(typeOf(rType))}`],tl=(b&&b.tl)||[],ph=tl.find(([,,s,e])=>el>=s&&el<e);
-  if(el<0)return `<b>עוד ${-el} ד׳</b><small>מתחילים ב-${esc(rTime)}</small>`;
-  if(el>=75)return `<b>הסתיים</b><small>${esc(rTime)}</small>`;
-  return `<b>דקה ${el}</b><small>${ph?esc(ph[1]):"מתוך 60"}</small>`}
-function renderLive(v){const w=WD[rType],exs=woEx(w),mx=mainEx(w),list=[...mx,...exs.filter(x=>!mx.includes(x))];
-  if(lvEx!=="-"&&(!lvEx||!list.includes(lvEx)))lvEx=list[0]||"-";
-  const here=DR.people.filter(p=>!p.absent),rrc=RR[`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`];
-  const names=Object.entries(RO).filter(([id])=>!DR.people.some(p=>p.id===id)).map(([,r])=>r.name).sort((a,b)=>a.localeCompare(b,"he"));
-  v.innerHTML=`<div class="lv">
-  <div class="lv-top"><div class="lv-t"><b>${esc(typeOf(rType))} · ${esc(rTime||"")}</b><small>${here.length} בשיעור${rrc&&rrc.coach?" · "+esc(rrc.coach):""}${w?` · <span class="en">${esc(w.title||"")}</span>`:""}</small></div>
-    <div class="lv-clk" id="lvClk">${clockHTML()}</div>
-    <button type="button" class="cta" id="lvEnd">סיום ודיווח</button></div>
-  <div class="lv-body">
-    ${w?`<aside class="lv-wo">${(w.blocks||[]).map(b=>`<div class="lv-blk"><b>${esc(b.name||"")}</b>${b.format?`<small>${esc(b.format)}</small>`:""}
-      ${(b.items||[]).map(it=>{const n=exClean(it.n),can=list.includes(n);return `<button type="button" class="lv-it${can&&n===lvEx?" on":""}"${can?` data-lvx="${esc(n)}"`:" disabled"}>${esc(it.n)}</button>`}).join("")}</div>`).join("")}</aside>`:""}
-    <section class="lv-main">
-      <div class="lv-exs"><span class="lbl">ממלאים עכשיו</span><div class="chips">${list.map(x=>`<button type="button" data-lvx="${esc(x)}" aria-pressed="${x===lvEx}" class="en">${esc(x.length>30?x.slice(0,30)+"…":x)}</button>`).join("")}<button type="button" data-lvx="-" aria-pressed="${lvEx==="-"}">רק תגיות</button></div></div>
-      <div class="lv-grid">${DR.people.map((p,i)=>liveCard(p,i)).join("")}
-        <div class="lv-add"><input type="text" id="rpAdd" list="rpNames" placeholder="+ מתאמן שלא ברשימה" autocomplete="off"><button class="ghost" type="button" id="rpAddB">הוספה</button></div></div>
-      <datalist id="rpNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist>
-      <p class="hint">הכל נשמר במכשיר תוך כדי. 🤕 כאב · 😓 קושי · 🏆 שיא · 🚩 דגל · לחיצה על העיגול = לא הגיע. את פרטי הכאב וההערות משלימים ב״סיום ודיווח״.</p>
-    </section></div></div>`;
-  const inp=$("rpAdd");inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addPerson(inp.value)}};$("rpAddB").onclick=()=>addPerson(inp.value)}
-function liveCard(p,i){const r=RO[p.id]||{},tags=p.tags||[],x=lvEx&&lvEx!=="-"?lvEx:null,L=x?((p.lx||{})[x]||{}):{},sg=x?sugg(r,x):null;
-  const avc=p.absent?" x":tags.length?" t":" ok",avt=p.absent?"✕":tags.length?esc(ini(p.name)):"✓";
-  return `<div class="lv-c${p.absent?" abs":""}">
-    <div class="lv-ch"><button type="button" class="av${avc}" data-ab="${i}" aria-label="${p.absent?"סימון שהגיע":"סימון שלא הגיע"}">${avt}</button>
-      <div class="lv-n"><b>${esc(p.name)}</b>${r.inj&&!p.absent?`<small>⚠ ${esc(r.inj)}</small>`:""}${p.absent?`<small>לא הגיע</small>`:""}</div>
-      ${p.absent?"":`<button type="button" class="lv-nb${(p.note||"").trim()?" on":""}" data-lvn="${i}" aria-label="הערה">📝</button>`}</div>
-    ${p.absent?"":`<div class="qt">${QT.map(([k,e,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" data-live="1" aria-pressed="${tags.includes(k)}" aria-label="${l}" title="${l}" style="--c:${c}">${e}</button>`).join("")}</div>
-    ${lvNote===i?`<textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה קצרה"}">${esc(p.note||"")}</textarea>`:""}
-    ${x?`<div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="${sg&&sg.kg?esc(sg.kg):"ק״ג"}"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
-      ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">✓ ${esc(sg.kg)} כמו בפעם הקודמת</button>`:sg?`<small class="lv-sg">${esc(sg.t)}</small>`:""}`:""}`}
-  </div>`}
 /* ---------- pro report helpers ---------- */
 const AREAS=["צוואר","כתף","מרפק","שורש כף יד","גב עליון","גב תחתון","אגן / ירך","ברך","קרסול / כף רגל","אחר"];
 const strip=h=>String(h||"").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").trim();
@@ -1783,47 +1720,50 @@ function sugg(r,ex){const L=(r.lx||{})[ex];if(!L){const k=(r.last||{})[ex];retur
   const step=kg>=20?2.5:1,n=L.rpe<=7?kg+step:L.rpe>=10?Math.max(0,kg-step):kg;
   return {t:base+` · הצעה: ${n}`,kg:String(n)}}
 function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
-  if(r.inj)bits.push(`<span style="--c:var(--warn)">⚠ ${esc(r.inj)}</span>`);
-  if(r.flag&&r.flag.st==="open")bits.push(`<span style="--c:var(--bad)">🚩 מעקב: ${esc(r.flag.text||"דגל פתוח")}</span>`);
+  if(r.inj)bits.push(`<span style="--c:var(--warn)">${esc(r.inj)}</span>`);
+  if(r.flag&&r.flag.st==="open")bits.push(`<span style="--c:var(--bad)">מעקב: ${esc(r.flag.text||"דגל פתוח")}</span>`);
   if(r.lastPain&&r.lastPain.d>=addDays(rDate,-21))bits.push(`<span style="--c:var(--bad)">כאב ${esc(r.lastPain.d===TODAY?"היום":fmt(r.lastPain.d))}: ${esc([r.lastPain.area,r.lastPain.lvl?r.lastPain.lvl+"/10":""].filter(Boolean).join(" "))}</span>`);
   const lx=Object.entries(r.lx||{}).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||""))[0];if(lx)bits.push(`<span style="--c:var(--mes)">${esc(lx[0].slice(0,22))}: ${esc(lx[1].kg||"")}${lx[1].ver?" · "+esc(lx[1].ver):""}</span>`);
   return bits.length?`<div class="prep"><b>${esc(p.name)}</b><div class="mini">${bits.join("")}</div></div>`:""}).join("")}
-const QT=[["pain","🤕","כאב / פציעה","var(--bad)"],["hard","😓","קושי","var(--warn)"],["pr","🏆","שיא","var(--ok)"],["red","🚩","דגל אדום","var(--bad)"]];
-function mainEx(w){const out=[];if(!w||!w.blocks)return out;
-  w.blocks.forEach(b=>{if(!/strength|main|כוח|מיין/i.test(b.name||"")||/metcon|מטקון/i.test(b.name||""))return;
-    (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!out.includes(n))out.push(n)})});return out}
-function liftRow(p,i,x,r){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
+const QT=[["pain","כאב","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
+const WIDE=()=>matchMedia("(min-width:820px)").matches;
+function exBlocks(w){const out=[];if(!w||!w.blocks)return out;
+  w.blocks.forEach(b=>{const nm=b.name||"";if(/מוביליטי|mobility|warm|חימום/i.test(nm))return;const items=[];
+    (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!items.includes(n))items.push(n)});
+    if(items.length)out.push({name:nm.split("·").pop().trim()||nm,items,str:/strength|main|כוח|מיין/i.test(nm)&&!/metcon|מטקון/i.test(nm)})});return out}
+const allEx=w=>{const a=[];exBlocks(w).forEach(b=>b.items.forEach(x=>{if(!a.includes(x))a.push(x)}));return a};
+function liftRow(p,i,x,r,str){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
   return `<div class="lift-r"><label>${esc(x)}</label>
-    ${vs.length?`<div class="chips sm">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
-    <div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="ק״ג"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
-    ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">✓ ${esc(sg.kg)} ק״ג כמו שהוצע</button>`:""}
-    <div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>
+    ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
+    <div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="${sg&&sg.kg?esc(sg.kg):"ק״ג"}"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
+    ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג כמו שהוצע</button>`:""}
+    ${str?`<div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>`:""}
     ${sg?`<div class="hint">${esc(sg.t)}</div>`:""}</div>`}
-function personCard(p,i,exs,met){const r=RO[p.id]||{},op=openP===p.id&&!p.absent,pn=p.pn||{},lx=p.lx||{},tags=p.tags||[];
-  const flagOpen=r.flag&&r.flag.st==="open",nl=Object.values(lx).filter(x=>x&&x.kg).length;
-  const mx=op?mainEx(WD[rType]):[],rest=op?exs.filter(x=>!mx.includes(x)):[],shown=mx.length?mx:exs,others=mx.length?rest:[],mis=op?mistakesFor(exs):[];
+function personCard(p,i,exs,met){const r=RO[p.id]||{},wide=WIDE(),op=(wide||openP===p.id)&&!p.absent,pn=p.pn||{},lx=p.lx||{},tags=p.tags||[];
+  const flagOpen=r.flag&&r.flag.st==="open",nv=Object.values(lx).filter(x=>x&&(x.kg||x.ver)).length;
+  const bl=op?exBlocks(WD[rType]):[],ex2=op?allEx(WD[rType]):[],mis=op?mistakesFor(exs):[];
   const avc=p.absent?" x":tags.length?" t":" ok",avt=p.absent?"✕":tags.length?esc(ini(p.name)):"✓";
   return `<div class="rp-p${op?" open":""}${p.absent?" abs":""}">
   <div class="rp-h"><button type="button" class="av${avc}" data-ab="${i}" aria-label="${p.absent?"סימון שהגיע":"סימון שלא הגיע"}">${avt}</button>
     <button type="button" class="nm" data-pp="${esc(p.id)}"><b>${esc(p.name)}</b>
-      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">⚠ ${esc(r.inj)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">🚩 מעקב פתוח${p.fu?" · נבדק ✓":""}</div>`:""}
-      <div class="mini">${tags.length?tagPills(tags):`<span style="--c:var(--ok)">✓ בסדר</span>`}${nl?`<span style="--c:var(--mes)">${nl} משקלים</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}${(p.note||"").trim()?`<span style="--c:var(--muted)">הערה</span>`:""}</div>`}</button>
-    ${p.absent?"":`<div class="qt">${QT.map(([k,e,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" aria-pressed="${tags.includes(k)}" aria-label="${l}" title="${l}" style="--c:${c}">${e}</button>`).join("")}</div>`}</div>
+      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">${esc(r.inj)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">מעקב פתוח מדגל קודם${p.fu?" · נבדק":""}</div>`:""}
+      <div class="mini">${tags.length?"":`<span style="--c:var(--ok)">בסדר</span>`}${nv?`<span style="--c:var(--mes)">${nv} תרגילים מולאו</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}${(p.note||"").trim()?`<span style="--c:var(--muted)">הערה</span>`:""}</div>`}</button>
+    ${wide||p.absent?"":`<span class="chev">${op?"▲":"▼"}</span>`}</div>
+  ${p.absent?"":`<div class="qt">${QT.map(([k,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" aria-pressed="${tags.includes(k)}" style="--c:${c}">${l}</button>`).join("")}</div>`}
   ${op?`<div class="rp-b">
-    ${flagOpen?`<div class="fu"><div><b>מעקב מדגל קודם</b> · ${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")}<div class="hint">${esc(r.flag.text||"")}</div></div><button type="button" class="chipb${p.fu?" on":""}" data-fu="${i}">${p.fu?"✓ בדקתי":"שאלתי איך מרגיש"}</button></div>`:""}
-    ${tags.includes("pain")?`<div class="painbox"><b class="bx">🤕 כאב</b><span class="lbl">איפה</span><div class="chips sm">${AREAS.map(a=>`<button type="button" data-pa="${esc(a)}" data-i="${i}" aria-pressed="${pn.area===a}">${a}</button>`).join("")}</div>
+    ${flagOpen?`<div class="fu"><div><b>מעקב מדגל קודם</b> · ${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")}<div class="hint">${esc(r.flag.text||"")}</div></div><button type="button" class="chipb${p.fu?" on":""}" data-fu="${i}">${p.fu?"בדקתי":"שאלתי איך מרגיש"}</button></div>`:""}
+    ${tags.includes("pain")?`<div class="painbox"><b class="bx">כאב</b><span class="lbl">איפה</span><div class="chips sm">${AREAS.map(a=>`<button type="button" data-pa="${esc(a)}" data-i="${i}" aria-pressed="${pn.area===a}">${a}</button>`).join("")}</div>
       <div class="chips sm">${["ימין","שמאל","שני הצדדים"].map(s=>`<button type="button" data-ps="${s}" data-i="${i}" aria-pressed="${pn.side===s}">${s}</button>`).join("")}</div>
       <span class="lbl">כמה חזק (1–10)</span><div class="chips sm lvl">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-pl="${n}" data-i="${i}" aria-pressed="${pn.lvl===n}" style="--c:${n>=7?"var(--bad)":n>=4?"var(--warn)":"var(--ok)"}">${n}</button>`).join("")}</div>
-      ${exs.length?`<span class="lbl">באיזה תרגיל</span><div class="chips sm">${exs.map(x=>`<button type="button" data-px="${esc(x)}" data-i="${i}" aria-pressed="${pn.ex===x}" class="en">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>`:""}
+      ${ex2.length?`<span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-px="${esc(x)}" data-i="${i}" aria-pressed="${pn.ex===x}" class="en">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>`:""}
       <input type="text" data-pm="${i}" value="${esc(pn.mod||"")}" placeholder="מה שינית? למשל: ירדנו ל-Goblet, טווח חלקי"></div>`:""}
-    ${tags.includes("pr")&&exs.length?`<div class="painbox prb"><b class="bx">🏆 שיא</b><span class="lbl">באיזה תרגיל</span><div class="chips sm">${exs.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>${p.prx&&!shown.includes(p.prx)?liftRow(p,i,p.prx,r):""}</div>`:""}
-    ${shown.length?`<span class="lbl">משקלי עבודה</span>${shown.map(x=>liftRow(p,i,x,r)).join("")}
-      ${others.length?(p.more?others.filter(x=>x!==p.prx).map(x=>liftRow(p,i,x,r)).join("")+`<button type="button" class="linkb" data-more="${i}">פחות תרגילים</button>`:`<button type="button" class="linkb" data-more="${i}">+ עוד ${others.length} תרגילים</button>`):""}`:""}
+    ${tags.includes("pr")&&ex2.length?`<div class="painbox prb"><b class="bx">שיא</b><span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div></div>`:""}
+    ${bl.map(b=>`<span class="lbl blk">${esc(b.name)}</span>${b.items.map(x=>liftRow(p,i,x,r,b.str)).join("")}`).join("")}
     ${mis.length?`<span class="lbl">מה תיקנת (מהבריף)</span><div class="chips sm">${mis.map(m=>`<button type="button" data-er="${esc(m)}" data-i="${i}" aria-pressed="${(p.err||[]).includes(m)}">${esc(m)}</button>`).join("")}</div>`:""}
     ${met?`<div class="kg"><label>תוצאה במטקון</label><input type="text" data-f="score" data-i="${i}" value="${esc(p.score||"")}" placeholder="זמן / סבבים"></div>`:""}
     <textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
     <input type="text" data-f="inj" data-i="${i}" value="${esc(p.inj!=null?p.inj:(r.inj||""))}" placeholder="פציעות / רגישויות קבועות (נשמר בכרטיס שלו)">
-    <div class="rp-f"><button class="ghost" type="button" data-pp="${esc(p.id)}">סגירה</button><button class="ghost" type="button" data-rm="${i}">הסרה מהשיעור</button></div>
+    <div class="rp-f">${wide?"":`<button class="ghost" type="button" data-pp="${esc(p.id)}">סגירה</button>`}<button class="ghost" type="button" data-rm="${i}">הסרה מהשיעור</button></div>
   </div>`:""}</div>`}
 
 function addPerson(raw){const n=String(raw||"").trim();if(!n)return;
@@ -1879,10 +1819,6 @@ async function vcParse(exs){const txt=(vcText||"").trim();if(!txt){toast("אין
 $("v-class").addEventListener("click",ev=>{const t=ev.target;
   const fresh=()=>{if(Date.now()-stAt>20000)loadStudio(true)};
   if(t.closest("#rpPick")){pickOpen=!pickOpen;render();return}
-  if(t.closest("#lvGo")){setLive(true);return}
-  if(t.closest("#lvEnd")){setLive(false);return}
-  const lx=t.closest("[data-lvx]");if(lx){lvEx=lx.dataset.lvx;render();return}
-  const ln=t.closest("[data-lvn]");if(ln){const k=+ln.dataset.lvn;lvNote=lvNote===k?null:k;render();if(lvNote!=null)setTimeout(()=>{const x=document.querySelector(`.lv-c textarea[data-i="${k}"]`);if(x)x.focus()},30);return}
   if(t.closest("#rpAll")){pickAll=!pickAll;render();return}
   const rc=t.closest("[data-rc]");if(rc){const [tm,ct]=rc.dataset.rc.split("|");rTime=tm;rType=Object.keys(WD).find(id=>WD[id].date===rDate&&typeOf(id)===ct)||("x-"+slug(ct));pickOpen=false;pickAll=false;render();draftSave();fresh();window.scrollTo(0,0);return}
   if(t.closest("#vcType")){vcOpen=true;render();setTimeout(()=>{const x=$("vcTxt");if(x)x.focus()},30);return}
@@ -1900,12 +1836,12 @@ $("v-class").addEventListener("click",ev=>{const t=ev.target;
     if(at.length&&!at.some(r=>typeOf(r.cls)===typeOf(rType))){const ty2=typeOf(at[0].cls);rType=Object.keys(WD).find(id=>WD[id].date===rDate&&typeOf(id)===ty2)||("x-"+slug(ty2))}
     render();draftSave();fresh();return}
   const pp=t.closest("[data-pp]");if(pp){openP=openP===pp.dataset.pp?null:pp.dataset.pp;render();return}
-  const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags||[];const on=!p.tags.includes(k);p.tags=on?[...p.tags,k]:p.tags.filter(x=>x!==k);if(on&&k!=="hard"&&!tg.dataset.live)openP=p.id;draftSave();render();return}
+  const tg=t.closest("[data-tag]");if(tg){const p=DR.people[+tg.dataset.i],k=tg.dataset.tag;p.tags=p.tags||[];const on=!p.tags.includes(k);p.tags=on?[...p.tags,k]:p.tags.filter(x=>x!==k);if(on&&k!=="hard")openP=p.id;draftSave();render();return}
   const rm=t.closest("[data-rm]");if(rm){DR.people.splice(+rm.dataset.rm,1);openP=null;draftSave();render();return}
   const my=t.closest("[data-myr]");if(my){loadMine(my.dataset.myr);return}
   if(t.closest("#rpSend")){sendReport();return}
   if(t.closest("#vcRec")){vcToggle();return}
-  if(t.closest("#vcGo")){vcParse(woEx(WD[rType]));return}
+  if(t.closest("#vcGo")){vcParse(allEx(WD[rType]));return}
   const fu=t.closest("[data-fu]");if(fu){const p=DR.people[+fu.dataset.fu];p.fu=!p.fu;draftSave();render();return}
   const pl=t.closest("[data-pl]");if(pl){const p=DR.people[+pl.dataset.i];p.pn={...(p.pn||{}),lvl:+pl.dataset.pl};draftSave();render();return}
   const pa=t.closest("[data-pa]");if(pa){const p=DR.people[+pa.dataset.i];p.pn={...(p.pn||{}),area:pa.dataset.pa};draftSave();render();return}
