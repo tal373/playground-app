@@ -977,7 +977,7 @@ let dirty=false;
 const typing=()=>{const a=document.activeElement;return a&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="file"))&&!$("sheet").contains(a)&&!$("player").contains(a)};
 const isPaused=()=>!!(prof&&prof.paused)&&(!isOwner||!!preview);
 function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const pz=isPaused(),C=["today","workout","menu","measure"];
-  C.forEach(t=>{const b=NB(t);if(b)b.hidden=pz});const sb=NB("smy");if(sb)sb.hidden=!(pz||(MEM&&MEMS==="in"&&!preview));
+  C.forEach(t=>{const b=NB(t);if(b)b.hidden=pz});const sb=NB("smy");if(sb)sb.hidden=!(pz||(MEM&&MEMS==="in"));
   if(pz&&C.includes(tab)){tab="smy";C.forEach(v=>$("v-"+v).hidden=true);$("v-smy").hidden=false;document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab==="smy"?"page":"false"))}}
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(memPv){renderStudioMe();return}
@@ -1038,7 +1038,8 @@ function studioBody(full){
 function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
   if(!memPv&&(!profSeen||MEMst<2)){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
   v.innerHTML=studioBody(true)}
-function renderSmy(){const v=$("v-smy");if(preview){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>${isPaused()?"הליווי מוקפא":"הסטודיו של המתאמן"}</h1><p>${isPaused()?"המתאמן רואה רק את לשונית הסטודיו. את התוכן שלה אפשר לראות בשיקוף מרשימת הלקוחות.":"את לשונית הסטודיו אפשר לראות בשיקוף מרשימת הלקוחות."}</p></div>`;return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
+function renderSmy(){const v=$("v-smy");if(preview){if(!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>${isPaused()?"הליווי מוקפא":"לא מנוי בסטודיו"}</h1><p>${pvStLoading?"טוען…":isPaused()?"המתאמן לא מנוי פעיל בסטודיו, אז כרגע אין לו מה לראות באפליקציה.":"המתאמן לא מסומן ״כן״ ברשימת הלקוחות, או שאין לו מנוי פעיל בארבוקס."}</p></div>`;return}
+    v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false);return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
   if(isPaused()&&!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>הליווי מוקפא כרגע</h1><p>כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.</p></div>`;return}
   v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false)}
 $("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[data-want]");if(!b||prof)return;if(memPv){toast("מצב שיקוף · לא נשלח");return}const k=b.dataset.want,u=UPS.find(x=>x[0]===k);if(!u||LEADM[k])return;
@@ -1083,7 +1084,9 @@ $("v-clients").addEventListener("click",async ev=>{const co=ev.target.closest("[
   const cp=ev.target.closest("[data-ccp]");if(cp){cp.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b===cp?"true":"false"));return}
   if(ev.target.closest("[data-ccx]")){clOpen=null;render();return}const cs=ev.target.closest("[data-ccs]");if(cs){cs.disabled=true;await clSave(cs.dataset.ccs);cs.disabled=false;return}
   const pv=ev.target.closest("[data-clpv]");if(pv){const c=CL[pv.dataset.clpv]||{};if(!coachAt){toast("טוען…");await loadCoach()}
-    const pu=Object.keys(C).find(u=>C[u]&&C[u].prof&&lowN(C[u].t&&C[u].t.email)===lowN(c.email));if(pu){pvFrom="clients";enterPreview(pu);return}enterMemberView(pv.dataset.clpv);return}const f=ev.target.closest("[data-clf]");if(f){clF=f.dataset.clf;render();return}
+    let pu=Object.keys(C).find(u=>C[u]&&C[u].prof&&lowN(C[u].t&&C[u].t.email)===lowN(c.email));
+    if(!pu&&window.pgMember){const v=await pgMember.view(pv.dataset.clpv);if(v&&v.uid&&C[v.uid]&&C[v.uid].prof)pu=v.uid}
+    if(pu){pvFrom="clients";enterPreview(pu);return}enterMemberView(pv.dataset.clpv);return}const f=ev.target.closest("[data-clf]");if(f){clF=f.dataset.clf;render();return}
   const b=ev.target.closest("[data-cli]");if(!b)return;const id=b.dataset.cli,c=CL&&CL[id];if(!c)return;
   const nv=b.dataset.v==="1",val=c.inc===nv?null:nv,old=c.inc;c.inc=val;render();
   try{await db.doc(`cl/${id}`).update({inc:val,dec:TODAY})}catch(e){c.inc=old;render();toast("לא נשמר")}});
@@ -2329,12 +2332,19 @@ $("v-prog").addEventListener("click",ev=>{const d=ev.target.closest("[data-pgsd]
 /* ===== owner preview ===== */
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
-async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;
+let pvMemSave=null,pvStLoading=false;
+async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS};MEM=null;MEMS="none";pvStLoading=true;
+  try{if(!CL){const s2=await db.collection("cl").get();CL={};s2.docs.forEach(d=>CL[d.id]=d.data())}
+    const em=lowN(c&&c.t&&c.t.email);let aid=Object.keys(CL).find(k=>em&&lowN(CL[k].email)===em);
+    if(!aid){const mm=await db.doc(`m/${id}`).get();if(mm.exists)aid=String((mm.data()||{}).aid||"")}
+    if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
+  pvStLoading=false;if(preview===id){applyPause();if(!typing())render()}}
+async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;pvStudio(id);
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
