@@ -731,6 +731,9 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .bf-ver ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}.bf-ver li b{direction:ltr;unicode-bidi:isolate;color:var(--ink)}.bf-ver li span{color:#c9d4e4}
 .sets-h{gap:8px}.sets-h>span{flex:1}.sadj{display:flex;gap:4px;flex:none}.sadj button{border:1px solid var(--line);background:var(--s1);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12.5px;min-width:30px}.sadj button:disabled{opacity:.35}
 .cl-b button.cl-pv{min-width:0;font-size:12.5px;font-weight:700;color:var(--muted);padding:9px 10px}
+button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}
+.cl-card{display:flex;flex-direction:column;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:-2px 0 6px}.cl-card label{font-size:13px;font-weight:700}.cl-card label small{font-weight:500;color:var(--muted);margin-inline-start:6px}
+.cl-card input,.cl-card textarea{padding:9px 10px;font-size:14px}.cl-card .cta{flex:none;padding:10px 18px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -1057,7 +1060,7 @@ let CL=null,clF="pending",clQ="",clAt=0;
 const CLW=/[?&]cl=1\b/.test(location.search);
 async function loadClients(){clAt=Date.now();try{const s=await db.collection("cl").get();CL={};s.docs.forEach(d=>CL[d.id]=d.data())}catch(e){CL=CL||{}}if(tab==="clients"&&!typing())render()}
 function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach");return}
-  if(!CL){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadClients();return}
+  if(!CL||!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;if(!CL)loadClients();if(!stLoaded)Promise.resolve(loadStudio()).then(()=>{if(tab==="clients")render()});return}
   if(Date.now()-clAt>120000)loadClients();
   const all=Object.entries(CL).filter(([,c])=>c.active!==false),st=c=>c.inc===true?"in":c.inc===false?"out":"pending";
   const cnt={pending:0,in:0,out:0};all.forEach(([,c])=>cnt[st(c)]++);
@@ -1071,16 +1074,34 @@ function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach"
   <div class="addrow sm"><input type="text" id="clQ" value="${esc(clQ)}" placeholder="חיפוש שם או מנוי" autocomplete="off"></div>
   ${clF==="pending"&&list.length>1?`<button type="button" class="linkb" id="clAllIn">סימון כל ${list.length} הממתינים שברשימה כ״כן״</button>`:""}
   <div class="cl-l">${list.length?list.map(([id,c])=>{const s=st(c);return `<div class="cl-r${s==="out"?" out":""}">
-    <div class="cl-n"><b>${esc(c.name||"")}</b>${isNew(c)?`<span class="cl-new">חדש</span>`:""}${c.app?`<span class="cl-app">באפליקציה</span>`:""}<small>${esc(c.plan||"")}${c.end?` · עד ${esc(fmt(c.end))}`:""}</small></div>
-    <div class="cl-b"><button type="button" class="cl-pv" data-clpv="${esc(id)}" aria-label="שיקוף">שיקוף</button><button type="button" data-cli="${esc(id)}" data-v="1" aria-pressed="${s==="in"}">כן</button><button type="button" data-cli="${esc(id)}" data-v="0" aria-pressed="${s==="out"}">לא</button></div></div>`}).join(""):`<div class="card"><div class="empty">${clF==="pending"?"אין ממתינים. הכל מסומן.":"אין לקוחות כאן"}</div></div>`}</div>`;
+    <button type="button" class="cl-n" data-clo="${esc(id)}"><b>${esc(c.name||"")}</b>${(()=>{const sd=RO[sidOf(id,c)]||{};return [sd.inj?`<span class="cl-tag w">פציעה</span>`:"",sd.preg?`<span class="cl-tag w">הריון</span>`:"",sd.cnote||sd.tnote?`<span class="cl-tag">הערה</span>`:""].join("")})()}${isNew(c)?`<span class="cl-new">חדש</span>`:""}${c.app?`<span class="cl-app">באפליקציה</span>`:""}<small>${esc(c.plan||"")}${c.end?` · עד ${esc(fmt(c.end))}`:""}</small></button>
+    <div class="cl-b"><button type="button" class="cl-pv" data-clpv="${esc(id)}" aria-label="שיקוף">שיקוף</button><button type="button" data-cli="${esc(id)}" data-v="1" aria-pressed="${s==="in"}">כן</button><button type="button" data-cli="${esc(id)}" data-v="0" aria-pressed="${s==="out"}">לא</button></div></div>${clOpen===id?clCard(id,c):""}`}).join(""):`<div class="card"><div class="empty">${clF==="pending"?"אין ממתינים. הכל מסומן.":"אין לקוחות כאן"}</div></div>`}</div>`;
   const qi=$("clQ");qi.oninput=()=>{clQ=qi.value;const p=qi.selectionStart;dirty=false;renderClients();const n=$("clQ");n.focus();try{n.setSelectionRange(p,p)}catch(e){}};
   const ab=$("clAllIn");if(ab)ab.onclick=async()=>{ab.disabled=true;const ids=list.map(([id])=>id);let bad=0;
     for(const id of ids){CL[id].inc=true;try{await db.doc(`cl/${id}`).update({inc:true,dec:TODAY})}catch(e){CL[id].inc=null;bad++}}render();toast(bad?`${bad} לא נשמרו`:`${ids.length} סומנו ✓`)}}
-$("v-clients").addEventListener("click",async ev=>{const pv=ev.target.closest("[data-clpv]");if(pv){enterMemberView(pv.dataset.clpv);return}const f=ev.target.closest("[data-clf]");if(f){clF=f.dataset.clf;render();return}
+$("v-clients").addEventListener("click",async ev=>{const co=ev.target.closest("[data-clo]");if(co){clOpen=clOpen===co.dataset.clo?null:co.dataset.clo;render();return}
+  const cp=ev.target.closest("[data-ccp]");if(cp){cp.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b===cp?"true":"false"));return}
+  if(ev.target.closest("[data-ccx]")){clOpen=null;render();return}const cs=ev.target.closest("[data-ccs]");if(cs){cs.disabled=true;await clSave(cs.dataset.ccs);cs.disabled=false;return}
+  const pv=ev.target.closest("[data-clpv]");if(pv){const c=CL[pv.dataset.clpv]||{};if(!coachAt){toast("טוען…");await loadCoach()}
+    const pu=Object.keys(C).find(u=>C[u]&&C[u].prof&&lowN(C[u].t&&C[u].t.email)===lowN(c.email));if(pu){pvFrom="clients";enterPreview(pu);return}enterMemberView(pv.dataset.clpv);return}const f=ev.target.closest("[data-clf]");if(f){clF=f.dataset.clf;render();return}
   const b=ev.target.closest("[data-cli]");if(!b)return;const id=b.dataset.cli,c=CL&&CL[id];if(!c)return;
   const nv=b.dataset.v==="1",val=c.inc===nv?null:nv,old=c.inc;c.inc=val;render();
   try{await db.doc(`cl/${id}`).update({inc:val,dec:TODAY})}catch(e){c.inc=old;render();toast("לא נשמר")}});
 
+/* client card: data Tal adds per person (coaches see injuries, pregnancy and coach note) */
+let clOpen=null,pvFrom=null;
+const sidOf=(aid,c)=>{const a=String(aid);const hit=Object.entries(RO).find(([,r])=>String(r.aid||"")===a)||Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(c&&c.name));return hit?hit[0]:null};
+function clCard(id,c){const sid=sidOf(id,c),r=(sid&&RO[sid])||{};
+  return `<div class="cl-card">
+    <label>פציעות ורגישויות <small>המאמנים רואים ליד השם בשיעור</small></label><input type="text" id="ccInj" value="${esc(r.inj||"")}" placeholder="למשל: כתף ימין רגישה, להימנע מלחיצה מעל הראש">
+    <label>הריון</label><div class="chips sm">${[["","לא"],["1","שליש ראשון"],["2","שליש שני"],["3","שליש שלישי"],["pp","אחרי לידה"]].map(([k,l])=>`<button type="button" data-ccp="${k}" aria-pressed="${(r.preg||"")===k}">${l}</button>`).join("")}</div>
+    <label>הערה למאמנים <small>מופיעה בשיעור</small></label><input type="text" id="ccCn" value="${esc(r.cnote||"")}" placeholder="למשל: מתחיל, לעבוד על טכניקה לפני משקל">
+    <label>הערה פרטית <small>רק אתה רואה</small></label><textarea id="ccTn" rows="2" placeholder="כל מה שחשוב לך לזכור">${esc(r.tnote||"")}</textarea>
+    <div class="rp-f"><button class="ghost" type="button" data-ccx="1">סגירה</button><button class="cta" type="button" data-ccs="${esc(id)}">שמירה</button></div></div>`}
+async function clSave(id){const c=CL[id];if(!c)return;let sid=sidOf(id,c);const cur=(sid&&RO[sid])||{name:c.name,aid:c.aid,src:"app",added:TODAY};
+  const preg=(document.querySelector(".cl-card [data-ccp][aria-pressed=true]")||{dataset:{ccp:""}}).dataset.ccp;
+  const up={...cur,aid:cur.aid||c.aid,inj:$("ccInj").value.trim(),cnote:$("ccCn").value.trim(),tnote:$("ccTn").value.trim(),preg};if(!up.preg)delete up.preg;
+  if(!sid)sid="a"+c.aid;try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;clOpen=null;toast("נשמר ✓");render()}catch(e){toast("לא נשמר")}}
 /* ===== my business (owner only, hidden) ===== */
 let BZ=null,bzAdd=false;
 async function loadBiz(){try{const s=await db.collection("x/rem").get();BZ={};s.docs.forEach(d=>BZ[d.id]=d.data())}catch(e){BZ={}}if(tab==="biz")render()}
@@ -1898,10 +1919,12 @@ function sugg(r,ex){const L=(r.lx||{})[ex];if(!L){const k=(r.last||{})[ex];retur
   return {t:base+` · הצעה: ${n}`,kg:String(n)}}
 function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
   if(r.inj)bits.push(`<span style="--c:var(--warn)">${esc(r.inj)}</span>`);
+  if(r.preg)bits.push(`<span style="--c:var(--warn)">${esc(PREG[r.preg]||"הריון")}</span>`);if(r.cnote)bits.push(`<span style="--c:var(--muted)">${esc(r.cnote)}</span>`);
   if(r.flag&&r.flag.st==="open")bits.push(`<span style="--c:var(--bad)">מעקב: ${esc(r.flag.text||"דגל פתוח")}</span>`);
   if(r.lastPain&&r.lastPain.d>=addDays(rDate,-21))bits.push(`<span style="--c:var(--bad)">כאב ${esc(r.lastPain.d===TODAY?"היום":fmt(r.lastPain.d))}: ${esc([r.lastPain.area,r.lastPain.lvl?r.lastPain.lvl+"/10":""].filter(Boolean).join(" "))}</span>`);
   const lx=Object.entries(r.lx||{}).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||""))[0];if(lx)bits.push(`<span style="--c:var(--mes)">${esc(lx[0].slice(0,22))}: ${esc(lx[1].kg||"")}${lx[1].ver?" · "+esc(lx[1].ver):""}</span>`);
   return bits.length?`<div class="prep"><b>${esc(p.name)}</b><div class="mini">${bits.join("")}</div></div>`:""}).join("")}
+const PREG={"1":"הריון · שליש ראשון","2":"הריון · שליש שני","3":"הריון · שליש שלישי","pp":"אחרי לידה"};
 const QT=[["pain","כאב","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
 const WIDE=()=>matchMedia("(min-width:820px)").matches;
 try{matchMedia("(min-width:820px)").addEventListener("change",()=>{if(tab==="class"&&!typing())render()})}catch(e){}
@@ -1963,7 +1986,7 @@ function personCard(p,i,exs,met){const r=RO[p.id]||{},wide=WIDE(),op=(wide||open
   return `<div class="rp-p${op?" open":""}${p.absent?" abs":""}">
   <div class="rp-h"><button type="button" class="av${avc}" data-ab="${i}" aria-label="${p.absent?"סימון שהגיע":"סימון שלא הגיע"}">${avt}</button>
     <button type="button" class="nm" data-pp="${esc(p.id)}"><b>${esc(p.name)}</b>
-      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">${esc(r.inj)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">מעקב פתוח מדגל קודם${p.fu?" · נבדק":""}</div>`:""}
+      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">${esc(r.inj)}</div>`:""}${r.preg?`<div class="known">${esc(PREG[r.preg]||"הריון")}</div>`:""}${r.cnote?`<div class="known" style="color:var(--muted)">${esc(r.cnote)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">מעקב פתוח מדגל קודם${p.fu?" · נבדק":""}</div>`:""}
       <div class="mini">${tags.length?"":`<span style="--c:var(--ok)">בסדר</span>`}${nv?`<span style="--c:var(--mes)">${nv} תרגילים מולאו</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}${(p.note||"").trim()?`<span style="--c:var(--muted)">הערה</span>`:""}</div>`}</button>
     ${wide||p.absent?"":`<span class="chev">${op?"▲":"▼"}</span>`}</div>
   ${p.absent?"":`<div class="qt">${QT.map(([k,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" aria-pressed="${tags.includes(k)}" style="--c:${c}">${l}</button>`).join("")}</div>`}
@@ -2312,7 +2335,7 @@ async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;u
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
 function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
-  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;go("coach")}
+  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
 function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
