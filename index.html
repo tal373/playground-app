@@ -725,6 +725,10 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .tb-r button.no{border-color:var(--warn);color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
 .tb-n{display:grid;grid-template-columns:62px 1fr;gap:6px;align-items:center}.tb-n span{font-size:13px;font-weight:700;color:var(--warn)}.tb-n input{padding:9px 10px;font-size:14px}
 .ver-o{padding:9px 10px;font-size:14px}
+.why{display:flex;flex-direction:column;gap:6px;background:color-mix(in srgb,var(--warn) 8%,transparent);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:12px;padding:8px 10px}
+.why>span{font-size:12.5px;font-weight:700;color:var(--warn)}.why input{padding:8px 10px;font-size:14px}
+.bf-ver{background:var(--s2);border-radius:16px;padding:11px 13px;font-size:14.5px}.bf-ver>b{display:block;font-size:12px;margin-bottom:6px;color:var(--c)}
+.bf-ver ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}.bf-ver li b{direction:ltr;unicode-bidi:isolate;color:var(--ink)}.bf-ver li span{color:#c9d4e4}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -1857,9 +1861,14 @@ const VARLIB=[[/back squat/i,["BB","Box Squat","Goblet","DBL KB Front Rack"]],[/
   [/\bdeadlift|\bdead lift/i,["BB","DBL KB","Single KB"]],[/\brdl\b|romanian/i,["BB","DBL DB","DBL KB"]],[/bench press/i,["BB","DBL DB"]],
   [/strict press|push press|military press|shoulder press/i,["BB","DBL DB","Single DB"]],[/pull ?ups?\b/i,["Band","Strict","TRX Seated"]],
   [/push ?ups?\b/i,["Elevated","Floor","Deficit","Rings"]],[/split squat|lunge/i,["BW","DBL DB","DBL KB","BB"]],[/hip thrust/i,["BB","DB","Single Leg"]],
-  [/goblet squat/i,["KB","DB"]],[/\bdips?\b/i,["Box","Bar","Rings"]],[/\brows?\b/i,["DB","KB","Rings","TRX"]]];
+  [/goblet squat/i,["KB","DB"]],[/\bdips?\b/i,["Box","Bar","Rings"]]];
 const varsOf0=x=>{const m=String(x).match(/\(Var\)\s*-\s*(.+)$/i)||String(x).match(/\(([^)]*\/[^)]*)\)\s*$/);return m?m[1].split("/").map(s=>s.trim()).filter(Boolean).slice(0,6):[]};
-const varsOf=x=>{const v=varsOf0(x);if(v.length)return v;const h=VARLIB.find(([re])=>re.test(String(x)));return h?h[1]:[]};
+const libVars=x=>{const h=VARLIB.find(([re])=>re.test(String(x)));return h?h[1]:[]};
+function briefVars(x){const b=typeof BRF!=="undefined"&&BRF[`${rDate}-${slug(typeOf(rType))}`];if(!b)return [];const nx=String(exName(x)).toLowerCase();
+  for(const bl of b.blocks||[])for(const e of bl.x||[]){if(!Array.isArray(e.g)||!e.g.length)continue;const nm=exName(exClean(strip(e.n))).toLowerCase();
+    if(nm===nx||nm.includes(nx.slice(0,16))||nx.includes(nm.slice(0,16)))return e.g.map(g=>Array.isArray(g)?g[0]:g)}return []}
+const varsOf=x=>{const v=varsOf0(x);if(v.length)return v;const bv=briefVars(x);if(bv.length)return bv;return libVars(x)};
+const WHY=["כאב / פציעה","טכניקה","כוח / יכולת","התקדמות","ציוד","הריון"];
 function mistakesFor(exs){const b=BRF[`${rDate}-${slug(typeOf(rType))}`];if(!b)return [];const out=[];
   (b.blocks||[]).forEach(bl=>(bl.x||[]).forEach(e=>{const nm=exClean(strip(e.n));if(!exs.some(x=>x===nm||nm.includes(x.slice(0,14))||x.includes(nm.slice(0,14))))return;
     String(e.e||"").replace(/"[^"]*"|״[^״]*״/g,"").split(/[.!]/).map(s=>s.trim()).filter(s=>s.length>6&&s.length<70).forEach(s=>{if(out.length<10&&!out.includes(s))out.push(s)})}));return out}
@@ -1912,9 +1921,11 @@ function setRows(p,i,x,r,m){const L=(p.lx||{})[x]||{},n=setTot(m),a=setsOf(L,m),
       <input type="text" inputmode="numeric" class="rp" data-sk="reps" data-si="${k}" data-lx="${esc(x)}" data-i="${i}" value="${esc(o.reps||"")}" placeholder="${esc(pr)}"></div>`).join("")}
     ${a[f0]&&setDone(a[f0])&&a.slice(f0+1).some(o=>!setDone(o))?`<button type="button" class="chipb" data-sfill="${esc(x)}" data-i="${i}">${m.warm?"אותו משקל וחזרות לשאר הסטים":"אותו דבר לשאר הסבבים"}</button>`:""}
     ${sg&&sg.kg&&!a.slice(f0).some(o=>String(o.kg||"").trim())?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג לכל הסטים, כמו שהוצע</button>`:""}</div>`}
-function verChips(L,x,i,vs){const other=!!L.ver&&!vs.includes(L.ver)||L.verO;
+function verChips(L,x,i,vs){const other=!!L.ver&&!vs.includes(L.ver)||L.verO;const needWhy=!!L.ver&&L.ver!==vs[0],why=L.why||[];
   return `<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}<button type="button" data-lvo="1" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${!!other}">אחר</button></div>
-    ${other?`<input type="text" class="ver-o" data-lvt="1" data-lx="${esc(x)}" data-i="${i}" value="${esc(vs.includes(L.ver)?"":L.ver||"")}" placeholder="איזו גרסה? למשל: Box Squat לקופסה נמוכה">`:""}`}
+    ${other?`<input type="text" class="ver-o" data-lvt="1" data-lx="${esc(x)}" data-i="${i}" value="${esc(vs.includes(L.ver)?"":L.ver||"")}" placeholder="איזו גרסה? למשל: Box Squat לקופסה נמוכה">`:""}
+    ${needWhy?`<div class="why"><span>למה ${esc(L.ver)}?</span><div class="chips sm">${WHY.map(w=>`<button type="button" data-why="${esc(w)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${why.includes(w)}">${w}</button>`).join("")}</div>
+      <input type="text" data-whyt="1" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.whyT||"")}" placeholder="פירוט קצר (לא חובה)"></div>`:""}`}
 function liftRow(p,i,x,r,str,m){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
   if((str||(m&&m.core))&&m&&m.sets>0)return `<div class="lift-r"><label>${esc(exName(x))}</label>
     ${verChips(L,x,i,vs)}
@@ -1965,7 +1976,11 @@ function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType
 
 async function sendReport(){if(coachPv){toast("מצב שיקוף — לא נשמר");return}const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
   const miss=pres.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
-  for(const p of pres){for(const [x,L] of Object.entries(p.lx||{})){const m=metaOf(x);if(!m||!L||m.mode==="hold"||m.mode==="int")continue;const a=setsOf(L,m),d=a.filter(setDone).length;
+  for(const p of pres){for(const [x,L] of Object.entries(p.lx||{})){if(!L)continue;const vs=varsOf(x),m0=metaOf(x),logged=(L.sets||[]).some(setDone)||!!L.kg||!!L.reps||(L.fail&&Object.keys(L.fail).length);
+    const go=msg=>{openP=p.id;render();toast(msg);setTimeout(()=>{const el=[...document.querySelectorAll(".lift-r")].find(e=>e.querySelector(`[data-lx="${CSS.escape(x)}"][data-i="${DR.people.indexOf(p)}"]`));if(el)el.scrollIntoView({block:"center",behavior:"smooth"})},80)};
+    if(vs.length&&logged&&!L.ver){go(`${p.name} · ${exName(x)}: באיזו גרסה עבד?`);return}
+    if(L.ver&&L.ver!==vs[0]&&!(L.why||[]).length&&!(L.whyT||"").trim()){go(`${p.name} · ${exName(x)}: למה ${L.ver}?`);return}
+    const m=m0;if(!m||m.mode==="hold"||m.mode==="int")continue;const a=setsOf(L,m),d=a.filter(setDone).length;
     if(d>0&&d<setTot(m)){openP=p.id;render();const miss2=a.map((o,k)=>setDone(o)?null:setLbl(m,k)).filter(Boolean);toast(`${p.name} · ${exName(x)}: חסר ${miss2.join(", ")}`);
       setTimeout(()=>{const el=document.querySelector(".sets.part");if(el)el.scrollIntoView({block:"center",behavior:"smooth"})},80);return}}}
   const b=$("rpSend");b.disabled=true;b.textContent="שולח…";
@@ -2045,6 +2060,7 @@ $("v-class").addEventListener("click",ev=>{const t=ev.target;
   const ps=t.closest("[data-ps]");if(ps){const p=DR.people[+ps.dataset.i];p.pn={...(p.pn||{}),side:ps.dataset.ps};draftSave();render();return}
   const px=t.closest("[data-px]");if(px){const p=DR.people[+px.dataset.i];p.pn={...(p.pn||{}),ex:(p.pn||{}).ex===px.dataset.px?"":px.dataset.px};draftSave();render();return}
   const lv=t.closest("[data-lv]");if(lv){const p=DR.people[+lv.dataset.i],x=lv.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{};L.ver=L.ver===lv.dataset.lv?"":lv.dataset.lv;delete L.verO;draftSave();render();return}
+  const wy=t.closest("[data-why]");if(wy){const p=DR.people[+wy.dataset.i],L=p.lx[wy.dataset.lx],w=wy.dataset.why;L.why=(L.why||[]).includes(w)?L.why.filter(z=>z!==w):[...(L.why||[]),w];draftSave();render();return}
   const lvo=t.closest("[data-lvo]");if(lvo){const p=DR.people[+lvo.dataset.i],x=lvo.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},vs=varsOf(x),on=!!L.ver&&!vs.includes(L.ver)||L.verO;
     if(on){if(!vs.includes(L.ver))L.ver="";delete L.verO}else{if(vs.includes(L.ver))L.ver="";L.verO=true}draftSave();render();
     if(!on)setTimeout(()=>{const el=document.querySelector(`[data-lvt][data-i="${lvo.dataset.i}"][data-lx="${CSS.escape(x)}"]`);if(el)el.focus()},30);return}
@@ -2056,6 +2072,7 @@ $("v-class").addEventListener("input",ev=>{const t=ev.target;if(!DR)return;
   if(t.id==="rpNote")DR.note=t.value;else if(t.id==="rpTal")DR.tal=t.value;else if(t.id==="vcTxt"){vcText=t.value;return}
   else if(t.dataset.pm!=null){const p=DR.people[+t.dataset.pm];p.pn={...(p.pn||{}),mod:t.value}}
   else if(t.dataset.lk){const p=DR.people[+t.dataset.i],x=t.dataset.lx;p.lx=p.lx||{};(p.lx[x]=p.lx[x]||{})[t.dataset.lk]=t.value}
+  else if(t.dataset.whyt){const p=DR.people[+t.dataset.i],L=(p.lx||{})[t.dataset.lx];if(L)L.whyT=t.value}
   else if(t.dataset.lvt){const p=DR.people[+t.dataset.i];p.lx=p.lx||{};const L=p.lx[t.dataset.lx]=p.lx[t.dataset.lx]||{};L.ver=t.value.trim();L.verO=true}
   else if(t.dataset.tfn!=null){const p=DR.people[+t.dataset.i],L=((p.lx||{})[t.dataset.lx]||{});if(L.fail)L.fail[t.dataset.tfn]=t.value}
   else if(t.dataset.sk){const p=DR.people[+t.dataset.i],x=t.dataset.lx,m=metaOf(x);if(!m)return;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},a=setsOf(L,m);a[+t.dataset.si][t.dataset.sk]=t.value;L.sets=a;setsSync(L,m);
@@ -2202,6 +2219,8 @@ function renderBrief(){const v=$("v-brief");
     ${(x.x||[]).map(e=>{n++;const k=bfSel+"|"+n,op=bfAll||BOPEN.has(k),d=dn.has(n);return `<article class="bf-ex${op?" open":""}${d?" done":""}">
       <button class="bf-exh" type="button" data-bex="${esc(k)}"><span class="tile">${d?"✓":String(n).padStart(2,"0")}</span><span class="nm">${e.n}</span><span class="chev">${op?"▲":"▼"}</span></button>
       ${op?`<div class="bf-exb"><div class="bf-vids">${(e.v||[]).map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener"><span>▶</span>${esc(l)}</a>`).join("")}</div>
+        ${(()=>{const g=Array.isArray(e.g)&&e.g.length?e.g.map(z=>Array.isArray(z)?z:[z,""]):(()=>{const nm=exClean(strip(e.n));return (varsOf0(nm).length?varsOf0(nm):libVars(nm)).map(z=>[z,""])})();
+          return g.length?`<div class="bf-ver"><b>גרסאות</b><ul>${g.map(([l,w])=>`<li><b>${esc(l)}</b>${w?` <span>· ${esc(w)}</span>`:""}</li>`).join("")}</ul></div>`:""})()}
         <div class="bf-cue"><b>קיו</b>${e.c||""}</div><div class="bf-err"><b>הטעות</b>${e.e||""}</div>
         <div class="bf-tabs" data-bt="${n}">${[["p","הריון"],["i","פציעות"],["t","למאמן"]].filter(([q])=>e[q]).map(([q,l],j)=>`<button type="button" data-btab="${q}" aria-pressed="${j===0}">${l}</button>`).join("")}</div>
         ${[["p"],["i"],["t"]].filter(([q])=>e[q]).map(([q],j)=>`<div class="bf-pane" data-bpane="${q}"${j?" hidden":""}>${e[q]}</div>`).join("")}
