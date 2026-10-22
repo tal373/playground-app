@@ -724,6 +724,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .tb-r{display:flex;flex-wrap:wrap;gap:6px}.tb-r button{border:1px solid var(--ok);color:var(--ok);background:transparent;border-radius:999px;padding:7px 13px;font-weight:700;font-size:13.5px}
 .tb-r button.no{border-color:var(--warn);color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
 .tb-n{display:grid;grid-template-columns:62px 1fr;gap:6px;align-items:center}.tb-n span{font-size:13px;font-weight:700;color:var(--warn)}.tb-n input{padding:9px 10px;font-size:14px}
+.ver-o{padding:9px 10px;font-size:14px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -1852,7 +1853,13 @@ function autoPick(ws){const mineF=a=>{const m=a.filter(r=>coachName&&firstN(r.co
 /* ---------- pro report helpers ---------- */
 const AREAS=["צוואר","כתף","מרפק","שורש כף יד","גב עליון","גב תחתון","אגן / ירך","ברך","קרסול / כף רגל","אחר"];
 const strip=h=>String(h||"").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").trim();
-const varsOf=x=>{const m=String(x).match(/\(Var\)\s*-\s*(.+)$/i)||String(x).match(/\(([^)]*\/[^)]*)\)\s*$/);return m?m[1].split("/").map(s=>s.trim()).filter(Boolean).slice(0,6):[]};
+const VARLIB=[[/back squat/i,["BB","Box Squat","Goblet","DBL KB Front Rack"]],[/front squat/i,["BB","Zombie","DBL KB Front Rack","Goblet"]],
+  [/\bdeadlift|\bdead lift/i,["BB","DBL KB","Single KB"]],[/\brdl\b|romanian/i,["BB","DBL DB","DBL KB"]],[/bench press/i,["BB","DBL DB"]],
+  [/strict press|push press|military press|shoulder press/i,["BB","DBL DB","Single DB"]],[/pull ?ups?\b/i,["Band","Strict","TRX Seated"]],
+  [/push ?ups?\b/i,["Elevated","Floor","Deficit","Rings"]],[/split squat|lunge/i,["BW","DBL DB","DBL KB","BB"]],[/hip thrust/i,["BB","DB","Single Leg"]],
+  [/goblet squat/i,["KB","DB"]],[/\bdips?\b/i,["Box","Bar","Rings"]],[/\brows?\b/i,["DB","KB","Rings","TRX"]]];
+const varsOf0=x=>{const m=String(x).match(/\(Var\)\s*-\s*(.+)$/i)||String(x).match(/\(([^)]*\/[^)]*)\)\s*$/);return m?m[1].split("/").map(s=>s.trim()).filter(Boolean).slice(0,6):[]};
+const varsOf=x=>{const v=varsOf0(x);if(v.length)return v;const h=VARLIB.find(([re])=>re.test(String(x)));return h?h[1]:[]};
 function mistakesFor(exs){const b=BRF[`${rDate}-${slug(typeOf(rType))}`];if(!b)return [];const out=[];
   (b.blocks||[]).forEach(bl=>(bl.x||[]).forEach(e=>{const nm=exClean(strip(e.n));if(!exs.some(x=>x===nm||nm.includes(x.slice(0,14))||x.includes(nm.slice(0,14))))return;
     String(e.e||"").replace(/"[^"]*"|״[^״]*״/g,"").split(/[.!]/).map(s=>s.trim()).filter(s=>s.length>6&&s.length<70).forEach(s=>{if(out.length<10&&!out.includes(s))out.push(s)})}));return out}
@@ -1905,14 +1912,17 @@ function setRows(p,i,x,r,m){const L=(p.lx||{})[x]||{},n=setTot(m),a=setsOf(L,m),
       <input type="text" inputmode="numeric" class="rp" data-sk="reps" data-si="${k}" data-lx="${esc(x)}" data-i="${i}" value="${esc(o.reps||"")}" placeholder="${esc(pr)}"></div>`).join("")}
     ${a[f0]&&setDone(a[f0])&&a.slice(f0+1).some(o=>!setDone(o))?`<button type="button" class="chipb" data-sfill="${esc(x)}" data-i="${i}">${m.warm?"אותו משקל וחזרות לשאר הסטים":"אותו דבר לשאר הסבבים"}</button>`:""}
     ${sg&&sg.kg&&!a.slice(f0).some(o=>String(o.kg||"").trim())?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג לכל הסטים, כמו שהוצע</button>`:""}</div>`}
+function verChips(L,x,i,vs){const other=!!L.ver&&!vs.includes(L.ver)||L.verO;
+  return `<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}<button type="button" data-lvo="1" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${!!other}">אחר</button></div>
+    ${other?`<input type="text" class="ver-o" data-lvt="1" data-lx="${esc(x)}" data-i="${i}" value="${esc(vs.includes(L.ver)?"":L.ver||"")}" placeholder="איזו גרסה? למשל: Box Squat לקופסה נמוכה">`:""}`}
 function liftRow(p,i,x,r,str,m){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
   if((str||(m&&m.core))&&m&&m.sets>0)return `<div class="lift-r"><label>${esc(exName(x))}</label>
-    ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
+    ${verChips(L,x,i,vs)}
     ${m.mode==="hold"||m.mode==="int"?timeRows(p,i,x,m):setRows(p,i,x,r,m)}
     ${str?`<div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>`:""}
     ${sg?`<div class="hint">${esc(sg.t)}</div>`:""}</div>`;
   return `<div class="lift-r"><label>${esc(exName(x))}</label>
-    ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
+    ${verChips(L,x,i,vs)}
     <div class="stp"><input type="text" inputmode="numeric" class="rp" data-lk="reps" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.reps||"")}" placeholder="חזרות"><button type="button" data-st="-1" data-lx="${esc(x)}" data-i="${i}" aria-label="פחות">−</button><input type="text" inputmode="decimal" data-lk="kg" data-lx="${esc(x)}" data-i="${i}" value="${esc(L.kg||"")}" placeholder="${sg&&sg.kg?esc(sg.kg):"ק״ג"}"><button type="button" data-st="1" data-lx="${esc(x)}" data-i="${i}" aria-label="יותר">+</button></div>
     ${sg&&sg.kg&&!String(L.kg||"").trim()?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג כמו שהוצע</button>`:""}
     ${str?`<div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>`:""}
@@ -2034,7 +2044,10 @@ $("v-class").addEventListener("click",ev=>{const t=ev.target;
   const pa=t.closest("[data-pa]");if(pa){const p=DR.people[+pa.dataset.i];p.pn={...(p.pn||{}),area:pa.dataset.pa};draftSave();render();return}
   const ps=t.closest("[data-ps]");if(ps){const p=DR.people[+ps.dataset.i];p.pn={...(p.pn||{}),side:ps.dataset.ps};draftSave();render();return}
   const px=t.closest("[data-px]");if(px){const p=DR.people[+px.dataset.i];p.pn={...(p.pn||{}),ex:(p.pn||{}).ex===px.dataset.px?"":px.dataset.px};draftSave();render();return}
-  const lv=t.closest("[data-lv]");if(lv){const p=DR.people[+lv.dataset.i],x=lv.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{};L.ver=L.ver===lv.dataset.lv?"":lv.dataset.lv;draftSave();render();return}
+  const lv=t.closest("[data-lv]");if(lv){const p=DR.people[+lv.dataset.i],x=lv.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{};L.ver=L.ver===lv.dataset.lv?"":lv.dataset.lv;delete L.verO;draftSave();render();return}
+  const lvo=t.closest("[data-lvo]");if(lvo){const p=DR.people[+lvo.dataset.i],x=lvo.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},vs=varsOf(x),on=!!L.ver&&!vs.includes(L.ver)||L.verO;
+    if(on){if(!vs.includes(L.ver))L.ver="";delete L.verO}else{if(vs.includes(L.ver))L.ver="";L.verO=true}draftSave();render();
+    if(!on)setTimeout(()=>{const el=document.querySelector(`[data-lvt][data-i="${lvo.dataset.i}"][data-lx="${CSS.escape(x)}"]`);if(el)el.focus()},30);return}
   const lr=t.closest("[data-lr]");if(lr){const p=DR.people[+lr.dataset.i],x=lr.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{};L.rpe=L.rpe===+lr.dataset.lr?null:+lr.dataset.lr;draftSave();render();return}
   const er=t.closest("[data-er]");if(er){const p=DR.people[+er.dataset.i],m=er.dataset.er;p.err=(p.err||[]).includes(m)?p.err.filter(x=>x!==m):[...(p.err||[]),m];draftSave();render();return}
   if(t.closest("#rpSync")){const rk=`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`;((RR[rk]||{}).names||[]).forEach(n=>{if(!DR.people.some(p=>p.name===n))addPersonQuiet(n)});draftSave();render();return}});
@@ -2043,6 +2056,7 @@ $("v-class").addEventListener("input",ev=>{const t=ev.target;if(!DR)return;
   if(t.id==="rpNote")DR.note=t.value;else if(t.id==="rpTal")DR.tal=t.value;else if(t.id==="vcTxt"){vcText=t.value;return}
   else if(t.dataset.pm!=null){const p=DR.people[+t.dataset.pm];p.pn={...(p.pn||{}),mod:t.value}}
   else if(t.dataset.lk){const p=DR.people[+t.dataset.i],x=t.dataset.lx;p.lx=p.lx||{};(p.lx[x]=p.lx[x]||{})[t.dataset.lk]=t.value}
+  else if(t.dataset.lvt){const p=DR.people[+t.dataset.i];p.lx=p.lx||{};const L=p.lx[t.dataset.lx]=p.lx[t.dataset.lx]||{};L.ver=t.value.trim();L.verO=true}
   else if(t.dataset.tfn!=null){const p=DR.people[+t.dataset.i],L=((p.lx||{})[t.dataset.lx]||{});if(L.fail)L.fail[t.dataset.tfn]=t.value}
   else if(t.dataset.sk){const p=DR.people[+t.dataset.i],x=t.dataset.lx,m=metaOf(x);if(!m)return;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},a=setsOf(L,m);a[+t.dataset.si][t.dataset.sk]=t.value;L.sets=a;setsSync(L,m);
     const row=t.closest(".set-r");if(row)row.classList.toggle("done",setDone(a[+t.dataset.si]));const box=t.closest(".sets");if(box){const d=a.filter(setDone).length,n=setTot(m),c=box.querySelector(".sets-h b");if(c){c.textContent=`${d}/${n}`;c.className=d===n?"ok":d?"warn":""}box.classList.toggle("part",d>0&&d<n)}dirty=true}
