@@ -695,6 +695,20 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .lbl.blk{margin-top:6px;font-weight:800;color:var(--ink);font-size:13.5px;border:0!important;background:none!important;padding:0!important;border-radius:0!important;direction:ltr;text-align:right}
 .chips.ver button[aria-pressed="true"]{background:var(--mes);border-color:var(--mes);color:var(--navy)}
 .spark{width:100%;height:44px;direction:ltr}.spark path{fill:none;stroke:var(--mes);stroke-width:2}.spark circle{fill:var(--mes)}
+.mcls h3{margin:0;font-size:18px}.mc-h{display:flex;align-items:center;gap:10px}.mc-d{background:var(--hot);color:#fff;border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:800}
+.mc-n{margin:0;line-height:1.55}.mc-ex{display:flex;flex-direction:column;gap:6px}
+.mc-i{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:9px 11px;color:var(--ink);text-decoration:none}
+.mc-i span:last-child{display:flex;flex-direction:column;min-width:0}.mc-i small{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-i .pl{width:28px;height:28px;flex:none;border-radius:50%;background:var(--hot);display:grid;place-items:center;font-size:11px;color:#fff}.mc-i .pl.off{background:var(--s3,var(--line))}
+.mlx{gap:0;padding:4px 16px}.ml-r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.ml-r:last-child{border-bottom:0}
+.ml-r>div{display:flex;flex-direction:column;min-width:0}.ml-r small{color:var(--muted);font-size:12px}.ml-v{text-align:left;align-items:flex-end;flex:none}
+.ups{gap:10px}.ups-h{display:flex;align-items:center;gap:10px}.ups-h b{flex:1}
+.ups-i{width:36px;height:36px;border-radius:12px;background:var(--s2);display:grid;place-items:center;flex:none}.ups-i svg,.ups-l svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ups-l svg{stroke:var(--muted);width:18px;height:18px}.ups .cta{flex:none}.ups-ok{color:var(--ok);font-weight:700;font-size:14px}
+.bz-l{display:flex;flex-direction:column}.bz-r{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.bz-r small{display:block;color:var(--muted);font-size:12px}
+.bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
+.bz-s{gap:6px;opacity:.85}.bz-soon{align-self:flex-start;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.brand img{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -711,6 +725,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <section class="view" id="v-class" hidden></section>
   <section class="view" id="v-studio" hidden></section>
   <section class="view" id="v-coaches" hidden></section>
+  <section class="view" id="v-biz" hidden></section>
   <footer class="sig"><img src="pg-logo.png" alt=""><b>PLAYGROUND STUDIO</b><span>ליווי אישי של טל ליפשטט · אימון, תזונה ושיקום</span></footer>
 </div>
 
@@ -812,6 +827,11 @@ const user={
 window.pgAI={async report(o){try{const {data,error}=await SB.functions.invoke("report-parse",{body:o});if(error||!data||!Array.isArray(data.people))return null;return data}catch(e){return null}},
   async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}},
   async improve(o){try{const {data,error}=await SB.functions.invoke("recipe",{body:{mode:"improve",...o}});if(error||!data||!Array.isArray(data.items)||!data.items.length)return null;return data}catch(e){return null}}};
+window.pgMember={async link(){try{const {data}=await SB.functions.invoke("member-link");return data||null}catch(e){return null}},
+  async me(){try{const {data,error}=await SB.rpc("my_member");return error?null:(data||null)}catch(e){return null}},
+  async preview(){try{const {data,error}=await SB.rpc("class_preview");return error?[]:(data||[])}catch(e){return []}},
+  email(){return (me&&me.email)||""},
+  async leads(){const {data,error}=await SB.from("docs").select("path,owner,data").like("parent","t/%/leads").order("updated_at",{ascending:false}).limit(300);if(error)throw E(error);return (data||[]).map(r=>({id:r.path,owner:r.owner,data:r.data}))}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
 /* push reminders */
 const VAPID="BGMEWrSIvSfh8ZyBAeIYV50p6mph3JzPCXlNKHKeSHni9_NzMOhuv-q78QKZeqYfG5zkIA2CuqgnG0jHh5C8byI";
@@ -887,7 +907,7 @@ const TODAY=dk();
 const FEEL=["","קל מדי","קל","בדיוק","קשה","קשה מאוד"];
 
 /* ===== state ===== */
-let db=null,user=null,isOwner=false,uid=null,prof=null,readOnly=false,booted=false,preview=null,ownerUid=null;
+let profSeen=false,db=null,user=null,isOwner=false,uid=null,prof=null,readOnly=false,booted=false,preview=null,ownerUid=null;
 const W={},MSG={},days={},weigh={},weekly={},wlog={},photos={},body={};
 let tab="today",sel=TODAY,woSel=null;
 const tp=(c,id)=>`t/${uid}/${c}${id?"/"+id:""}`;
@@ -932,11 +952,88 @@ function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
-function renderWelcome(){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
+function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioMe();return}$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
   $("v-today").innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>ברוכים הבאים לפלייגראונד</h1><p>${uid?"קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין."}</p></div>`}
+
+/* ===== studio member (free tier) ===== */
+let MEM=null,MEMst=0,CPV=[],LEADM={};
+const UPS=[["menu","תפריט ותזונה אישית","תפריט שבנוי בשבילך, מעקב יומי פשוט, מתכונים והתאמות מטל לאורך הדרך.","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"],
+  ["home","תכנית אימונים אישית לבית","אימונים לימים בלי סטודיו, עם סרטון לכל תרגיל, טיימר ומעקב התקדמות.","M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"],
+  ["physio","פיזיו, טיפול ושיקום","טיפול ידני ותכנית שיקום אישית לכאב, פציעה או חזרה לאימונים.","M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"]];
+const LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+const ytOk=u=>/^https:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[\w-]{6,}/.test(String(u||""));
+const numKg=v=>{const m=String(v||"").replace(",",".").match(/\d+(\.\d+)?/);return m?+m[0]:null};
+async function loadMe(force){if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
+  if(window.pgMember){await pgMember.link();const [a,b]=await Promise.all([pgMember.me(),pgMember.preview()]);MEM=a;CPV=b||[]}
+  try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
+  MEMst=2;if(!prof)render()}
+function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
+  if(!profSeen||MEMst<2){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
+  const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
+  const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
+  const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10);
+  const prs=log.filter(l=>l.pr).length,dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
+  const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
+  v.innerHTML=`
+  <div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>
+  ${MEM?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
+  <div class="sh"><h2>האימון בסטודיו</h2></div>
+  ${cp.length?cp.map(c=>`<div class="card mcls">
+    <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type||"")}</b></div>
+    ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
+    ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
+    ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
+      return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></div>`}).join("")}</div>`:""}
+  </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
+  <div class="sh"><h2>הנתונים שלי</h2>${log.length?`<span>${log.length} שיעורים</span>`:""}</div>
+  ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
+    <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0;
+      return `<div class="ml-r"><div><b class="en">${esc(exName(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
+        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}</div></div>`}).join("")}</div>`
+    :`<div class="card"><div class="empty">${MEM?"אחרי השיעור הבא המאמן ירשום את המשקלים שלך, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
+  <div class="sh"><h2>ליווי אישי</h2></div>
+  <p class="hint lead">חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.</p>
+  ${UPS.map(([k,t,d,ic])=>{const sent=LEADM[k];return `<div class="card ups"><div class="ups-h"><span class="ups-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic}"/></svg></span><b>${esc(t)}</b><span class="ups-l">${LOCK}</span></div>
+    <p class="hint" style="margin:0">${esc(d)}</p>
+    ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">אני רוצה לשמוע</button>`}</div>`}).join("")}`}
+$("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[data-want]");if(!b||prof)return;const k=b.dataset.want,u=UPS.find(x=>x[0]===k);if(!u||LEADM[k])return;
+  b.disabled=true;const d={want:k,label:u[1],at:new Date().toISOString(),name:(MEM&&MEM.name)||"",email:window.pgMember?pgMember.email():"",st:"new"};
+  try{await db.doc(`t/${uid}/leads/${k}`).set(d);LEADM[k]=d;toast("נשלח לטל ✓");render()}catch(e){b.disabled=false;toast("לא נשלח, נסו שוב")}});
+
+/* ===== leads (owner) ===== */
+let LEADS=null,leadsAt=0;
+async function loadLeads(){leadsAt=Date.now();try{LEADS=window.pgMember?await pgMember.leads():[]}catch(e){LEADS=LEADS||[]}if(tab==="studio"&&!typing())render()}
+function leadsCard(){if(!isOwner||preview)return "";if(LEADS===null||Date.now()-leadsAt>120000){if(Date.now()-leadsAt>5000)loadLeads();if(LEADS===null)return ""}
+  const open=LEADS.filter(l=>(l.data||{}).st!=="done");if(!open.length)return "";
+  return `<div class="sh"><h2>מתעניינים בליווי</h2><span>${open.length}</span></div><div class="flags">${open.map(l=>{const d=l.data||{};
+    return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}</div></div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
+$("v-studio").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
+  b.disabled=true;try{await db.doc(l.id).update({st:"done",done:TODAY});l.data={...l.data,st:"done"};render()}catch(e){b.disabled=false;toast("לא נשמר")}});
+
+/* ===== my business (owner only, hidden) ===== */
+let BZ=null,bzAdd=false;
+async function loadBiz(){try{const s=await db.collection("x/rem").get();BZ={};s.docs.forEach(d=>BZ[d.id]=d.data())}catch(e){BZ={}}if(tab==="biz")render()}
+function renderBiz(){const v=$("v-biz");if(!isOwner||preview){go("coach");return}
+  if(!BZ){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBiz();return}
+  const rs=Object.entries(BZ).filter(([,r])=>!r.done).sort((a,b)=>(a[1].due||"9").localeCompare(b[1].due||"9")),dn=Object.entries(BZ).filter(([,r])=>r.done).length;
+  v.innerHTML=`
+  <div class="hello"><span class="avatar">ט</span><div><small>פרטי · רק אתה רואה</small><b>העסק שלי</b></div><button class="ghost" type="button" id="bzOut" style="margin-inline-start:auto;padding:8px 14px">יציאה</button></div>
+  <div class="sh"><h2>תזכורות</h2><span>${rs.length}${dn?` · ${dn} בוצעו`:""}</span></div>
+  <div class="card">
+    ${rs.length?`<div class="bz-l">${rs.map(([id,r])=>{const late=r.due&&r.due<TODAY;return `<div class="bz-r"><button type="button" class="bz-c" data-bzd="${esc(id)}" aria-label="בוצע"></button><div style="flex:1"><b>${esc(r.t)}</b>${r.due?`<small style="${late?"color:var(--bad)":""}">${esc(r.due===TODAY?"היום":fmt(r.due))}</small>`:""}</div></div>`}).join("")}</div>`:`<div class="empty">אין תזכורות פתוחות</div>`}
+    <div class="addrow sm"><input type="text" id="bzT" placeholder="+ תזכורת חדשה" autocomplete="off"><input type="date" id="bzD" style="flex:none;width:9.5em"><button class="ghost" type="button" id="bzA">הוספה</button></div></div>
+  ${[["יומן אימונים","קביעת אימונים אישיים מול היומן שלך, תזכורת אוטומטית למתאמן."],["גבייה","חבילות, מי שילם ומי לא, תזכורות תשלום. בלי סליקה."],["הכנסות והוצאות","דשבורד חודשי מנתוני אמת בלבד: בנק, כאל וארבוקס."]].map(([t,d])=>`<div class="card bz-s"><b>${t}</b><p class="hint" style="margin:0">${d}</p><span class="bz-soon">בשלב הבא</span></div>`).join("")}`;
+  $("bzOut").onclick=()=>go(dashLast);
+  const add=async()=>{const t=$("bzT").value.trim();if(!t)return;const id=Date.now().toString(36),r={t,due:$("bzD").value||"",at:new Date().toISOString()};BZ[id]=r;render();try{await db.doc(`x/rem/${id}`).set(r)}catch(e){delete BZ[id];render();toast("לא נשמר")}};
+  $("bzA").onclick=add;$("bzT").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();add()}}}
+$("v-biz").addEventListener("click",async ev=>{const b=ev.target.closest("[data-bzd]");if(!b)return;const id=b.dataset.bzd,r=BZ[id];if(!r)return;r.done=TODAY;render();
+  try{await db.doc(`x/rem/${id}`).update({done:TODAY})}catch(e){delete r.done;render();toast("לא נשמר")}});
+(()=>{const img=document.querySelector(".brand img");if(!img)return;let t=null;const cancel=()=>{clearTimeout(t);t=null};
+  img.addEventListener("pointerdown",()=>{if(!isOwner||preview)return;cancel();t=setTimeout(()=>{t=null;if(navigator.vibrate)try{navigator.vibrate(20)}catch(e){}go(tab==="biz"?dashLast:"biz")},650)});
+  ["pointerup","pointerleave","pointercancel"].forEach(e=>img.addEventListener(e,cancel));img.addEventListener("contextmenu",e=>{if(isOwner)e.preventDefault()})})();
 
 /* ===== progress & rewards ===== */
 const FLAME='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 4 5 5.5 5 11a5 5 0 0 1-10 0c0-2.5 1.2-4 2.5-5 .2 1.8 1 2.8 2 3 0-3.5-.5-6 .5-9z"/></svg>';
@@ -1555,7 +1652,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
@@ -1875,6 +1972,7 @@ function renderStudio(){const v=$("v-studio");
   <div class="hello"><span class="avatar">ס</span><div><small>מה קורה בסטודיו</small><b>סטודיו</b></div><button class="ghost" type="button" id="stRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
   <div class="kpis"><div class="kpi"><b>${r7.length}</b><small>דיווחי שיעור השבוע</small></div><div class="kpi"><b>${new Set(ppl.map(p=>p.id)).size}</b><small>מתאמנים שדווחו</small></div>
     <div class="kpi"><b style="color:var(--bad)">${ppl.filter(p=>(p.tags||[]).includes("red")).length}</b><small>דגלים אדומים</small></div><div class="kpi"><b style="color:var(--warn)">${ppl.filter(p=>(p.tags||[]).includes("pain")).length}</b><small>כאב / פציעה</small></div></div>
+  ${leadsCard()}
   ${(()=>{const of=Object.entries(RO).filter(([,r])=>r.flag&&r.flag.st!=="done").sort((a,b)=>(b[1].flag.date||"").localeCompare(a[1].flag.date||""));return of.length?`<div class="sh"><h2>דגלים פתוחים</h2><span>${of.length}</span></div><div class="flags">${of.map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.flag.st==="open"?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b> <span class="hint">${r.flag.st==="checked"?"נבדק בשיעור הבא":"ממתין"}</span><div class="hint">${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")} · ${esc(r.flag.text||"")}</div></div></button>`).join("")}</div>`:""})()}
   <div class="sh"><h2>דורש תשומת לב</h2><span>7 ימים</span></div>
   <div class="flags">${att.length?att.slice(0,15).map(p=>`<button class="flag" type="button" data-mem="${esc(p.id)}" style="--c:${(p.tags||[]).includes("red")?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(p.name)}</b> <span class="mini" style="display:inline-flex">${tagPills(p.tags)}</span>
@@ -2064,7 +2162,7 @@ function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=f
 $("pvbar").querySelector("button").onclick=exitPreview;
 
 function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
-  k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{}));
+  k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;profSeen=true;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{profSeen=true;render()}));
   k(db.collection(`p/${uid}/workouts`).onSnapshot(s=>{Object.keys(W).forEach(k=>delete W[k]);s.docs.forEach(d=>W[d.id]=d.data());if(sheetMeal===null&&!PL)render()},()=>{}));
   k(db.collection(`p/${uid}/msgs`).onSnapshot(s=>{Object.keys(MSG).forEach(k=>delete MSG[k]);s.docs.forEach(d=>MSG[d.id]=d.data());if(sheetMeal===null)render()},()=>{}));
   const sub=(col,store)=>k(db.collection(tp(col)).onSnapshot(s=>{const seen=new Set();
