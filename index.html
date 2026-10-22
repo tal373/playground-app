@@ -1911,7 +1911,7 @@ function addPerson(raw){const n=String(raw||"").trim();if(!n)return;
 function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType=Object.keys(WD).find(id=>WD[id].date===r.date&&typeOf(id)===r.cls)||("x-"+slug(r.cls));
   DR={cls:r.cls,people:[...JSON.parse(JSON.stringify(r.people||[])),...(r.absent||[]).map(n=>{const hit=Object.entries(RO).find(([,o])=>lowN(o.name)===lowN(n));return {id:hit?hit[0]:newId(),name:n,absent:true,tags:[]}})],note:r.note||"",tal:r.tal||"",edit:1,k:`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`};openP=null;draftSave();render();window.scrollTo(0,0)}
 
-async function sendReport(){const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
+async function sendReport(){if(coachPv){toast("מצב שיקוף — לא נשמר");return}const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
   const miss=pres.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
   const b=$("rpSend");b.disabled=true;b.textContent="שולח…";
   try{const key=rKey(),cls=typeOf(rType),path=`c/${uid}/reports/${key}`;
@@ -2077,6 +2077,7 @@ function renderCoaches(){const v=$("v-coaches");
       <div class="hint">${(()=>{const ac=arb(c.name).length;return ac?`דיווח ${Math.min(w7.length,ac)}/${ac} שיעורים (${Math.round(Math.min(w7.length,ac)/ac*100)}%)`:`${w7.length} שיעורים השבוע`})()} · ${ppl} מתאמנים${flags?` · ${flags} דגלים`:""}${(()=>{const pr=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).includes("pr")).length,0);return pr?` · ${pr} שיאים`:""})()}</div><div class="hint">${last?"דיווח אחרון: "+esc(fmt(last[1].date))+" "+esc(last[1].time||""):"עוד לא דיווח"}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
       ${op?`<div class="rp-b"><div class="hint" dir="ltr" style="text-align:right">${esc(c.email)}</div>
         ${rs.slice(0,10).map(([k,r])=>{const red=(r.people||[]).filter(p=>(p.tags||[]).includes("red")).length;return `<div class="flag" style="--c:${red?"var(--bad)":"var(--s3)"}"><div style="flex:1"><b>${esc(fmt(r.date))} · ${esc(r.time||"")} · ${esc(r.cls||"")}</b><div class="hint">${(r.people||[]).length} מתאמנים${red?` · ${red} דגל אדום`:""}${r.tal?" · הודעה לטל":""}</div>${r.note?`<div class="hint">${esc(r.note)}</div>`:""}</div></div>`}).join("")||`<div class="empty">אין דיווחים עדיין</div>`}
+        <button class="ghost" type="button" data-copv="${esc(c.name||c.email)}" style="align-self:flex-start;padding:8px 14px">שיקוף חי</button>
         <button class="ghost" type="button" data-codel="${esc(c.email)}" style="align-self:flex-start;padding:8px 14px;${coaDel===c.email?"color:var(--bad);border-color:var(--bad)":""}">${coaDel===c.email?"לחץ שוב להסרה":"הסרת המאמן מהאפליקציה"}</button></div>`:""}</div>`}).join("")||`<div class="card"><div class="empty">עוד אין מאמנים</div></div>`}</div>
   <div class="sh"><h2>הוספת מאמן</h2></div>
   <div class="card"><input type="text" id="coName" placeholder="שם, למשל שמעון"><input type="text" id="coMail" inputmode="email" dir="ltr" placeholder="email@gmail.com"><button class="cta" type="button" id="coAdd">הוספה</button>
@@ -2086,7 +2087,15 @@ function renderCoaches(){const v=$("v-coaches");
     try{await db.addCoach(m,n);COA=null;toast("נוסף ✓");loadCoaches()}catch(e){toast("לא נוסף")}}}
 $("v-coaches").addEventListener("click",async ev=>{const t=ev.target;
   const d=t.closest("[data-codel]");if(d){const m=d.dataset.codel;if(coaDel!==m){coaDel=m;render();return}coaDel=null;try{await db.delCoach(m);COA=null;toast("הוסר");loadCoaches()}catch(e){toast("לא הוסר")}return}
+  const pv=t.closest("[data-copv]");if(pv){enterCoachView(pv.dataset.copv);return}
   const c=t.closest("[data-coa]");if(c){coaOpen=coaOpen===c.dataset.coa?null:c.dataset.coa;coaDel=null;render()}});
+/* owner: live mirror of a coach's screens (read-only) */
+let coachPv=null,coachNameOwn="";
+function enterCoachView(name){coachPv=name;coachNameOwn=coachName;coachName=name;
+  ["coach","claude","today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);["class","brief","prog"].forEach(t=>NB(t).hidden=false);
+  const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${name} (מאמן)`;b.hidden=false;window.scrollTo(0,0);go("class")}
+function exitCoachView(){coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;NB("claude").hidden=false;
+  if(!isCoach)["class","brief","prog"].forEach(t=>NB(t).hidden=true);go("coaches")}
 
 /* ---------- coach brief (in-app, from b/<date>-<type>) ---------- */
 const BRF={},BDONE={},BOPEN=new Set();let bfLoaded=false,bfLoading=false,bfSel=null,bfAll=false,bfT=0,bfRun=null,rsT=0,rsTot=0,rsRun=null,rsPause=false;
@@ -2195,7 +2204,7 @@ async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;u
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
 function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;go("coach")}
-$("pvbar").querySelector("button").onclick=exitPreview;
+$("pvbar").querySelector("button").onclick=()=>coachPv?exitCoachView():exitPreview();
 
 function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
   k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;profSeen=true;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{profSeen=true;render()}));
