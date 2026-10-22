@@ -709,6 +709,12 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
 .bz-s{gap:6px;opacity:.85}.bz-soon{align-self:flex-start;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
 .brand img{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+.cl-l{display:flex;flex-direction:column;gap:6px}.cl-r{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.cl-r.out{opacity:.55}.cl-n{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}.cl-n small{flex-basis:100%;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-new,.cl-app{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px}.cl-new{background:var(--hot);color:#fff}.cl-app{border:1px solid var(--ok);color:var(--ok)}
+.cl-b{display:flex;gap:6px;flex:none}.cl-b button{min-width:52px;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--s2);font-weight:800}
+.cl-b button[data-v="1"][aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--navy)}.cl-b button[data-v="0"][aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.dseg button{font-size:13.5px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -726,6 +732,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <section class="view" id="v-studio" hidden></section>
   <section class="view" id="v-coaches" hidden></section>
   <section class="view" id="v-biz" hidden></section>
+  <section class="view" id="v-clients" hidden></section>
   <footer class="sig"><img src="pg-logo.png" alt=""><b>PLAYGROUND STUDIO</b><span>ליווי אישי של טל ליפשטט · אימון, תזונה ושיקום</span></footer>
 </div>
 
@@ -952,14 +959,14 @@ function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const
 function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
 function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioMe();return}$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
   $("v-today").innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>ברוכים הבאים לפלייגראונד</h1><p>${uid?"קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין."}</p></div>`}
 
 /* ===== studio member (free tier) ===== */
-let MEM=null,MEMst=0,CPV=[],LEADM={};
+let MEM=null,MEMst=0,CPV=[],LEADM={},MEMS="none";
 const UPS=[["menu","תפריט ותזונה אישית","תפריט שבנוי בשבילך, מעקב יומי פשוט, מתכונים והתאמות מטל לאורך הדרך.","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"],
   ["home","תכנית אימונים אישית לבית","אימונים לימים בלי סטודיו, עם סרטון לכל תרגיל, טיימר ומעקב התקדמות.","M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"],
   ["physio","פיזיו, טיפול ושיקום","טיפול ידני ותכנית שיקום אישית לכאב, פציעה או חזרה לאימונים.","M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"]];
@@ -967,7 +974,7 @@ const LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width
 const ytOk=u=>/^https:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[\w-]{6,}/.test(String(u||""));
 const numKg=v=>{const m=String(v||"").replace(",",".").match(/\d+(\.\d+)?/);return m?+m[0]:null};
 async function loadMe(force){if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
-  if(window.pgMember){await pgMember.link();const [a,b]=await Promise.all([pgMember.me(),pgMember.preview()]);MEM=a;CPV=b||[]}
+  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b]=await Promise.all([pgMember.me(),pgMember.preview()]);MEM=a;CPV=b||[]}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   MEMst=2;if(!prof)render()}
 function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
@@ -979,7 +986,7 @@ function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","
   const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
   v.innerHTML=`
   <div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>
-  ${MEM?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
+  ${MEM?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
   ${cp.length?cp.map(c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type||"")}</b></div>
@@ -1012,6 +1019,35 @@ function leadsCard(){if(!isOwner||preview)return "";if(LEADS===null||Date.now()-
     return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}</div></div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
 $("v-studio").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
   b.disabled=true;try{await db.doc(l.id).update({st:"done",done:TODAY});l.data={...l.data,st:"done"};render()}catch(e){b.disabled=false;toast("לא נשמר")}});
+
+/* ===== active Arbox clients: who is in the app (owner) ===== */
+let CL=null,clF="pending",clQ="",clAt=0;
+const CLW=/[?&]cl=1\b/.test(location.search);
+async function loadClients(){clAt=Date.now();try{const s=await db.collection("cl").get();CL={};s.docs.forEach(d=>CL[d.id]=d.data())}catch(e){CL=CL||{}}if(tab==="clients"&&!typing())render()}
+function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach");return}
+  if(!CL){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadClients();return}
+  if(Date.now()-clAt>120000)loadClients();
+  const all=Object.entries(CL).filter(([,c])=>c.active!==false),st=c=>c.inc===true?"in":c.inc===false?"out":"pending";
+  const cnt={pending:0,in:0,out:0};all.forEach(([,c])=>cnt[st(c)]++);
+  const q=clQ.trim().toLowerCase(),list=all.filter(([,c])=>(clF==="all"||st(c)===clF)&&(!q||(c.name||"").toLowerCase().includes(q)||(c.plan||"").toLowerCase().includes(q)))
+    .sort((a,b)=>(+!!b[1].app- +!!a[1].app)||((b[1].first||"").localeCompare(a[1].first||""))||(a[1].name||"").localeCompare(b[1].name||"","he"));
+  const isNew=c=>!c.init&&c.inc==null;
+  v.innerHTML=`
+  <div class="hello"><span class="avatar">ל</span><div><small>לקוחות פעילים בארבוקס · ${all.length}</small><b>מי במערכת</b></div></div>
+  <p class="hint lead">״כן״ = הלקוח יכול להיכנס לאפליקציה ולראות את האימון, המשקלים וההתקדמות שלו. ״לא״ = לא נכנס. כל יום הרשימה מתעדכנת מארבוקס, ולקוח חדש מגיע אליך כהתראה בערב.</p>
+  <div class="chips">${[["pending","ממתינים"],["in","במערכת"],["out","לא"],["all","הכל"]].map(([k,l])=>`<button type="button" data-clf="${k}" aria-pressed="${clF===k}">${l}${k==="all"?"":` · ${cnt[k]}`}</button>`).join("")}</div>
+  <div class="addrow sm"><input type="text" id="clQ" value="${esc(clQ)}" placeholder="חיפוש שם או מנוי" autocomplete="off"></div>
+  ${clF==="pending"&&list.length>1?`<button type="button" class="linkb" id="clAllIn">סימון כל ${list.length} הממתינים שברשימה כ״כן״</button>`:""}
+  <div class="cl-l">${list.length?list.map(([id,c])=>{const s=st(c);return `<div class="cl-r${s==="out"?" out":""}">
+    <div class="cl-n"><b>${esc(c.name||"")}</b>${isNew(c)?`<span class="cl-new">חדש</span>`:""}${c.app?`<span class="cl-app">באפליקציה</span>`:""}<small>${esc(c.plan||"")}${c.end?` · עד ${esc(fmt(c.end))}`:""}</small></div>
+    <div class="cl-b"><button type="button" data-cli="${esc(id)}" data-v="1" aria-pressed="${s==="in"}">כן</button><button type="button" data-cli="${esc(id)}" data-v="0" aria-pressed="${s==="out"}">לא</button></div></div>`}).join(""):`<div class="card"><div class="empty">${clF==="pending"?"אין ממתינים. הכל מסומן.":"אין לקוחות כאן"}</div></div>`}</div>`;
+  const qi=$("clQ");qi.oninput=()=>{clQ=qi.value;const p=qi.selectionStart;dirty=false;renderClients();const n=$("clQ");n.focus();try{n.setSelectionRange(p,p)}catch(e){}};
+  const ab=$("clAllIn");if(ab)ab.onclick=async()=>{ab.disabled=true;const ids=list.map(([id])=>id);let bad=0;
+    for(const id of ids){CL[id].inc=true;try{await db.doc(`cl/${id}`).update({inc:true,dec:TODAY})}catch(e){CL[id].inc=null;bad++}}render();toast(bad?`${bad} לא נשמרו`:`${ids.length} סומנו ✓`)}}
+$("v-clients").addEventListener("click",async ev=>{const f=ev.target.closest("[data-clf]");if(f){clF=f.dataset.clf;render();return}
+  const b=ev.target.closest("[data-cli]");if(!b)return;const id=b.dataset.cli,c=CL&&CL[id];if(!c)return;
+  const nv=b.dataset.v==="1",val=c.inc===nv?null:nv,old=c.inc;c.inc=val;render();
+  try{await db.doc(`cl/${id}`).update({inc:val,dec:TODAY})}catch(e){c.inc=old;render();toast("לא נשמר")}});
 
 /* ===== my business (owner only, hidden) ===== */
 let BZ=null,bzAdd=false;
@@ -1652,7 +1688,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
@@ -2021,9 +2057,9 @@ $("v-studio").addEventListener("click",ev=>{const t=ev.target;
   const m=t.closest("[data-mem]");if(m){openMember(m.dataset.mem);return}});
 
 /* ---------- dashboard switcher + coaches dashboard ---------- */
-const DASH=["coach","studio","coaches"];let dashLast="coach",COA=null,coaOpen=null,coaDel=null;
+const DASH=["coach","studio","clients","coaches"];let dashLast="coach",COA=null,coaOpen=null,coaDel=null;
 function dashSeg(){const v=$("v-"+tab);if(!v||v.querySelector(".dseg"))return;const d=document.createElement("div");d.className="dseg";
-  d.innerHTML=[["coach","ליווי אישי"],["studio","סטודיו"],["coaches","מאמנים"]].map(([k,l])=>`<button type="button" data-dseg="${k}" aria-pressed="${k===tab}">${l}</button>`).join("");v.prepend(d)}
+  d.innerHTML=[["coach","ליווי אישי"],["studio","סטודיו"],["clients","לקוחות"],["coaches","מאמנים"]].map(([k,l])=>`<button type="button" data-dseg="${k}" aria-pressed="${k===tab}">${l}</button>`).join("");v.prepend(d)}
 async function loadCoaches(){try{COA=await db.coachList()}catch(e){COA=[]}if(tab==="coaches")render()}
 function renderCoaches(){const v=$("v-coaches");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
@@ -2184,7 +2220,7 @@ let liveU=[];
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
     db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
     if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}
-    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(!(isCoach&&openRep()))go("coach");return}
+    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(CLW){try{history.replaceState(null,"",location.pathname)}catch(e){}dashLast="clients";go("clients");return}if(!(isCoach&&openRep()))go("coach");return}
   if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false;setSave("מחובר ✓","ok");if(!openRep())go("brief");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
