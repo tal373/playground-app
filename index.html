@@ -749,6 +749,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <section class="view" id="v-coaches" hidden></section>
   <section class="view" id="v-biz" hidden></section>
   <section class="view" id="v-clients" hidden></section>
+  <section class="view" id="v-smy" hidden></section>
   <footer class="sig"><img src="pg-logo.png" alt=""><b>PLAYGROUND STUDIO</b><span>ליווי אישי של טל ליפשטט · אימון, תזונה ושיקום</span></footer>
 </div>
 
@@ -757,6 +758,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
   <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>אימון</button>
   <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
+  <button class="nb" type="button" data-tab="smy" hidden><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/></svg>סטודיו</button>
   <button class="nb" type="button" data-tab="prog" hidden><svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>תכנית</button>
   <button class="nb" type="button" data-tab="brief" hidden><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>בריף</button>
   <button class="nb" type="button" data-tab="class" hidden><svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM6 6h3M15 6h3v15H6V6M9 12h6M9 16h4"/></svg>שיעור</button>
@@ -977,7 +979,7 @@ function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(memPv){renderStudioMe();return}
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients,smy:renderSmy})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
 
 function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioMe();return}$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
@@ -1000,17 +1002,16 @@ const numKg=v=>{const m=String(v||"").replace(",",".").match(/\d+(\.\d+)?/);retu
 async function loadMe(force){if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
   if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b]=await Promise.all([pgMember.me(),pgMember.preview()]);MEM=a;CPV=b||[]}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
-  MEMst=2;if(!prof)render()}
-function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
-  if(!memPv&&(!profSeen||MEMst<2)){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
+  MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
+function studioBody(full){
   const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
   const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
   const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10);
   const prs=log.filter(l=>l.pr).length,dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
   const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
-  v.innerHTML=`
-  <div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>
-  ${MEM&&(memPv||MEMS==="in")?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
+  return `
+  ${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
+  ${!full||MEM&&(memPv||MEMS==="in")?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
   ${cp.length?cp.map(c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type||"")}</b></div>
@@ -1025,11 +1026,16 @@ function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","
       return `<div class="ml-r"><div><b class="en">${esc(exName(x).replace(/\s*\([^)]*\)/g,"").replace(/\s+-\s+.*$/,"").trim()||exName(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
         <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}</div></div>`}).join("")}</div>`
     :`<div class="card"><div class="empty">${MEM?"אחרי השיעור הבא המאמן ירשום את המשקלים שלך, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
-  <div class="sh"><h2>ליווי אישי</h2></div>
+  ${full?`  <div class="sh"><h2>ליווי אישי</h2></div>
   <p class="hint lead">חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.</p>
   ${UPS.map(([k,t,d,ic])=>{const sent=LEADM[k];return `<div class="card ups"><div class="ups-h"><span class="ups-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic}"/></svg></span><b>${esc(t)}</b><span class="ups-l">${LOCK}</span></div>
     <p class="hint" style="margin:0">${esc(d)}</p>
-    ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">אני רוצה לשמוע</button>`}</div>`}).join("")}`}
+    ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">אני רוצה לשמוע</button>`}</div>`}).join("")}`:""}`}
+function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
+  if(!memPv&&(!profSeen||MEMst<2)){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
+  v.innerHTML=studioBody(true)}
+function renderSmy(){const v=$("v-smy");if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
+  v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false)}
 $("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[data-want]");if(!b||prof)return;if(memPv){toast("מצב שיקוף · לא נשלח");return}const k=b.dataset.want,u=UPS.find(x=>x[0]===k);if(!u||LEADM[k])return;
   b.disabled=true;const d={want:k,label:u[1],at:new Date().toISOString(),name:(MEM&&MEM.name)||"",email:window.pgMember?pgMember.email():"",st:"new"};
   try{await db.doc(`t/${uid}/leads/${k}`).set(d);LEADM[k]=d;toast("נשלח לטל ✓");render()}catch(e){b.disabled=false;toast("לא נשלח, נסו שוב")}});
@@ -1712,7 +1718,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
-function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients","smy"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
@@ -2308,7 +2314,7 @@ function exitPreview(){if(isCoach){NB("class").hidden=false;NB("brief").hidden=f
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
 function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
-  k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;profSeen=true;if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{profSeen=true;render()}));
+  k(db.doc(`p/${uid}`).onSnapshot(s=>{prof=s.exists?s.data():null;profSeen=true;if(prof&&!isOwner&&!isCoach&&!preview&&MEMst===0)loadMe();if(prof){$("nav").hidden=false;if($("v-today").hidden&&tab==="today")$("v-today").hidden=false}render()},()=>{profSeen=true;render()}));
   k(db.collection(`p/${uid}/workouts`).onSnapshot(s=>{Object.keys(W).forEach(k=>delete W[k]);s.docs.forEach(d=>W[d.id]=d.data());if(sheetMeal===null&&!PL)render()},()=>{}));
   k(db.collection(`p/${uid}/msgs`).onSnapshot(s=>{Object.keys(MSG).forEach(k=>delete MSG[k]);s.docs.forEach(d=>MSG[d.id]=d.data());if(sheetMeal===null)render()},()=>{}));
   const sub=(col,store)=>k(db.collection(tp(col)).onSnapshot(s=>{const seen=new Set();
