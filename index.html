@@ -1870,29 +1870,37 @@ const WIDE=()=>matchMedia("(min-width:820px)").matches;
 try{matchMedia("(min-width:820px)").addEventListener("change",()=>{if(tab==="class"&&!typing())render()})}catch(e){}
 function exBlocks(w){const out=[];if(!w||!w.blocks)return out;
   w.blocks.forEach(b=>{const nm=b.name||"";if(/מוביליטי|mobility|warm|חימום/i.test(nm))return;const items=[],meta={};
-    const fr=String(b.format||"").match(/(\d+)(?:\s*-\s*(\d+))?\s*(rounds?|sets?|סבבים|סטים)/i),fN=fr?+(fr[2]||fr[1]):0;
-    (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!items.includes(n)){items.push(n);meta[n]={sets:Math.min(8,+i.sets||fN||0),reps:String(i.reps||"").trim()}}});
-    if(items.length)out.push({name:nm.split("·").pop().trim()||nm,items,meta,str:/strength|main|כוח|מיין/i.test(nm)&&!/metcon|מטקון/i.test(nm)})});return out}
+    const fm=String(b.format||""),fr=fm.match(/(\d+)(?:\s*-\s*(\d+))?\s*(rounds?|sets?|סבבים|סטים)/i)||fm.match(/\bx\s*(\d+)\b/i),fN=fr?+(fr[2]||fr[1]):0;
+    const iv=fm.match(/^\s*(\d+)\s*\/\s*\d+/),str=/strength|main|כוח|מיין/i.test(nm)&&!/metcon|מטקון/i.test(nm),core=/core|קור/i.test(nm)&&!str;
+    (b.items||[]).forEach(i=>{const n=exClean(i.n);if(n&&!/^(rest|score|into)\b/i.test(n)&&!/^\*/.test(n)&&!items.includes(n)){items.push(n);
+      const rp=String(i.reps||"").trim(),raw=String(i.n||""),tm=raw.match(/\d+:\d\d(?:\s*-\s*\d+:\d\d)?/);
+      const mode=/hold/i.test(raw)||(tm&&!/\d+\s*\/\s*\d+/.test(rp))?"hold":iv?"int":"reps";
+      meta[n]={sets:Math.min(8,+i.sets||fN||0),reps:mode==="int"?"":rp,mode,work:iv?+iv[1]:0,hold:tm?tm[0]:"",warm:str}}});
+    if(items.length)out.push({name:nm.split("·").pop().trim()||nm,items,meta,str,core})});return out}
 const allEx=w=>{const a=[];exBlocks(w).forEach(b=>b.items.forEach(x=>{if(!a.includes(x))a.push(x)}));return a};
-const metaOf=x=>{for(const b of exBlocks(WD[rType]))if(b.str&&b.meta[x]&&b.meta[x].sets>0)return b.meta[x];return null};
+const metaOf=x=>{for(const b of exBlocks(WD[rType]))if((b.str||b.core)&&b.meta[x]&&b.meta[x].sets>0)return {...b.meta[x],core:b.core};return null};
 const exName=x=>String(x).replace(/\s*\(Var\)\s*-.*$/i,"").replace(/\s*\([^)]*\/[^)]*\)\s*$/,"").trim()||x;
-const setsOf=(L,n)=>{const a=Array.isArray(L.sets)?L.sets.slice():[];if(!a.length&&(L.kg||L.reps))a[1]={kg:L.kg||"",reps:L.reps||""};for(let k=0;k<=n;k++)a[k]=a[k]||{kg:"",reps:""};return a.slice(0,n+1)};
-const setDone=o=>!!(o&&String(o.kg||"").trim()&&String(o.reps||"").trim());
-function setsSync(L,n){const a=setsOf(L,n);L.sets=a;let best=null;a.forEach((o,k)=>{if(!k)return;const v=parseFloat(String(o.kg||"").replace(",","."));if(isFinite(v)&&(!best||v>=best.v))best={v,o}});
-  if(best){L.kg=String(best.o.kg).trim();L.reps=String(best.o.reps||"").trim()}else{L.kg="";L.reps=""}}
-function setRows(p,i,x,r,m){const L=(p.lx||{})[x]||{},n=m.sets,a=setsOf(L,n),sg=sugg(r,x),done=a.filter(setDone).length,part=done>0&&done<n+1;
-  const pk=sg&&sg.kg?sg.kg:"ק״ג",pr=m.reps||"חזרות";
-  return `<div class="sets${part?" part":""}"><div class="sets-h"><span>${n} סבבים + חימום${m.reps?` · ${esc(m.reps)} חזרות`:""}</span><b class="${done===n+1?"ok":part?"warn":""}">${done}/${n+1}</b></div>
-    ${a.map((o,k)=>`<div class="set-r${setDone(o)?" done":""}"><span class="set-l">${k?`סט ${k}`:"חימום"}</span>
-      <input type="text" inputmode="decimal" data-sk="kg" data-si="${k}" data-lx="${esc(x)}" data-i="${i}" value="${esc(o.kg||"")}" placeholder="${k?esc(pk):"ק״ג"}">
+const setTot=m=>m.sets+(m.warm?1:0);
+const setsOf=(L,m)=>{const n=setTot(m),a=Array.isArray(L.sets)?L.sets.slice():[];if(!a.length&&(L.kg||L.reps))a[m.warm?1:0]={kg:L.kg||"",reps:L.reps||""};for(let k=0;k<n;k++)a[k]=a[k]||{kg:"",reps:""};return a.slice(0,n)};
+const setDone=o=>!!(o&&String(o.reps||"").trim());
+const setLbl=(m,k)=>m.warm?(k?`סט ${k}`:"חימום"):`סבב ${k+1}`;
+function setsSync(L,m){const a=setsOf(L,m);L.sets=a;if(m.mode==="hold")L.unit="sec";else if(m.mode==="int")L.unit="reps@"+m.work;let best=null;
+  a.forEach((o,k)=>{if(m.warm&&!k)return;const v=parseFloat(String(o.kg||"").replace(",","."));const sc=isFinite(v)?v:-1;if(String(o.reps||"").trim()&&(!best||sc>=best.v))best={v:sc,o}});
+  if(best){L.kg=String(best.o.kg||"").trim();L.reps=String(best.o.reps||"").trim()}else{L.kg="";L.reps=""}}
+function setRows(p,i,x,r,m){const L=(p.lx||{})[x]||{},n=setTot(m),a=setsOf(L,m),sg=sugg(r,x),done=a.filter(setDone).length,part=done>0&&done<n,f0=m.warm?1:0;
+  const pk=sg&&sg.kg?sg.kg:"ק״ג / BW",pr=m.mode==="hold"?"שניות":m.mode==="int"?"חזרות":(m.reps||"חזרות");
+  const head=m.mode==="hold"?`החזקה${m.hold?" "+m.hold:""} · כמה שניות החזיק`:m.mode==="int"?`${m.work} שנ׳ עבודה · כמה חזרות`:(m.reps?`${m.reps} חזרות`:"");
+  return `<div class="sets${part?" part":""}"><div class="sets-h"><span>${m.sets} סבבים${m.warm?" + חימום":""}${head?` · ${esc(head)}`:""}</span><b class="${done===n?"ok":part?"warn":""}">${done}/${n}</b></div>
+    ${a.map((o,k)=>`<div class="set-r${setDone(o)?" done":""}"><span class="set-l">${setLbl(m,k)}</span>
+      <input type="text" inputmode="decimal" data-sk="kg" data-si="${k}" data-lx="${esc(x)}" data-i="${i}" value="${esc(o.kg||"")}" placeholder="${k>=f0?esc(pk):"ק״ג"}">
       <input type="text" inputmode="numeric" class="rp" data-sk="reps" data-si="${k}" data-lx="${esc(x)}" data-i="${i}" value="${esc(o.reps||"")}" placeholder="${esc(pr)}"></div>`).join("")}
-    ${a[1]&&String(a[1].kg||"").trim()&&a.slice(2).some(o=>!String(o.kg||"").trim())?`<button type="button" class="chipb" data-sfill="${esc(x)}" data-i="${i}">אותו משקל וחזרות לשאר הסטים</button>`:""}
-    ${sg&&sg.kg&&!a.slice(1).some(o=>String(o.kg||"").trim())?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג לכל הסטים, כמו שהוצע</button>`:""}</div>`}
+    ${a[f0]&&setDone(a[f0])&&a.slice(f0+1).some(o=>!setDone(o))?`<button type="button" class="chipb" data-sfill="${esc(x)}" data-i="${i}">${m.warm?"אותו משקל וחזרות לשאר הסטים":"אותו דבר לשאר הסבבים"}</button>`:""}
+    ${sg&&sg.kg&&!a.slice(f0).some(o=>String(o.kg||"").trim())?`<button type="button" class="chipb sg" data-sg="${esc(sg.kg)}" data-lx="${esc(x)}" data-i="${i}">${esc(sg.kg)} ק״ג לכל הסטים, כמו שהוצע</button>`:""}</div>`}
 function liftRow(p,i,x,r,str,m){const L=(p.lx||{})[x]||{},sg=sugg(r,x),vs=varsOf(x);
-  if(str&&m&&m.sets>0)return `<div class="lift-r"><label>${esc(exName(x))}</label>
+  if((str||(m&&m.core))&&m&&m.sets>0)return `<div class="lift-r"><label>${esc(exName(x))}</label>
     ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
     ${setRows(p,i,x,r,m)}
-    <div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>
+    ${str?`<div class="rpe"><span>RPE</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-lr="${n}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div>`:""}
     ${sg?`<div class="hint">${esc(sg.t)}</div>`:""}</div>`;
   return `<div class="lift-r"><label>${esc(exName(x))}</label>
     ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-lv="${esc(v)}" data-lx="${esc(x)}" data-i="${i}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
@@ -1919,7 +1927,7 @@ function personCard(p,i,exs,met){const r=RO[p.id]||{},wide=WIDE(),op=(wide||open
       ${ex2.length?`<span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-px="${esc(x)}" data-i="${i}" aria-pressed="${pn.ex===x}" class="en">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>`:""}
       <input type="text" data-pm="${i}" value="${esc(pn.mod||"")}" placeholder="מה שינית? למשל: ירדנו ל-Goblet, טווח חלקי"></div>`:""}
     ${tags.includes("pr")&&ex2.length?`<div class="painbox prb"><b class="bx">שיא</b><span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div></div>`:""}
-    ${bl.map(b=>`<span class="lbl blk">${esc(b.name)}</span>${b.items.map(x=>liftRow(p,i,x,r,b.str,b.meta[x])).join("")}`).join("")}
+    ${bl.map(b=>`<span class="lbl blk">${esc(b.name)}</span>${b.items.map(x=>liftRow(p,i,x,r,b.str,b.meta[x]&&{...b.meta[x],core:b.core})).join("")}`).join("")}
     ${mis.length?`<span class="lbl">מה תיקנת (מהבריף)</span><div class="chips sm">${mis.map(m=>`<button type="button" data-er="${esc(m)}" data-i="${i}" aria-pressed="${(p.err||[]).includes(m)}">${esc(m)}</button>`).join("")}</div>`:""}
     ${met?`<div class="kg"><label>תוצאה במטקון</label><input type="text" data-f="score" data-i="${i}" value="${esc(p.score||"")}" placeholder="זמן / סבבים"></div>`:""}
     <textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
@@ -1938,8 +1946,8 @@ function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType
 
 async function sendReport(){if(coachPv){toast("מצב שיקוף — לא נשמר");return}const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
   const miss=pres.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
-  for(const p of pres){for(const [x,L] of Object.entries(p.lx||{})){const m=metaOf(x);if(!m||!L)continue;const a=setsOf(L,m.sets),d=a.filter(setDone).length;
-    if(d>0&&d<m.sets+1){openP=p.id;render();const miss2=a.map((o,k)=>setDone(o)?null:(k?`סט ${k}`:"חימום")).filter(Boolean);toast(`${p.name} · ${exName(x)}: חסר ${miss2.join(", ")}`);
+  for(const p of pres){for(const [x,L] of Object.entries(p.lx||{})){const m=metaOf(x);if(!m||!L)continue;const a=setsOf(L,m),d=a.filter(setDone).length;
+    if(d>0&&d<setTot(m)){openP=p.id;render();const miss2=a.map((o,k)=>setDone(o)?null:setLbl(m,k)).filter(Boolean);toast(`${p.name} · ${exName(x)}: חסר ${miss2.join(", ")}`);
       setTimeout(()=>{const el=document.querySelector(".sets.part");if(el)el.scrollIntoView({block:"center",behavior:"smooth"})},80);return}}}
   const b=$("rpSend");b.disabled=true;b.textContent="שולח…";
   try{const key=rKey(),cls=typeOf(rType),path=`c/${uid}/reports/${key}`;
@@ -1992,9 +2000,9 @@ $("v-class").addEventListener("click",ev=>{const t=ev.target;
   const st=t.closest("[data-st]");if(st){const p=DR.people[+st.dataset.i],x=st.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},sg=sugg(RO[p.id]||{},x);
     const cur=parseFloat(String(L.kg||"").replace(",",".")),sk=parseFloat((sg&&sg.kg)||""),base=isFinite(cur)?cur:isFinite(sk)?sk:0,step=base>=20?2.5:1;L.kg=String(Math.max(0,Math.round((base+(+st.dataset.st)*step)*100)/100));draftSave();render();return}
   const sgb=t.closest("[data-sg]");if(sgb){const p=DR.people[+sgb.dataset.i],x=sgb.dataset.lx;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},m=metaOf(x);
-    if(m&&m.sets>0){const a=setsOf(L,m.sets);a.forEach((o,k)=>{if(k&&!String(o.kg||"").trim())o.kg=sgb.dataset.sg});L.sets=a;setsSync(L,m.sets)}else L.kg=sgb.dataset.sg;draftSave();render();return}
-  const sf=t.closest("[data-sfill]");if(sf){const p=DR.people[+sf.dataset.i],x=sf.dataset.sfill,m=metaOf(x);if(!m)return;const L=p.lx[x],a=setsOf(L,m.sets);
-    a.forEach((o,k)=>{if(k>1){if(!String(o.kg||"").trim())o.kg=a[1].kg;if(!String(o.reps||"").trim())o.reps=a[1].reps}});L.sets=a;setsSync(L,m.sets);draftSave();render();return}
+    if(m&&m.sets>0){const a=setsOf(L,m);a.forEach((o,k)=>{if((k||!m.warm)&&!String(o.kg||"").trim())o.kg=sgb.dataset.sg});L.sets=a;setsSync(L,m)}else L.kg=sgb.dataset.sg;draftSave();render();return}
+  const sf=t.closest("[data-sfill]");if(sf){const p=DR.people[+sf.dataset.i],x=sf.dataset.sfill,m=metaOf(x);if(!m)return;const L=p.lx[x],a=setsOf(L,m);
+    const f0=m.warm?1:0;a.forEach((o,k)=>{if(k>f0){if(!String(o.kg||"").trim())o.kg=a[f0].kg;if(!String(o.reps||"").trim())o.reps=a[f0].reps}});L.sets=a;setsSync(L,m);draftSave();render();return}
   const prx=t.closest("[data-prx]");if(prx){const p=DR.people[+prx.dataset.i];p.prx=p.prx===prx.dataset.prx?"":prx.dataset.prx;draftSave();render();return}
   const mo=t.closest("[data-more]");if(mo){const p=DR.people[+mo.dataset.more];p.more=!p.more;render();return}
   const d=t.closest("[data-rd]");if(d){rDate=d.dataset.rd;rType=null;rTime=null;render();draftSave();fresh();return}
@@ -2023,8 +2031,8 @@ $("v-class").addEventListener("input",ev=>{const t=ev.target;if(!DR)return;
   if(t.id==="rpNote")DR.note=t.value;else if(t.id==="rpTal")DR.tal=t.value;else if(t.id==="vcTxt"){vcText=t.value;return}
   else if(t.dataset.pm!=null){const p=DR.people[+t.dataset.pm];p.pn={...(p.pn||{}),mod:t.value}}
   else if(t.dataset.lk){const p=DR.people[+t.dataset.i],x=t.dataset.lx;p.lx=p.lx||{};(p.lx[x]=p.lx[x]||{})[t.dataset.lk]=t.value}
-  else if(t.dataset.sk){const p=DR.people[+t.dataset.i],x=t.dataset.lx,m=metaOf(x);if(!m)return;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},a=setsOf(L,m.sets);a[+t.dataset.si][t.dataset.sk]=t.value;L.sets=a;setsSync(L,m.sets);
-    const row=t.closest(".set-r");if(row)row.classList.toggle("done",setDone(a[+t.dataset.si]));const box=t.closest(".sets");if(box){const d=a.filter(setDone).length,n=m.sets+1,c=box.querySelector(".sets-h b");if(c){c.textContent=`${d}/${n}`;c.className=d===n?"ok":d?"warn":""}box.classList.toggle("part",d>0&&d<n)}dirty=true}
+  else if(t.dataset.sk){const p=DR.people[+t.dataset.i],x=t.dataset.lx,m=metaOf(x);if(!m)return;p.lx=p.lx||{};const L=p.lx[x]=p.lx[x]||{},a=setsOf(L,m);a[+t.dataset.si][t.dataset.sk]=t.value;L.sets=a;setsSync(L,m);
+    const row=t.closest(".set-r");if(row)row.classList.toggle("done",setDone(a[+t.dataset.si]));const box=t.closest(".sets");if(box){const d=a.filter(setDone).length,n=setTot(m),c=box.querySelector(".sets-h b");if(c){c.textContent=`${d}/${n}`;c.className=d===n?"ok":d?"warn":""}box.classList.toggle("part",d>0&&d<n)}dirty=true}
   else if(t.dataset.kg!=null){const p=DR.people[+t.dataset.i];p.kg=p.kg||{};p.kg[t.dataset.kg]=t.value}
   else if(t.dataset.f){DR.people[+t.dataset.i][t.dataset.f]=t.value}else return;draftSave()});
 
