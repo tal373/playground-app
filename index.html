@@ -730,6 +730,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .bf-ver{background:var(--s2);border-radius:16px;padding:11px 13px;font-size:14.5px}.bf-ver>b{display:block;font-size:12px;margin-bottom:6px;color:var(--c)}
 .bf-ver ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}.bf-ver li b{direction:ltr;unicode-bidi:isolate;color:var(--ink)}.bf-ver li span{color:#c9d4e4}
 .sets-h{gap:8px}.sets-h>span{flex:1}.sadj{display:flex;gap:4px;flex:none}.sadj button{border:1px solid var(--line);background:var(--s1);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12.5px;min-width:30px}.sadj button:disabled{opacity:.35}
+.sl-c{flex-wrap:wrap}.slf{gap:10px}.sl-h{display:flex;flex-direction:column}.sl-h small{color:var(--muted);font-size:12.5px}
 .cl-b button.cl-pv{min-width:0;font-size:12.5px;font-weight:700;color:var(--muted);padding:9px 10px}
 button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}
 .cl-card{display:flex;flex-direction:column;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:-2px 0 6px}.cl-card label{font-size:13px;font-weight:700}.cl-card label small{font-weight:500;color:var(--muted);margin-inline-start:6px}
@@ -859,6 +860,7 @@ window.pgMember={async link(){try{const {data}=await SB.functions.invoke("member
   async me(){try{const {data,error}=await SB.rpc("my_member");return error?null:(data||null)}catch(e){return null}},
   async preview(){try{const {data,error}=await SB.rpc("class_preview");return error?[]:(data||[])}catch(e){return []}},
   email(){return (me&&me.email)||""},
+  async recent(){try{const {data,error}=await SB.rpc("my_recent_classes");return error?[]:(data||[])}catch(e){return []}},
   async view(aid){try{const {data,error}=await SB.rpc("member_view",{p_aid:String(aid)});return error?null:data}catch(e){return null}},
   async leads(){const {data,error}=await SB.from("docs").select("path,owner,data").like("parent","t/%/leads").order("updated_at",{ascending:false}).limit(300);if(error)throw E(error);return (data||[]).map(r=>({id:r.path,owner:r.owner,data:r.data}))}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="user"?user:null)};
@@ -1004,7 +1006,7 @@ const LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width
 const ytOk=u=>/^https:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[\w-]{6,}/.test(String(u||""));
 const numKg=v=>{const m=String(v||"").replace(",",".").match(/\d+(\.\d+)?/);return m?+m[0]:null};
 async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
-  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b]=await Promise.all([pgMember.me(),pgMember.preview()]);MEM=a;CPV=b||[]}
+  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[]}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
 function studioBody(full){
@@ -1024,6 +1026,7 @@ function studioBody(full){
     ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
       return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></div>`}).join("")}</div>`:""}
   </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
+  ${slSection()}
   <div class="sh"><h2>הנתונים שלי</h2>${log.length?`<span>${log.length} שיעורים</span>`:""}</div>
   ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
     <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0;
@@ -1045,6 +1048,55 @@ function renderSmy(){const v=$("v-smy");if(preview){if(!(MEM&&MEMS==="in")){v.in
 $("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[data-want]");if(!b||prof)return;if(memPv){toast("מצב שיקוף · לא נשלח");return}const k=b.dataset.want,u=UPS.find(x=>x[0]===k);if(!u||LEADM[k])return;
   b.disabled=true;const d={want:k,label:u[1],at:new Date().toISOString(),name:(MEM&&MEM.name)||"",email:window.pgMember?pgMember.email():"",st:"new"};
   try{await db.doc(`t/${uid}/leads/${k}`).set(d);LEADM[k]=d;toast("נשלח לטל ✓");render()}catch(e){b.disabled=false;toast("לא נשלח, נסו שוב")}});
+
+/* ===== trainee self-log of studio classes (weights, sets, effort) ===== */
+let SRC2=[],SLK=null,SLD={};
+const slCls=k=>SRC2.find(c=>c.key===k);
+function slMeta(c){const out=[];exBlocks(c).forEach(b=>{if(!(b.str||b.core))return;b.items.forEach(x=>{const m=b.meta[x];if(m&&m.sets>0)out.push([x,{...m,core:b.core,base:m.sets},b.name])})});return out}
+function slVars(c,x){const v=varsOf0(x);if(v.length)return v;const nx=exName(x).toLowerCase();
+  const hit=(c.brief||[]).find(e=>{const nm=exName(exClean(strip(e.n))).toLowerCase();return nm===nx||nm.includes(nx.slice(0,16))||nx.includes(nm.slice(0,16))});
+  if(hit&&Array.isArray(hit.g)&&hit.g.length)return hit.g.map(g=>Array.isArray(g)?g[0]:g);return libVars(x)}
+function slOpen(k){SLK=k;const c=slCls(k);SLD=JSON.parse(JSON.stringify((c&&c.mine&&c.mine.lx)||{}))}
+function slForm(){const c=slCls(SLK);if(!c)return "";const ex=slMeta(c),ro=!!(memPv||preview);let blk="";
+  return `<div class="card slf"><div class="sl-h"><b>${esc(c.cls||"")} · ${esc(c.date===TODAY?"היום":fmt(c.date))} ${esc(c.time||"")}</b>${c.title?`<small class="en">${esc(c.title)}</small>`:""}</div>
+    ${ex.length?ex.map(([x,m0,bn])=>{const L=SLD[x]||{},m={...m0,sets:L.nS||m0.sets},vs=slVars(c,x),head=bn!==blk?(blk=bn,`<span class="lbl blk">${esc(bn.split("·").pop().trim())}</span>`):"";
+      const tm=m.mode==="hold"||m.mode==="int",a=tm?null:setsOf(L,m),f=L.fail||{};
+      return head+`<div class="lift-r"><label>${esc(exName(x))}</label>
+        ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-sver="${esc(v)}" data-sx="${esc(x)}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
+        <div class="sets"><div class="sets-h"><span>${m.sets} סבבים${m.warm&&!tm?" + חימום":""}${tm?(m.mode==="hold"?" · החזקה":` · ${m.work} שנ׳ עבודה`):m.reps?` · ${esc(m.reps)} חזרות`:""}</span>
+          <span class="sadj"><button type="button" data-sadd2="-1" data-sx="${esc(x)}"${m.sets<=1?" disabled":""}>−</button><button type="button" data-sadd2="1" data-sx="${esc(x)}">+ סט</button></span></div>
+        ${tm?`<div class="tb-r">${Array.from({length:m.sets},(_,k)=>`<button type="button" data-sfail="${k}" data-sx="${esc(x)}" class="${f[k]!=null?"no":""}">סבב ${k+1} ${f[k]!=null?"· לא סיימתי":"✓"}</button>`).join("")}</div>`
+          :a.map((o,k)=>`<div class="set-r${setDone(o)?" done":""}"><span class="set-l">${setLbl(m,k)}</span>
+            <input type="text" inputmode="decimal" data-sfk="kg" data-ssi="${k}" data-sx="${esc(x)}" value="${esc(o.kg||"")}" placeholder="ק״ג / BW">
+            <input type="text" inputmode="numeric" class="rp" data-sfk="reps" data-ssi="${k}" data-sx="${esc(x)}" value="${esc(o.reps||"")}" placeholder="${esc(m.reps||"חזרות")}"></div>`).join("")}</div>
+        <div class="rpe"><span>מאמץ</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-srpe="${n}" data-sx="${esc(x)}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div></div>`}).join("")
+      :`<div class="empty">אין תרגילי כוח לרישום באימון הזה</div>`}
+    <p class="hint" style="margin:0">מאמץ: 6 = עוד 4 חזרות בטנק · 8 = עוד 2 · 10 = לא הייתה עוד חזרה. בסבב החימום רושמים את המשקל הקל שהתחממת איתו.</p>
+    ${ro?`<p class="hint">מצב שיקוף · לא נשמר</p>`:`<div class="rp-f"><button class="ghost" type="button" data-sclose="1">סגירה</button><button class="cta" type="button" data-ssave="1">${c.mine?"עדכון":"שמירה"}</button></div>`}</div>`}
+function slSection(){if(!(MEM&&(MEMS==="in"||memPv)))return "";
+  return `<div class="sh"><h2>רישום האימון שלי</h2></div>
+  ${SRC2.length?`<div class="chips sl-c">${SRC2.map(c=>`<button type="button" data-scls="${esc(c.key)}" aria-pressed="${SLK===c.key}">${esc(c.date===TODAY?"היום":fmt(c.date))} · ${esc(c.time||"")} ${esc(c.cls||"")}${c.mine?" ✓":""}</button>`).join("")}</div>
+    ${SLK?slForm():`<p class="hint lead">בוחרים שיעור ורושמים משקל וחזרות לכל סט, חימום ומאמץ. המאמן רואה את זה בשיעור הבא.</p>`}`
+  :`<div class="card"><div class="empty">אחרי שיעור שנרשמת אליו בארבוקס, הוא יופיע כאן ותוכל לרשום משקלים וסטים.</div></div>`}`}
+async function slSave(btn){const c=slCls(SLK);if(!c)return;const meta=Object.fromEntries(slMeta(c).map(([x,m])=>[x,m]));const lx={};
+  Object.entries(SLD).forEach(([x,L])=>{const m0=meta[x];if(!m0||!L)return;const m={...m0,sets:L.nS||m0.sets};const o={...L};
+    if(!(m.mode==="hold"||m.mode==="int"))setsSync(o,m);const has=(o.sets||[]).some(setDone)||o.ver||o.rpe||(o.fail&&Object.keys(o.fail).length);if(has)lx[x]=o});
+  if(!Object.keys(lx).length){toast("עוד לא רשמת כלום");return}
+  btn.disabled=true;try{const d={date:c.date,time:c.time,cls:c.cls,key:c.key,lx,at:new Date().toISOString()};await db.doc(`t/${uid}/slog/${c.key}`).set(d);c.mine=d;
+    toast("נשמר ✓");SLK=null;const a=await pgMember.me();if(a)MEM=a;render()}catch(e){toast("לא נשמר, נסו שוב")}finally{btn.disabled=false}}
+document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy"))return;
+  const cl=t.closest("[data-scls]");if(cl){if(SLK===cl.dataset.scls)SLK=null;else slOpen(cl.dataset.scls);render();return}
+  if(!t.closest(".slf"))return;const x=(t.closest("[data-sx]")||{dataset:{}}).dataset.sx;const L=x?(SLD[x]=SLD[x]||{}):null;
+  const c=slCls(SLK),m0=x&&c?(slMeta(c).find(e=>e[0]===x)||[])[1]:null;
+  const v=t.closest("[data-sver]");if(v){L.ver=L.ver===v.dataset.sver?"":v.dataset.sver;render();return}
+  const r=t.closest("[data-srpe]");if(r){const n=+r.dataset.srpe;L.rpe=L.rpe===n?null:n;render();return}
+  const fl=t.closest("[data-sfail]");if(fl){const k=fl.dataset.sfail;L.fail=L.fail||{};if(L.fail[k]!=null)delete L.fail[k];else L.fail[k]="";render();return}
+  const ad=t.closest("[data-sadd2]");if(ad&&m0){const n=Math.max(1,Math.min(10,(L.nS||m0.sets)+(+ad.dataset.sadd2)));if(n===m0.sets)delete L.nS;else L.nS=n;
+    if(Array.isArray(L.sets))L.sets=L.sets.slice(0,setTot({...m0,sets:n}));render();return}
+  if(t.closest("[data-sclose]")){SLK=null;render();return}
+  const sv=t.closest("[data-ssave]");if(sv){slSave(sv);return}});
+document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||!t.dataset.sfk||!t.closest(".slf"))return;const x=t.dataset.sx,c=slCls(SLK),e=c&&slMeta(c).find(z=>z[0]===x);if(!e)return;
+  const L=SLD[x]=SLD[x]||{},m={...e[1],sets:L.nS||e[1].sets},a=setsOf(L,m);a[+t.dataset.ssi][t.dataset.sfk]=t.value;L.sets=a;const row=t.closest(".set-r");if(row)row.classList.toggle("done",setDone(a[+t.dataset.ssi]))});
 
 /* ===== leads (owner) ===== */
 let LEADS=null,leadsAt=0;
