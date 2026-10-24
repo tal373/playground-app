@@ -1507,16 +1507,16 @@ $("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();i
 
 /* guided player */
 let PL=null,timer=null,left=0,full=0,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
-/* order: a block with 2+ exercises runs as rounds (1, 2, 3… then round 2); one exercise, or "מכל תרגיל", runs set after set.
-   rest: inside a round no rest between exercises (EMOM/interval blocks rest b.rest between each), b.rest after a full round / between straight sets, 0 = no rest screen */
+/* every section reads as a superset/circuit: exercises back to back (1, 2, 3…), rest only after the round, then round 2.
+   one exercise = set after set. rest after round: b.rest, else "M:SS Rest" / the rest in 45/15-style formats; "Every M:SS" = what's left of the window; 0 = no rest screen */
 const isIntv=b=>/EMOM|E\dMOM|\d+\s*\/\s*\d+\s*x/i.test(b.format||"");
-const isStraight=(b,idx)=>idx.length<2||!!b.straight||/מכל תרגיל|straight sets/i.test(b.format||"");
+const isStraight=(b,idx)=>idx.length<2||!!b.straight;
 function openPlayer(w){const steps=[],lg0=getLog(w.id,TODAY);
   (w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0).filter(ii=>(b.items[ii].sets||0)>0);if(!idx.length)return;const R=Math.max(0,+b.rest||0);
     if(isStraight(b,idx)){idx.forEach((ii,k)=>{const it=b.items[ii],n=it.sets||0;for(let s=0;s<n;s++)steps.push({bi,ii,s,b,it,ra:(s<n-1||k<idx.length-1)?R:0})})}
     else{const F=b.format||"",n=Math.max(...idx.map(ii=>b.items[ii].sets||0)),em=F.match(/Every\s+(\d+):(\d{2})/i),ev=em?(+em[1])*60+(+em[2]):0,alt=/A-B/.test(F);
       const sl=F.match(/(\d+)\s*\/\s*(\d+)(?:\s*\/\s*(\d+))?/),rr=F.match(/(\d+):(\d{2})\s*Rest/i);
-      const inR=sl?+(sl[3]||sl[2]):(isIntv(b)?R:0),endR=b.rest!=null&&b.rest!==""?R:rr?(+rr[1])*60+(+rr[2]):inR;
+      const inR=0,endR=b.rest!=null&&b.rest!==""?R:rr?(+rr[1])*60+(+rr[2]):sl?+(sl[3]||sl[2]):0;
       for(let s=0;s<n;s++){const row=idx.filter(ii=>(b.items[ii].sets||0)>s);row.forEach((ii,k)=>{const last=k===row.length-1;steps.push({bi,ii,s,b,it:b.items[ii],circ:true,nR:n,ev,first:alt||k===0,last:alt||last,ra:last?(s<n-1?Math.max(endR,inR):0):inR})})}}});
   if(!steps.length)return;const lg=getLog(w.id,TODAY);let i=steps.findIndex(st=>!((lg.sets[st.bi+"-"+st.ii]||[])[st.s]||{}).ok);if(i<0)i=0;
   PL={w,steps,i};$("player").classList.add("open");showStep();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
