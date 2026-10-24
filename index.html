@@ -2364,7 +2364,7 @@ $("v-brief").addEventListener("click",ev=>{const t=ev.target;
 
 /* ---------- day program (sheet view) ---------- */
 let pgSel=null;
-const wkStart=()=>addDays(TODAY,-fromKey(TODAY).getDay());
+const wkStart=()=>{const g=fromKey(TODAY).getDay();return g===6?addDays(TODAY,1):addDays(TODAY,-g)};
 const inWin=d=>ARCH||(d>=wkStart()&&d<=addDays(wkStart(),13));
 let ARCH=false,archLoaded=false;
 async function loadArchive(){if(archLoaded)return;try{const [ws,bs]=await Promise.all([db.collection("w").get(),db.collection("b").get()]);
