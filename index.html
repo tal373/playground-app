@@ -735,6 +735,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}
 .cl-card{display:flex;flex-direction:column;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:-2px 0 6px}.cl-card label{font-size:13px;font-weight:700}.cl-card label small{font-weight:500;color:var(--muted);margin-inline-start:6px}
 .cl-card input,.cl-card textarea{padding:9px 10px;font-size:14px}.cl-card .cta{flex:none;padding:10px 18px}
+.linkb.arch{font-size:13px;color:var(--muted);margin:-4px 0 4px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -1157,6 +1158,7 @@ async function clSave(id){const c=CL[id];if(!c)return;let sid=sidOf(id,c);const 
   const preg=(document.querySelector(".cl-card [data-ccp][aria-pressed=true]")||{dataset:{ccp:""}}).dataset.ccp;
   const up={...cur,aid:cur.aid||c.aid,inj:$("ccInj").value.trim(),cnote:$("ccCn").value.trim(),tnote:$("ccTn").value.trim(),preg};if(!up.preg)delete up.preg;
   if(!sid)sid="a"+c.aid;try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;clOpen=null;toast("נשמר ✓");render()}catch(e){toast("לא נשמר")}}
+document.addEventListener("click",ev=>{const a=ev.target.closest&&ev.target.closest("[data-arch]");if(!a)return;ARCH=!ARCH;if(ARCH)loadArchive();render()});
 /* ===== my business (owner only, hidden) ===== */
 let BZ=null,bzAdd=false;
 async function loadBiz(){try{const s=await db.collection("x/rem").get();BZ={};s.docs.forEach(d=>BZ[d.id]=d.data())}catch(e){BZ={}}if(tab==="biz")render()}
@@ -1219,7 +1221,7 @@ async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(
 
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
-const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||x.date>=addDays(TODAY,-7)||x.id===woSel).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
 const logId=(wid,date)=>`${wid}_${date}`;
 const fixedList=()=>woList().filter(x=>x.fixed);
 /* fixed workouts alternate: the next one is the one done least recently (never done first) */
@@ -2294,13 +2296,13 @@ async function loadBriefs(){if(!db||bfLoading)return;bfLoading=true;
 const bdSave=()=>{try{localStorage.pgBDone=JSON.stringify(Object.fromEntries(Object.entries(BDONE).map(([k,v])=>[k,[...v]])))}catch(e){}};
 function renderBrief(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
-  const ids=Object.keys(BRF).sort();
+  const ids=winIds(BRF);
   if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>בריף מאמנים</small><b>אין בריף עדיין</b></div></div><div class="card"><div class="empty">הבריף של השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>`;return}
-  if(!bfSel||!BRF[bfSel])bfSel=ids.find(id=>BRF[id].date===TODAY)||ids.find(id=>BRF[id].date>TODAY)||ids[ids.length-1];
+  if(!bfSel||!ids.includes(bfSel))bfSel=ids.find(id=>BRF[id].date===TODAY)||ids.find(id=>BRF[id].date>TODAY)||ids[ids.length-1];
   const b=BRF[bfSel],dn=BDONE[bfSel]||new Set(),blocks=b.blocks||[],tot=blocks.reduce((a,x)=>a+(x.x||[]).length,0),tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;
   let n=0;const HC=2*Math.PI*45;
   v.innerHTML=`<div class="bf">
-  ${dayPick(BRF,bfSel,"bsel")}
+  ${dayPick(BRF,bfSel,"bsel")}${archBtn()}
   <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div>
     <div class="bf-ring"><svg viewBox="0 0 108 108"><circle class="tr" cx="54" cy="54" r="45"/><circle class="br" cx="54" cy="54" r="45" style="stroke-dasharray:${HC};stroke-dashoffset:${HC*(1-(tot?dn.size/tot:0))}"/></svg><div class="in"><b>${dn.size}/${tot}</b><small>עברת עליהם</small></div></div>
     <p class="bf-lede">${b.lede||""}</p>
@@ -2348,7 +2350,7 @@ function rsDraw(){const C=2*Math.PI*90,b=$("rsBar");if(!b)return;$("rsT").textCo
 function rsStart(s){rsTot=s;rsT=s;rsPause=false;clearInterval(rsRun);rsDraw();$("rsS").textContent="נותרו";
   rsRun=setInterval(()=>{if(rsPause)return;rsT--;rsDraw();if(rsT<=0){clearInterval(rsRun);rsRun=null;$("rsS").textContent="יוצאים לסבב!";try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}},1000)}
 $("v-brief").addEventListener("click",ev=>{const t=ev.target;
-  const sd=t.closest("[data-bseld]");if(sd){bfSel=Object.keys(BRF).sort().find(id=>BRF[id].date===sd.dataset.bseld);render();return}
+  const sd=t.closest("[data-bseld]");if(sd){bfSel=winIds(BRF).find(id=>BRF[id].date===sd.dataset.bseld);render();return}
   const s=t.closest("[data-bsel]");if(s){bfSel=s.dataset.bsel;render();return}
   if(t.closest("[data-ball]")){bfAll=!bfAll;if(!bfAll)BOPEN.clear();render();return}
   const ex=t.closest("[data-bex]");if(ex){const k=ex.dataset.bex;if(bfAll){bfAll=false;BOPEN.clear()}BOPEN.has(k)?BOPEN.delete(k):BOPEN.add(k);render();return}
@@ -2362,24 +2364,31 @@ $("v-brief").addEventListener("click",ev=>{const t=ev.target;
 
 /* ---------- day program (sheet view) ---------- */
 let pgSel=null;
-function dayPick(store,sel,attr){const ids=Object.keys(store).sort(),days=[...new Set(ids.map(id=>store[id].date))].sort(),cur=store[sel]?store[sel].date:null,types=ids.filter(id=>store[id].date===cur);
+const wkStart=()=>addDays(TODAY,-fromKey(TODAY).getDay());
+const inWin=d=>ARCH||(d>=wkStart()&&d<=addDays(wkStart(),13));
+let ARCH=false,archLoaded=false;
+async function loadArchive(){if(archLoaded)return;try{const [ws,bs]=await Promise.all([db.collection("w").get(),db.collection("b").get()]);
+  ws.docs.forEach(d=>{if(!WD[d.id])WD[d.id]=d.data()});bs.docs.forEach(d=>{if(!BRF[d.id])BRF[d.id]=d.data()});archLoaded=true}catch(e){toast("לא הצלחנו לטעון את הארכיון")}if(!typing())render()}
+function winIds(store){return Object.keys(store).filter(id=>store[id]&&inWin(store[id].date)).sort()}
+function archBtn(){return isOwner?`<button type="button" class="linkb arch" data-arch="1">${ARCH?"חזרה לשבוע הנוכחי":"ארכיון · שבועות קודמים"}</button>`:""}
+function dayPick(store,sel,attr){const ids=winIds(store),days=[...new Set(ids.map(id=>store[id].date))].sort(),cur=store[sel]?store[sel].date:null,types=ids.filter(id=>store[id].date===cur);
   return `<div class="chips dpk">${days.map(d=>`<button type="button" data-${attr}d="${d}" aria-pressed="${d===cur}">${d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":esc(fmt(d))}</button>`).join("")}</div>${types.length>1?`<div class="chips">${types.map(id=>`<button type="button" data-${attr}="${esc(id)}" aria-pressed="${id===sel}">${esc(typeOf(id))}</button>`).join("")}</div>`:""}`}
 const pgCol=n=>/mobil|מוביליטי/i.test(n)?"var(--pA)":/core|קור/i.test(n)?"var(--pB)":/metcon|מטקון|chipper|buy/i.test(n)?"var(--pD)":"var(--pC)";
 function renderProg(){const v=$("v-prog");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
-  const ids=Object.keys(WD).sort();
+  const ids=winIds(WD);
   if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ת</span><div><small>תכנית האימון</small><b>אין תכנית עדיין</b></div></div><div class="card"><div class="empty">התכנית של השיעור הבא תופיע כאן ברגע שהיא עולה.</div></div>`;return}
-  if(!pgSel||!WD[pgSel])pgSel=ids.find(id=>WD[id].date===TODAY)||ids.find(id=>WD[id].date>TODAY)||ids[ids.length-1];
+  if(!pgSel||!ids.includes(pgSel))pgSel=ids.find(id=>WD[id].date===TODAY)||ids.find(id=>WD[id].date>TODAY)||ids[ids.length-1];
   const w=WD[pgSel];
   v.innerHTML=`<div class="pg">
-  ${dayPick(WD,pgSel,"pgs")}
+  ${dayPick(WD,pgSel,"pgs")}${archBtn()}
   <div class="pg-hero"><small>${esc(w.tag||typeOf(pgSel))} · ${esc(fmt(w.date))}</small><h1>${esc(w.title||"")}</h1></div>
   ${(w.blocks||[]).map(b=>{const nm=String(b.name||"").split("·").pop().trim();let k=0;return `<div class="pg-blk" style="--c:${pgCol(b.name||"")}">
     <div class="pg-bh"><b>${esc(nm)}</b></div>${b.format?`<div class="pg-fmt">${esc(b.format)}</div>`:""}
     ${(b.items||[]).map(it=>{k++;const extra=[it.sets&&!/round/i.test(b.format||"")?it.sets+" sets":"",it.reps&&!String(it.n||"").includes(String(it.reps).split(" ")[0])?it.reps:""].filter(Boolean).join(" · ");return `<div class="pg-ln"><span>${esc(it.n)}${extra?`<small>${esc(extra)}</small>`:""}</span><i>${k}</i></div>`}).join("")}
     ${b.rest?`<span class="pg-rest">Rest ${mmss(+b.rest)}</span>`:""}</div>`}).join("")}
   </div>`}
-$("v-prog").addEventListener("click",ev=>{const d=ev.target.closest("[data-pgsd]");if(d){pgSel=Object.keys(WD).sort().find(id=>WD[id].date===d.dataset.pgsd);render();return}const s=ev.target.closest("[data-pgs]");if(s){pgSel=s.dataset.pgs;render()}});
+$("v-prog").addEventListener("click",ev=>{const d=ev.target.closest("[data-pgsd]");if(d){pgSel=winIds(WD).find(id=>WD[id].date===d.dataset.pgsd);render();return}const s=ev.target.closest("[data-pgs]");if(s){pgSel=s.dataset.pgs;render()}});
 
 /* ===== owner preview ===== */
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
