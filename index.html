@@ -2297,7 +2297,7 @@ const bdSave=()=>{try{localStorage.pgBDone=JSON.stringify(Object.fromEntries(Obj
 function renderBrief(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
   const ids=winIds(BRF);
-  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>בריף מאמנים</small><b>אין בריף עדיין</b></div></div><div class="card"><div class="empty">הבריף של השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>`;return}
+  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>בריף מאמנים</small><b>אין בריף עדיין</b></div></div><div class="card"><div class="empty">הבריף של השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>${archBtn()}`;return}
   if(!bfSel||!ids.includes(bfSel))bfSel=ids.find(id=>BRF[id].date===TODAY)||ids.find(id=>BRF[id].date>TODAY)||ids[ids.length-1];
   const b=BRF[bfSel],dn=BDONE[bfSel]||new Set(),blocks=b.blocks||[],tot=blocks.reduce((a,x)=>a+(x.x||[]).length,0),tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;
   let n=0;const HC=2*Math.PI*45;
@@ -2377,7 +2377,7 @@ const pgCol=n=>/mobil|מוביליטי/i.test(n)?"var(--pA)":/core|קור/i.test
 function renderProg(){const v=$("v-prog");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
   const ids=winIds(WD);
-  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ת</span><div><small>תכנית האימון</small><b>אין תכנית עדיין</b></div></div><div class="card"><div class="empty">התכנית של השיעור הבא תופיע כאן ברגע שהיא עולה.</div></div>`;return}
+  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ת</span><div><small>תכנית האימון</small><b>אין תכנית עדיין</b></div></div><div class="card"><div class="empty">התכנית של השיעור הבא תופיע כאן ברגע שהיא עולה.</div></div>${archBtn()}`;return}
   if(!pgSel||!ids.includes(pgSel))pgSel=ids.find(id=>WD[id].date===TODAY)||ids.find(id=>WD[id].date>TODAY)||ids[ids.length-1];
   const w=WD[pgSel];
   v.innerHTML=`<div class="pg">
