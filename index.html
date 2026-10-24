@@ -2415,7 +2415,7 @@ async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;u
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=c.pend?[]:subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
-  const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · עוד לא נרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
+  const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
 function exitPreview(){if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
