@@ -1224,7 +1224,7 @@ async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(
 
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
-const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||x.date>=addDays(TODAY,-7)||x.id===woSel).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||(x.date>=addDays(TODAY,-7)&&!(x.until&&x.until<TODAY))||x.id===woSel).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
 const logId=(wid,date)=>`${wid}_${date}`;
 const fixedList=()=>woList().filter(x=>x.fixed);
 /* fixed workouts alternate: the next one is the one done least recently (never done first) */
