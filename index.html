@@ -1507,25 +1507,35 @@ $("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();i
 
 /* guided player */
 let PL=null,timer=null,left=0,full=0,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
-function openPlayer(w){const steps=[],lg0=getLog(w.id,TODAY);(w.blocks||[]).forEach((b,bi)=>activeIdx(b,bi,lg0).forEach(ii=>{const it=b.items[ii];for(let s=0;s<(it.sets||0);s++)steps.push({bi,ii,s,b,it})}));
+/* order: a block with 2+ exercises runs as rounds (1, 2, 3… then round 2); one exercise, or "מכל תרגיל", runs set after set.
+   rest: inside a round no rest between exercises (EMOM/interval blocks rest b.rest between each), b.rest after a full round / between straight sets, 0 = no rest screen */
+const isIntv=b=>/EMOM|E\dMOM|\d+\s*\/\s*\d+\s*x/i.test(b.format||"");
+const isStraight=(b,idx)=>idx.length<2||!!b.straight||/מכל תרגיל|straight sets/i.test(b.format||"");
+function openPlayer(w){const steps=[],lg0=getLog(w.id,TODAY);
+  (w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0).filter(ii=>(b.items[ii].sets||0)>0);if(!idx.length)return;const R=Math.max(0,+b.rest||0);
+    if(isStraight(b,idx)){idx.forEach((ii,k)=>{const it=b.items[ii],n=it.sets||0;for(let s=0;s<n;s++)steps.push({bi,ii,s,b,it,ra:(s<n-1||k<idx.length-1)?R:0})})}
+    else{const F=b.format||"",n=Math.max(...idx.map(ii=>b.items[ii].sets||0)),em=F.match(/Every\s+(\d+):(\d{2})/i),ev=em?(+em[1])*60+(+em[2]):0,alt=/A-B/.test(F);
+      const sl=F.match(/(\d+)\s*\/\s*(\d+)(?:\s*\/\s*(\d+))?/),rr=F.match(/(\d+):(\d{2})\s*Rest/i);
+      const inR=sl?+(sl[3]||sl[2]):(isIntv(b)?R:0),endR=b.rest!=null&&b.rest!==""?R:rr?(+rr[1])*60+(+rr[2]):inR;
+      for(let s=0;s<n;s++){const row=idx.filter(ii=>(b.items[ii].sets||0)>s);row.forEach((ii,k)=>{const last=k===row.length-1;steps.push({bi,ii,s,b,it:b.items[ii],circ:true,nR:n,ev,first:alt||k===0,last:alt||last,ra:last?(s<n-1?Math.max(endR,inR):0):inR})})}}});
   if(!steps.length)return;const lg=getLog(w.id,TODAY);let i=steps.findIndex(st=>!((lg.sets[st.bi+"-"+st.ii]||[])[st.s]||{}).ok);if(i<0)i=0;
   PL={w,steps,i};$("player").classList.add("open");showStep();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
 function closePlayer(){$("player").classList.remove("open");clearInterval(timer);try{lock&&lock.release()}catch(e){}PL=null;render()}
 $("pClose").onclick=closePlayer;
-function showStep(){const {w,steps,i}=PL,st=steps[i],key=st.bi+"-"+st.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[st.s]||{};
+function showStep(){const {w,steps,i}=PL,st=steps[i];if(st.ev&&st.first&&PL.rk!==i){PL.rk=i;PL.rt=Date.now()}const key=st.bi+"-"+st.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[st.s]||{};
   const prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][st.s]?prev.sets[key][st.s].kg:null;
   $("pRest").hidden=true;$("pWork").hidden=false;$("pBar").style.width=(i/steps.length*100)+"%";
   $("pWork").innerHTML=`<div class="stage"><small>${esc(st.b.name)} · ${i+1}/${steps.length}</small><h2>${esc(st.it.n)}</h2>${st.it.d?`<p>${esc(st.it.d)}</p>`:""}
     <div class="vids">${(st.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div></div>
-    <div class="meter"><div><small>סט</small><b>${st.s+1}/${st.it.sets}</b><small>${esc(st.it.reps||"")} חזרות</small></div>
+    <div class="meter"><div><small>${st.circ?"סבב":"סט"}</small><b>${st.s+1}/${st.circ?st.nR:st.it.sets}</b><small>${esc(st.it.reps||"")}${/^[\d\s\-–]+$/.test(String(st.it.reps||""))?" חזרות":""}</small></div>
       ${st.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`}</div>
     <button class="big" type="button" id="pDone">סיימתי סט</button>
     <div class="pnav"><button type="button" id="pPrev" ${i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`;
   $("pDone").onclick=()=>{const kg=$("pKg")?$("pKg").value:"";setLog(w.id,TODAY,l=>{const a=(l.sets[key]||[]).slice();a[st.s]=Object.assign({},a[st.s]||{},{ok:true,kg:kg===""?null:+kg});l.sets[key]=a});
     if(i>=steps.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}
-    startRest(st.b.rest||60)};
+    const nxt=PL.steps[PL.i+1],ra=st.ev&&st.last&&nxt&&nxt.bi===st.bi&&PL.rt?Math.max(0,Math.round(st.ev-(Date.now()-PL.rt)/1000)):st.ra;if(ra>0)startRest(ra);else{PL.i++;showStep()}};
   $("pPrev").onclick=()=>{if(PL.i>0){PL.i--;showStep()}};$("pNext").onclick=()=>{if(PL.i<steps.length-1){PL.i++;showStep()}else closePlayer()}}
-function startRest(sec){PL.i++;const nx=PL.steps[PL.i];$("rNext").textContent=`הבא: ${nx.it.n} · סט ${nx.s+1}`;$("pWork").hidden=true;$("pRest").hidden=false;
+function startRest(sec){PL.i++;const nx=PL.steps[PL.i];$("rNext").textContent=`הבא: ${nx.it.n} · ${nx.circ?"סבב":"סט"} ${nx.s+1}`;$("pWork").hidden=true;$("pRest").hidden=false;
   full=left=sec;tick();clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);showStep()}},1000)}
 function tick(){$("rSec").textContent=Math.max(left,0);$("rBar").style.strokeDashoffset=RRC*(1-Math.max(left,0)/full)}
 $("rPlus").onclick=()=>{left+=15;full+=15;tick()};$("rSkip").onclick=()=>{clearInterval(timer);showStep()};
