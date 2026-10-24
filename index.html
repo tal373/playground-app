@@ -313,6 +313,10 @@ td:first-child,th:first-child{text-align:right}
 .rring .in b{font-size:58px;font-weight:800;line-height:1}
 .rb{display:flex;gap:10px}
 .rb button{background:var(--s1);border:1px solid var(--line);border-radius:999px;padding:12px 20px;font-weight:700}
+.pclk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0}.pclk b{font-family:var(--font);font-size:44px;font-weight:800;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.pclk small{color:var(--muted);font-size:13px}
+.pchip{align-self:flex-start;background:#00000055;border-radius:999px;padding:6px 14px;font-weight:800;font-size:18px}
+.pside{color:var(--hot);font-size:18px}.meter.one{grid-template-columns:1fr}.ghostb{background:var(--s1)!important;color:var(--ink)!important}
+#pWork .rring{margin:0 auto}#pWork .rring .in small{display:block;color:var(--muted);font-size:13px;text-align:center}
 .pnav{display:flex;justify-content:space-between}
 .pnav button{color:var(--muted);font-weight:600;font-size:14px;padding:6px 2px}
 .welcome{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;text-align:center}
@@ -1478,7 +1482,7 @@ function renderWorkout(){const list=woList();
   <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
     ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
     ${totalSets?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
-  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${b.rest?` · מנוחה ${b.rest>=60?Math.floor(b.rest/60)+":"+pad(b.rest%60):b.rest+" שנ׳"}`:""}</small></div></div>
+  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${(()=>{const r=restOf(b);return r&&!/Rest|מנוחה/i.test(b.format||"")?` · מנוחה ${r>=60?Math.floor(r/60)+":"+pad(r%60):r+" שנ׳"}`:""})()}${(lg.score||{})[bi]?` · <b class="wk-ok">תוצאה: ${esc(lg.score[bi])}</b>`:""}</small></div></div>
     ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pk=b.pick!=null,chosen=!!(lg.pick||{})[key],nCh=pk?(b.items||[]).filter((_,j)=>(lg.pick||{})[bi+"-"+j]).length:0,hideSets=pk&&b.pick>0&&nCh>=b.pick&&!chosen,pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
       return `<div class="ex-row${hideSets?" unpicked":""}"><div>${pk?`<button class="pickb" type="button" data-pick="${key}" aria-pressed="${chosen}">${chosen?"✓ בחרתי":"בחירה"}</button>`:""}<b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
       ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
@@ -1505,40 +1509,108 @@ $("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();i
   setLog(w.id,TODAY,l=>{if(t.value==="")delete l.pain[t.dataset.pain];else l.pain[t.dataset.pain]=+t.value});
   if(+t.value>=5)toast("כאב 5 ומעלה: לא ממשיכים את התרגיל היום. טל יראה את הדיווח")});
 
-/* guided player */
-let PL=null,timer=null,left=0,full=0,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
-/* every section reads as a superset/circuit: exercises back to back (1, 2, 3…), rest only after the round, then round 2.
-   one exercise = set after set. rest after round: b.rest, else "M:SS Rest" / the rest in 45/15-style formats; "Every M:SS" = what's left of the window; 0 = no rest screen */
-const isIntv=b=>/EMOM|E\dMOM|\d+\s*\/\s*\d+\s*x/i.test(b.format||"");
-const isStraight=(b,idx)=>idx.length<2||!!b.straight;
-function openPlayer(w){const steps=[],lg0=getLog(w.id,TODAY);
-  (w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0).filter(ii=>(b.items[ii].sets||0)>0);if(!idx.length)return;const R=Math.max(0,+b.rest||0);
-    if(isStraight(b,idx)){idx.forEach((ii,k)=>{const it=b.items[ii],n=it.sets||0;for(let s=0;s<n;s++)steps.push({bi,ii,s,b,it,ra:(s<n-1||k<idx.length-1)?R:0})})}
-    else{const F=b.format||"",n=Math.max(...idx.map(ii=>b.items[ii].sets||0)),em=F.match(/Every\s+(\d+):(\d{2})/i),ev=em?(+em[1])*60+(+em[2]):0,alt=/A-B/.test(F);
-      const sl=F.match(/(\d+)\s*\/\s*(\d+)(?:\s*\/\s*(\d+))?/),rr=F.match(/(\d+):(\d{2})\s*Rest/i);
-      const inR=0,endR=b.rest!=null&&b.rest!==""?R:rr?(+rr[1])*60+(+rr[2]):sl?+(sl[3]||sl[2]):0;
-      for(let s=0;s<n;s++){const row=idx.filter(ii=>(b.items[ii].sets||0)>s);row.forEach((ii,k)=>{const last=k===row.length-1;steps.push({bi,ii,s,b,it:b.items[ii],circ:true,nR:n,ev,first:alt||k===0,last:alt||last,ra:last?(s<n-1?Math.max(endR,inR):0):inR})})}}});
-  if(!steps.length)return;const lg=getLog(w.id,TODAY);let i=steps.findIndex(st=>!((lg.sets[st.bi+"-"+st.ii]||[])[st.s]||{}).ok);if(i<0)i=0;
-  PL={w,steps,i};$("player").classList.add("open");showStep();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
+/* guided player
+   Reads each section the way Tal writes it:
+   · Rounds / supersets / quality rounds: exercises back to back (1,2,3), rest only after the round. Rest "1:30-2:00" = the low end.
+   · One exercise: set after set, same rest.
+   · N Min AMRAP: one clock, loop the exercises, score = rounds + reps.  "N Rounds | 2:00 AMRAP|Work / 1:00 Rest": AMRAP windows with rest.
+   · N Min EMOM (W/R): every minute the next exercise, W seconds work, R rest. Without W/R: do the reps, the rest of the minute is rest. "Min K : Rest" = rest minute.
+   · W/R xN (45/15): each exercise W work, R rest.  A/B/C xN (30/30/10): each exercise A sec left side, B sec right side, C rest + switch.
+   · Every M:SS x N: the round inside the window, the rest of the window is rest. A-B: one exercise per window.
+   · For Time / Time Cap / 21-15-9: stopwatch, tap through, score = time.
+   · Timed holds ("30 שנ׳", "0:45", "לכל צד") in normal rounds get a countdown. */
+let PL=null,timer=null,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
+const mss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+pad(s%60)};
+const secOf=(m,s)=>(+m)*60+(+s);
+function restOf(b){const F=b.format||"";let m=F.match(/Rest\s*(\d+):(\d{2})/i);if(m)return secOf(m[1],m[2]);m=F.match(/מנוחה\s*(\d+)\s*שנ/);if(m)return +m[1];m=F.match(/מנוחה\s*(\d+):(\d{2})/);if(m)return secOf(m[1],m[2]);return Math.max(0,+b.rest||0)}
+function holdOf(it){const r=String(it.reps||"");if(/סבב|צעד|חזר|נשימ|כיוון|\+|\/|\|/.test(r))return null;let m=r.match(/^\s*(\d+)\s*(?:[-–]\s*\d+\s*)?שנ/),sec=m?+m[1]:null;if(sec==null){m=r.match(/^\s*(\d+):(\d{2})/);if(m)sec=secOf(m[1],m[2])}
+  if(sec==null){m=r.match(/^\s*(\d+)?\s*דק/);if(m)sec=60*(+(m[1]||1))}
+  if(!sec||sec>300)return null;const t=r.match(/[×x]\s*(\d+)/);return {sec,sides:/לכל צד|לצד|לכל רגל|לרגל|\(Each\)|\beach\b/i.test(r),times:t?+t[1]:1}}
+const fmtRounds=F=>{const m=F.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*(?:Rounds?|סבבים)/i);return m?+m[1]:/סבב אחד/.test(F)?1:0};
+function blockPlan(b,bi,idx){const F=b.format||"",fr=fmtRounds(F)||1,its=idx.map(ii=>{const it=b.items[ii];return {ii,it:it.sets?it:Object.assign({},it,{sets:fr})}}),R=restOf(b),seg=[],nS=Math.max(1,...its.map(x=>x.it.sets||0));
+  const mk=(x,s,o)=>Object.assign({bi,ii:x.ii,s,b,it:x.it},o||{});let m;
+  if((m=F.match(/(\d+)\s*Rounds?\s*\|\s*(\d+):(\d{2})\s*(?:AMRAP|Work)\s*\/\s*(\d+):(\d{2})\s*Rest/i))){const n=+m[1];seg.push({kind:"ready",bi,b});
+    const list=/Work/i.test(m[0]);for(let r=0;r<n;r++){seg.push({kind:"amrap",bi,b,its,list,sec:secOf(m[2],m[3]),win:r,nW:n});if(r<n-1)seg.push({kind:"rest",bi,b,sec:secOf(m[4],m[5])})}if(/Score/i.test(F))seg.push({kind:"score",bi,b,q:"סך החזרות בכל הסבבים"});return seg}
+  if((m=F.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*(?:Min|דק[׳']?)\s*AMRAP/i)||F.match(/AMRAP\s*(\d+)(?:\s*[-–]\s*\d+)?\s*(?:Min|דק)/i))){seg.push({kind:"ready",bi,b},{kind:"amrap",bi,b,its,sec:(+m[1])*60},{kind:"score",bi,b,q:"כמה סבבים וחזרות"});return seg}
+  if((m=F.match(/(\d+)\s*Min\s*E(\d)?MOM/i))){const win=60*(+(m[2]||1)),nW=Math.floor((+m[1])*60/win),wr=F.match(/\(\s*(\d+)\s*\/\s*(\d+)\s*\)/),rk=F.match(/Min\s*(\d+)\s*:\s*Rest/i),cyc=rk?+rk[1]:its.length;
+    seg.push({kind:"ready",bi,b});const cnt={};
+    for(let w=0;w<nW;w++){const pos=w%cyc;if(rk&&pos===cyc-1){seg.push({kind:"rest",bi,b,sec:win,emom:true});continue}const x=its[pos%its.length];const s=cnt[x.ii]=(cnt[x.ii]??-1)+1;
+      if(wr)seg.push(mk(x,s,{kind:"work",sec:+wr[1],tag:`דקה ${w+1}/${nW}`}),{kind:"rest",bi,b,sec:+wr[2],emom:true});
+      else seg.push(mk(x,s,{kind:"rep",win,winStart:true,winEnd:true,tag:`דקה ${w+1}/${nW}`}))}
+    return seg}
+  if((m=F.match(/Every\s*(\d+):(\d{2})\s*x\s*(\d+)/i))){const win=secOf(m[1],m[2]),n=+m[3],alt=/A-B/.test(F);seg.push({kind:"ready",bi,b});
+    if(alt){const cnt={};for(let w=0;w<n;w++){const x=its[w%its.length],s=cnt[x.ii]=(cnt[x.ii]??-1)+1;seg.push(mk(x,s,{kind:"rep",win,winStart:true,winEnd:true,tag:`חלון ${w+1}/${n}`}))}}
+    else for(let r=0;r<n;r++)its.forEach((x,k)=>seg.push(mk(x,Math.min(r,(x.it.sets||1)-1),{kind:"rep",win,winStart:k===0,winEnd:k===its.length-1,tag:`סבב ${r+1}/${n}`})));
+    if(/Score/i.test(F))seg.push({kind:"score",bi,b,q:/Longest/i.test(F)?"הזמן של הסבב הארוך":"התוצאה שלך"});return seg}
+  let iv=F.match(/(\d+)\s*\/\s*(\d+)(?:\s*\/\s*(\d+))?\s*x\s*(\d+)/i);if(!iv){const q=F.match(/(\d+)\s*Rounds?\s*\|\s*(\d+)\s*\/\s*(\d+)/i);if(q)iv=[q[0],q[2],q[3],undefined,q[1]]}
+  if(iv){m=iv;const three=m[3]!=null,n=+m[4],a=+m[1],c=+m[2],rr=three?+m[3]:+m[2];seg.push({kind:"ready",bi,b});
+    for(let r=0;r<n;r++)its.forEach((x,k)=>{const s=Math.min(r,(x.it.sets||1)-1),last=r===n-1&&k===its.length-1,tag=`סבב ${r+1}/${n}`;
+      if(three){seg.push(mk(x,s,{kind:"work",sec:a,side:"צד שמאל",tag,noMark:true}),mk(x,s,{kind:"work",sec:c,side:"צד ימין",tag}))}else seg.push(mk(x,s,{kind:"work",sec:a,tag}));
+      if(!last)seg.push({kind:"rest",bi,b,sec:k===its.length-1?Math.max(rr,R):rr,emom:true})});
+    return seg}
+  if(/For Time|Time Cap|T\.C\b|\d+-\d+-\d+/i.test(F)){const cm=F.match(/(\d+)\s*Min\s*(?:Time Cap|T\.C)/i),sch=(F.match(/\b(\d+(?:-\d+){2,})\b/)||[])[1],reps=sch?sch.split("-"):null;
+    const seq=[],bIn=its.filter(x=>/^\s*Buy In/i.test(x.it.n)),bOut=its.filter(x=>/^\s*Buy Out/i.test(x.it.n)),ones=its.filter(x=>(x.it.sets||1)===1),mid=its.filter(x=>(x.it.sets||1)>1);
+    if(bIn.length||bOut.length){const md=its.filter(x=>!bIn.includes(x)&&!bOut.includes(x)),im=F.match(/Into\s*(\d+)\s*Rounds/i),n=im?+im[1]:reps?reps.length:1;bIn.forEach(x=>seq.push({x,s:0}));for(let r=0;r<n;r++)md.forEach(x=>seq.push({x,s:Math.min(r,(x.it.sets||1)-1),rp:reps&&reps.length===n?reps[r]:null}));bOut.forEach(x=>seq.push({x,s:0}))}
+    else if(mid.length&&ones.length&&mid.length<its.length){const fi=its.indexOf(mid[0]),li=its.indexOf(mid[mid.length-1]);its.slice(0,fi).forEach(x=>seq.push({x,s:0}));const n=Math.max(...mid.map(x=>x.it.sets));for(let r=0;r<n;r++)mid.forEach(x=>{if((x.it.sets||1)>r)seq.push({x,s:r})});its.slice(li+1).forEach(x=>seq.push({x,s:0}))}
+    else{const n=reps?reps.length:nS;for(let r=0;r<n;r++)its.forEach(x=>seq.push({x,s:Math.min(r,(x.it.sets||1)-1),rp:reps?reps[r]:null}))}
+    seg.push({kind:"ready",bi,b},{kind:"ft",bi,b,cap:cm?(+cm[1])*60:0,seq},{kind:"score",bi,b,q:"הזמן שלך (או Cap + חזרות)"});return seg}
+  /* rounds / straight sets */
+  const straight=its.length<2||!!b.straight;
+  if(straight)its.forEach((x,k)=>{const n=x.it.sets||0;for(let s=0;s<n;s++){seg.push(mk(x,s,{kind:holdOf(x.it)?"hold":"rep",tag:`סט ${s+1}/${n}`}));if((s<n-1||k<its.length-1)&&R)seg.push({kind:"rest",bi,b,sec:R})}});
+  else for(let r=0;r<nS;r++){const row=its.filter(x=>(x.it.sets||0)>r);row.forEach(x=>seg.push(mk(x,r,{kind:holdOf(x.it)?"hold":"rep",tag:`סבב ${r+1}/${nS}`})));if(r<nS-1&&R)seg.push({kind:"rest",bi,b,sec:R})}
+  return seg}
+function openPlayer(w){const lg0=getLog(w.id,TODAY),segs=[];(w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0);if(idx.length)segs.push(...blockPlan(b,bi,idx))});
+  if(!segs.length)return;const ok=g=>!!((lg0.sets[g.bi+"-"+g.ii]||[])[g.s]||{}).ok;let i=segs.findIndex(g=>g.it&&!ok(g));
+  if(i<0)i=0;else{const bi=segs[i].bi,f=segs.findIndex(g=>g.bi===bi);if(segs.slice(f,i).some(g=>g.kind==="ready"||g.kind==="amrap"||g.kind==="ft")||segs[f].kind==="ready")i=f}
+  PL={w,segs,i};$("player").classList.add("open");show();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
 function closePlayer(){$("player").classList.remove("open");clearInterval(timer);try{lock&&lock.release()}catch(e){}PL=null;render()}
 $("pClose").onclick=closePlayer;
-function showStep(){const {w,steps,i}=PL,st=steps[i];if(st.ev&&st.first&&PL.rk!==i){PL.rk=i;PL.rt=Date.now()}const key=st.bi+"-"+st.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[st.s]||{};
-  const prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][st.s]?prev.sets[key][st.s].kg:null;
-  $("pRest").hidden=true;$("pWork").hidden=false;$("pBar").style.width=(i/steps.length*100)+"%";
-  $("pWork").innerHTML=`<div class="stage"><small>${esc(st.b.name)} · ${i+1}/${steps.length}</small><h2>${esc(st.it.n)}</h2>${st.it.d?`<p>${esc(st.it.d)}</p>`:""}
-    <div class="vids">${(st.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div></div>
-    <div class="meter"><div><small>${st.circ?"סבב":"סט"}</small><b>${st.s+1}/${st.circ?st.nR:st.it.sets}</b><small>${esc(st.it.reps||"")}${/^[\d\s\-–]+$/.test(String(st.it.reps||""))?" חזרות":""}</small></div>
-      ${st.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`}</div>
-    <button class="big" type="button" id="pDone">סיימתי סט</button>
-    <div class="pnav"><button type="button" id="pPrev" ${i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`;
-  $("pDone").onclick=()=>{const kg=$("pKg")?$("pKg").value:"";setLog(w.id,TODAY,l=>{const a=(l.sets[key]||[]).slice();a[st.s]=Object.assign({},a[st.s]||{},{ok:true,kg:kg===""?null:+kg});l.sets[key]=a});
-    if(i>=steps.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}
-    const nxt=PL.steps[PL.i+1],ra=st.ev&&st.last&&nxt&&nxt.bi===st.bi&&PL.rt?Math.max(0,Math.round(st.ev-(Date.now()-PL.rt)/1000)):st.ra;if(ra>0)startRest(ra);else{PL.i++;showStep()}};
-  $("pPrev").onclick=()=>{if(PL.i>0){PL.i--;showStep()}};$("pNext").onclick=()=>{if(PL.i<steps.length-1){PL.i++;showStep()}else closePlayer()}}
-function startRest(sec){PL.i++;const nx=PL.steps[PL.i];$("rNext").textContent=`הבא: ${nx.it.n} · ${nx.circ?"סבב":"סט"} ${nx.s+1}`;$("pWork").hidden=true;$("pRest").hidden=false;
-  full=left=sec;tick();clearInterval(timer);timer=setInterval(()=>{left--;tick();if(left<=0){clearInterval(timer);showStep()}},1000)}
-function tick(){$("rSec").textContent=Math.max(left,0);$("rBar").style.strokeDashoffset=RRC*(1-Math.max(left,0)/full)}
-$("rPlus").onclick=()=>{left+=15;full+=15;tick()};$("rSkip").onclick=()=>{clearInterval(timer);showStep()};
+let AC=null;function beep(f,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;g.gain.value=.08;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+(d||.12))}catch(e){}}
+function buzz(){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}beep(990,.25)}
+function markSet(g,kg){setLog(PL.w.id,TODAY,l=>{const k=g.bi+"-"+g.ii,a=(l.sets[k]||[]).slice();a[g.s]=Object.assign({},a[g.s]||{},{ok:true},kg!==undefined?{kg:kg===""?null:+kg}:{});l.sets[k]=a})}
+function next(){clearInterval(timer);if(!PL)return;if(PL.i>=PL.segs.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}PL.i++;show()}
+function nextLabel(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft");if(!n)return "סוף האימון";if(n.kind==="amrap"||n.kind==="ft")return "הבא: "+n.b.name;return `הבא: ${n.it.n}${n.side?" · "+n.side:""}${n.bi!==PL.segs[PL.i].bi?" · "+n.b.name:""}`}
+function clock(sec,onEnd,draw,up){const t0=Date.now();let last=-1,paused=0,pAt=0;const st={get left(){return sec-((pAt||Date.now())-t0-paused)/1000},pause(){if(pAt){paused+=Date.now()-pAt;pAt=0}else pAt=Date.now()},get paused(){return !!pAt},add(s){sec+=s}};
+  const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0)beep(660)}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
+function ring(id,lbl,big){return `<div class="rring"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="${id}B" cx="100" cy="100" r="90" style="stroke-dasharray:${RRC}"/></svg><div class="in"><b id="${id}S">${big||""}</b>${lbl?`<small>${lbl}</small>`:""}</div></div>`}
+function drawRing(id,v,frac){const s=$(id+"S"),b=$(id+"B");if(s)s.textContent=v;if(b)b.style.strokeDashoffset=RRC*(1-Math.max(0,Math.min(1,frac)))}
+function stageHTML(g,extra){return `<div class="stage"><small>${esc(g.b.name)}${g.tag?" · "+esc(g.tag):""}</small><h2>${esc(g.it.n)}</h2>${g.side?`<b class="pside">${g.side}</b>`:""}${g.it.d?`<p>${esc(g.it.d)}</p>`:""}
+  <div class="vids">${(g.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div>${extra||""}</div>`}
+const repTxt=r=>{r=String(r||"");return r+(/^[\d\s\-–]+$/.test(r)?" חזרות":"")};
+function navHTML(){return `<div class="pnav"><button type="button" id="pPrev" ${PL.i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`}
+function wireNav(){$("pPrev").onclick=()=>{clearInterval(timer);if(PL.i>0){PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}};$("pNext").onclick=()=>next()}
+function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
+  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").textContent=nextLabel();const full=g.sec;const c=clock(g.sec,next,(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
+    $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
+  if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
+    PL.am=0;PL.rl=[];clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
+  if(g.kind==="score"){const sc=(getLog(w.id,TODAY).score||{})[g.bi]||PL.auto||(PL.am?`${PL.am} סבבים + `:"")||(g.q.includes("הארוך")&&PL.rl&&PL.rl.length?mss(Math.max(...PL.rl)):"");PL.auto="";W.innerHTML=`<div class="stage"><small>${esc(g.b.name)}</small><h2 style="direction:rtl">התוצאה שלך</h2><p>${esc(g.q)}</p></div>
+    <div class="meter" style="grid-template-columns:1fr"><div><small>תוצאה</small><input id="pSc" type="text" dir="ltr" value="${esc(sc)}" placeholder="${g.q.includes("זמן")?"12:30":"5 + 8"}"></div></div><button class="big" type="button" id="pDone">שמירה והמשך</button>${navHTML()}`;
+    $("pDone").onclick=()=>{const v=$("pSc").value.trim();if(v)setLog(w.id,TODAY,l=>{l.score=Object.assign({},l.score||{},{[g.bi]:v})});next()};wireNav();return}
+  if(g.kind==="amrap"){const its=g.its;let k=0,rd=0;const draw=()=>{const x=its[k];if(g.list){$("pA").innerHTML=`<div class="stage"><small>${esc(g.b.name)} · חלון ${g.win+1}/${g.nW}</small>${its.map(y=>`<h2 style="font-size:19px">${esc(y.it.n)}</h2>`).join("")}</div>`;return}$("pA").innerHTML=stageHTML({b:g.b,it:x.it,tag:`סבב ${rd+1}${g.nW?` · חלון ${g.win+1}/${g.nW}`:""}`},(x.it.reps?`<div class="pchip">${esc(repTxt(x.it.reps))}</div>`:""))};
+    W.innerHTML=`<div id="pA"></div><div class="pclk"><b id="pCS"></b><small>AMRAP · נשאר</small></div>${g.list?"":`<button class="big" type="button" id="pDone">סיימתי · לתרגיל הבא</button>`}${navHTML()}`;draw();
+    const end=()=>{PL.am=(PL.am||0)+rd;PL.auto=g.nW?"":`${rd} + `;its.forEach(x=>{for(let s=0;s<Math.min(rd,x.it.sets||1);s++)markSet({bi:g.bi,ii:x.ii,s})});next()};
+    clock(g.sec,end,(v)=>{$("pCS").textContent=mss(Math.ceil(v))});if($("pDone"))$("pDone").onclick=()=>{beep(880);k++;if(k>=its.length){k=0;rd++}draw()};wireNav();return}
+  if(g.kind==="ft"){let k=0;const n=g.seq.length;const draw=()=>{const q=g.seq[k];$("pA").innerHTML=stageHTML({b:g.b,it:q.x.it,tag:`${k+1}/${n}`},((q.rp||q.x.it.reps)?`<div class="pchip">${esc(repTxt(q.rp||q.x.it.reps))}</div>`:""))};
+    W.innerHTML=`<div id="pA"></div><div class="pclk"><b id="pCS">0:00</b><small>${g.cap?`For Time · Cap ${mss(g.cap)}`:"For Time"}</small></div><button class="big" type="button" id="pDone">סיימתי · הבא</button>${navHTML()}`;draw();const t0=Date.now();
+    const fin=(capped)=>{clearInterval(timer);const el=(Date.now()-t0)/1000;PL.auto=capped?`Cap + `:mss(el);g.seq.slice(0,capped?k:n).forEach(q=>markSet({bi:g.bi,ii:q.x.ii,s:q.s}));next()};
+    clock(g.cap||36000,()=>fin(true),(v)=>{$("pCS").textContent=mss(v)},true);$("pDone").onclick=()=>{beep(880);k++;if(k>=n)fin(false);else draw()};wireNav();return}
+  /* exercise screens: rep / hold / work */
+  const key=g.bi+"-"+g.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[g.s]||{},prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][g.s]?prev.sets[key][g.s].kg:null;
+  const kgBox=g.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`;
+  if(g.kind==="work"){W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${navHTML()}`;
+    const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
+  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${navHTML()}`;
+    const run=()=>{const kg=$("pKg")?$("pKg").value:undefined;$("pH").innerHTML=ring("pR",(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:""));$("pDone").hidden=true;
+      clock(h.sec,()=>{if(h.sides&&!side){side=1;beep(990,.2);run();return}if(--rpt>0){side=0;beep(990,.2);run();return}markSet(g,kg);next()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
+    $("pDone").onclick=run;wireNav();return}
+  /* rep */
+  const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
+  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${navHTML()}`;
+  if(g.win){if(g.winStart||!PL.wt)PL.wt=Date.now();const wt=PL.wt,left=g.win-(Date.now()-wt)/1000;clock(left,()=>{let j=PL.i+1;while(j<PL.segs.length&&PL.segs[j].bi===g.bi&&PL.segs[j].win&&!PL.segs[j].winStart)j++;PL.i=j-1;next()},(v)=>{$("pCS").textContent=mss(Math.ceil(v))})}
+  $("pDone").onclick=()=>{markSet(g,$("pKg")?$("pKg").value:undefined);
+    if(g.win&&g.winEnd){const rem=Math.round(g.win-(Date.now()-PL.wt)/1000);PL.rl=(PL.rl||[]).concat(g.win-rem);clearInterval(timer);if(rem>0&&PL.i<PL.segs.length-1){PL.segs.splice(PL.i+1,0,{kind:"rest",bi:g.bi,b:g.b,sec:rem,tmp:true})}}
+    next()};wireNav()}
 
 /* ===== MENU ===== */
 function renderMenu(){const mn=prof.menu;
