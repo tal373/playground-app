@@ -1025,7 +1025,7 @@ function studioBody(full){
   ${!full||MEM&&(memPv||MEMS==="in")?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
   ${cp.length?cp.map(c=>`<div class="card mcls">
-    <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type||"")}</b></div>
+    <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type||"")}</b></div>
     ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
     ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
     ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
@@ -1921,8 +1921,8 @@ function woEx(w){const out=[];if(!w||!w.blocks)return out;
   w.blocks.forEach(b=>{if(/מוביליטי|mobility|קור|core/i.test(b.name||""))return;
     (b.items||[]).forEach(i=>{const n=exClean(i.n);if(!n||/^(rest|score|into)\b/i.test(n)||/^\*/.test(n))return;if(!out.includes(n))out.push(n)})});return out}
 const hasMet=w=>!!(w&&w.blocks&&w.blocks.some(b=>/metcon|מטקון|chipper|emom|amrap|for time/i.test((b.name||"")+" "+(b.format||""))));
-const typeOf=id=>/method/i.test(id||"")?"Method":"Power Lab";
-const slug=t=>/method/i.test(t)?"method":"powerlab";
+const typeOf=id=>/method/i.test(id||"")?"Method":/flex/i.test(id||"")?"Flex":"Power Lab";
+const slug=t=>/method/i.test(t)?"method":/flex/i.test(t)?"flex":"powerlab";
 const ini=n=>(String(n||"?").trim()[0]||"?");
 const newId=()=>"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const rKey=()=>`${rDate}_${(rTime||"").replace(":","")}-${slug(rType?typeOf(rType):(DR&&DR.cls)||"")}`;
@@ -1936,7 +1936,7 @@ function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).f
     DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
   DR.rAt=rrc.at||"1"}
 const RP=new URLSearchParams(location.search).get("rep");
-function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
+function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
 function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
@@ -2465,7 +2465,7 @@ function archPick(store,sel,attr){const ids=winIds(store);if(!ids.length)return 
 const fmtD=k=>{const d=fromKey(k);return `${d.getDate()}.${d.getMonth()+1}`};
 function dayPick(store,sel,attr){const ids=winIds(store),days=[...new Set(ids.map(id=>store[id].date))].sort(),cur=store[sel]?store[sel].date:null,types=ids.filter(id=>store[id].date===cur);
   return `<div class="chips dpk">${days.map(d=>`<button type="button" data-${attr}d="${d}" aria-pressed="${d===cur}">${d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":esc(fmt(d))}</button>`).join("")}</div>${types.length>1?`<div class="chips">${types.map(id=>`<button type="button" data-${attr}="${esc(id)}" aria-pressed="${id===sel}">${esc(typeOf(id))}</button>`).join("")}</div>`:""}`}
-const pgCol=n=>/mobil|מוביליטי/i.test(n)?"var(--pA)":/core|קור/i.test(n)?"var(--pB)":/metcon|מטקון|chipper|buy/i.test(n)?"var(--pD)":"var(--pC)";
+const pgCol=n=>/mobil|movement|מוביליטי/i.test(n)?"var(--pA)":/core|קור/i.test(n)?"var(--pB)":/metcon|מטקון|chipper|buy/i.test(n)?"var(--pD)":"var(--pC)";
 function renderProg(){const v=$("v-prog");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
   const ids=winIds(WD);
