@@ -2390,7 +2390,7 @@ let coachPv=null,coachNameOwn="";
 function enterCoachView(name){coachPv=name;coachNameOwn=coachName;coachName=name;
   ["coach","claude","today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);["class","brief","prog"].forEach(t=>NB(t).hidden=false);
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${name} (מאמן)`;b.hidden=false;window.scrollTo(0,0);go("class")}
-function exitCoachView(){coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;NB("claude").hidden=false;
+function exitCoachView(){coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;
   if(!isCoach)["class","brief","prog"].forEach(t=>NB(t).hidden=true);go("coaches")}
 
 /* ---------- coach brief (in-app, from b/<date>-<type>) ---------- */
@@ -2523,7 +2523,7 @@ async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;u
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
 function exitPreview(){if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
-  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;NB("claude").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
+  $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
 function subscribeAll(){const U=[],k=f=>{if(typeof f==="function")U.push(f)};
@@ -2546,8 +2546,7 @@ let liveU=[];
   if(user){isOwner=await user.isOwner();uid=await user.id();ownerUid=uid;try{isCoach=await user.isCoach();if(isCoach)coachName=await user.coachName()}catch(e){}}
   booted=true;
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
-  if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;document.querySelector('.nb[data-tab="claude"]').hidden=false;
-    db.collection("req").onSnapshot(s=>{Object.keys(REQ).forEach(k=>delete REQ[k]);s.docs.forEach(d=>REQ[d.id]=d.data());if(tab==="claude"&&!typing())render()},()=>{});
+  if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;
     if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}
     ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(CLW){try{history.replaceState(null,"",location.pathname)}catch(e){}dashLast="clients";go("clients");return}if(!(isCoach&&openRep()))go("coach");return}
   if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false;setSave("מחובר ✓","ok");if(!openRep())go("brief");return}
