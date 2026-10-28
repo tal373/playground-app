@@ -764,6 +764,7 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 .ex-row a.th i{position:absolute;inset:auto auto 6px 6px;width:24px;height:24px;border-radius:50%;background:#0c1d33cc;display:grid;place-items:center}
 .ex-row a.th i svg{width:10px;height:10px;fill:#fff;transform:scaleX(-1)}
 .stage.has-th{background:linear-gradient(180deg,#0c1d3300 0%,#0c1d3333 30%,#0c1d33e6 68%,#0c1d33 100%),var(--th) center/auto 136% no-repeat,var(--s1)}
+.pzbox{margin:0 16px 12px;background:#ff5a5a0d;border:1px solid #ff5a5a2e;border-radius:14px;padding:10px 12px}.pzbox summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);list-style:none}.pzbox summary::-webkit-details-marker{display:none}.pzbox summary::before{content:"+ "}.pzbox[open] summary::before{content:"\2212  "}.pzbox .pzl{font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}.pzbox .pzv{color:var(--warn)}.pzbox .pzv.hi{color:var(--bad)}.pzbox .pzn{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}.pzbox .pzn button{padding:7px 0;min-width:0;text-align:center}.pzbox .pzt{width:100%;margin-top:12px;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:inherit}#pWork .pzbox{margin:14px 0 0;text-align:right}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -1495,6 +1496,24 @@ const getLog=(wid,date)=>Object.assign({sets:{},pain:{},pick:{},done:false,feel:
 /* pick blocks: b.pick = how many to choose (0 = bonus). Active = chosen ones, else the first b.pick */
 function activeIdx(b,bi,lg){const all=(b.items||[]).map((_,i)=>i);if(b.pick==null)return all;const ch=all.filter(i=>(lg.pick||{})[bi+"-"+i]);return ch.length?ch:all.slice(0,b.pick)}
 function setLog(wid,date,fn){const l=getLog(wid,date);fn(l);l.wid=wid;l.date=date;wlog[logId(wid,date)]=l;saveDoc(tp("wlog",logId(wid,date)),l)}
+const PZA=["צוואר","כתף","מרפק / יד","גב עליון","גב תחתון","ישבן","אגן / ירך","ברך","קרסול / כף רגל","יורד לרגל","אחר"],PZS=["ימין","שמאל","שני הצדדים"],PZP=["בירידה","בעלייה","בהחזקה","כל התנועה"];
+const pzX=(l,k)=>{const p=(l.pz||{})[k]||{},s=[p.a,p.s,p.p,p.t?`״${p.t}״`:""].filter(Boolean).join(" · ");return s?" · "+s:""};
+const pzSum=v=>`דיווח כאב והערה${v!=null?` · <b class="pzv${v>=5?" hi":""}">${v}/10</b>`:""}`;
+function painBox(key,lg){const v=(lg.pain||{})[key],p=(lg.pz||{})[key]||{},has=v!=null||p.a||p.s||p.p||p.t,
+  ch=(f,arr)=>`<div class="chips sm">${arr.map(a=>`<button type="button" data-pzf="${f}" data-k="${key}" data-v="${esc(a)}" aria-pressed="${p[f]===a}">${a}</button>`).join("")}</div>`;
+  return `<details class="pzbox"${has?" open":""}><summary>${pzSum(v)}</summary>
+  <div class="pzl">כאב בתרגיל (0–10)</div><div class="chips sm pzn">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-pzl="${key}" data-v="${n}" style="--c:${n<=3?"var(--ok)":n<=6?"var(--warn)":"var(--bad)"}" aria-pressed="${v===n}">${n}</button>`).join("")}</div>
+  <div class="pzl">איפה</div>${ch("a",PZA)}<div class="pzl">צד</div>${ch("s",PZS)}<div class="pzl">מתי</div>${ch("p",PZP)}
+  <input type="text" class="pzt" data-pzt="${key}" placeholder="משהו להוסיף" value="${esc(p.t||"")}" aria-label="הערה לתרגיל"></details>`}
+const pzWid=()=>PL?PL.w.id:(curWorkout()||{}).id;
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-pzl],[data-pzf]");if(!b)return;const wid=pzWid();if(!wid)return;let on=false;
+  if(b.dataset.pzl!=null){const k=b.dataset.pzl,v=+b.dataset.v;setLog(wid,TODAY,l=>{l.pain=l.pain||{};if(l.pain[k]===v)delete l.pain[k];else{l.pain[k]=v;on=true}});
+    [...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",on&&x===b));const sm=b.closest(".pzbox").querySelector("summary");if(sm)sm.innerHTML=pzSum(on?v:null);
+    if(on&&v>=5)toast("כאב 5 ומעלה: לא ממשיכים את התרגיל היום. טל יראה את הדיווח");return}
+  const k=b.dataset.k,f=b.dataset.pzf,v=b.dataset.v;setLog(wid,TODAY,l=>{l.pz=l.pz||{};const o=Object.assign({},l.pz[k]||{});if(o[f]===v)delete o[f];else{o[f]=v;on=true}l.pz[k]=o});
+  [...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",on&&x===b))});
+document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||t.dataset.pzt==null)return;const wid=pzWid();if(!wid)return;const k=t.dataset.pzt,v=t.value.trim();
+  setLog(wid,TODAY,l=>{l.pz=l.pz||{};const o=Object.assign({},l.pz[k]||{});if(v)o.t=v;else delete o.t;l.pz[k]=o})});
 function renderWorkout(){const list=woList();
   if(!list.length){$("v-workout").innerHTML=`<div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>האימונים שלך</small><h2>טל עוד לא העלה אימון</h2><p>כשיעלה אימון הוא יופיע כאן, עם סרטון לכל תרגיל.</p></div>`;return}
   const w=curWorkout(),lg=getLog(w.id,TODAY),prev=lastLog(w.id,TODAY);
@@ -1511,7 +1530,7 @@ function renderWorkout(){const list=woList();
       return `<div class="ex-row${hideSets?" unpicked":""}"><div>${pk?`<button class="pickb" type="button" data-pick="${key}" aria-pressed="${chosen}">${chosen?"✓ בחרתי":"בחירה"}</button>`:""}<b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
       ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
       ${it.sets&&!hideSets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow${it.nokg?" nokg":""}"><span>סט ${si+1}</span>${it.nokg?"":`<input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}">`}<input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
-      ${prof.painScale&&!hideSets?`<div class="painsel">כאב בתרגיל (0–10)<select data-pain="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(v=>`<option value="${v}" ${String(lg.pain[key]??"")===String(v)?"selected":""}>${v===""?"—":v}</option>`).join("")}</select></div>`:""}`}).join("")}</div>`).join("")}
+      ${prof.painScale&&!hideSets?painBox(key,lg):""}`}).join("")}</div>`).join("")}
   <div class="card"><b>איך היה האימון?</b>
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
     <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
@@ -1622,15 +1641,15 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
   /* exercise screens: rep / hold / work */
   const key=g.bi+"-"+g.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[g.s]||{},prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][g.s]?prev.sets[key][g.s].kg:null;
   const kgBox=g.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`;
-  if(g.kind==="work"){W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${navHTML()}`;
+  if(g.kind==="work"){W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
-  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${navHTML()}`;
+  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const run=()=>{const kg=$("pKg")?$("pKg").value:undefined;$("pH").innerHTML=ring("pR",(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:""));$("pDone").hidden=true;
       clock(h.sec,()=>{if(h.sides&&!side){side=1;beep(990,.2);run();return}if(--rpt>0){side=0;beep(990,.2);run();return}markSet(g,kg);next()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
     $("pDone").onclick=run;wireNav();return}
   /* rep */
   const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
-  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${navHTML()}`;
+  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
   if(g.win){if(g.winStart||!PL.wt)PL.wt=Date.now();const wt=PL.wt,left=g.win-(Date.now()-wt)/1000;clock(left,()=>{let j=PL.i+1;while(j<PL.segs.length&&PL.segs[j].bi===g.bi&&PL.segs[j].win&&!PL.segs[j].winStart)j++;PL.i=j-1;next()},(v)=>{$("pCS").textContent=mss(Math.ceil(v))})}
   $("pDone").onclick=()=>{markSet(g,$("pKg")?$("pKg").value:undefined);
     if(g.win&&g.winEnd){const rem=Math.round(g.win-(Date.now()-PL.wt)/1000);PL.rl=(PL.rl||[]).concat(g.win-rem);clearInterval(timer);if(rem>0&&PL.i<PL.segs.length-1){PL.segs.splice(PL.i+1,0,{kind:"rest",bi:g.bi,b:g.b,sec:rem,tmp:true})}}
@@ -1735,7 +1754,7 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
     if(h.type==="choice"&&h.warnIf){const n=vals.filter(v=>v===h.warnIf).length;if(n)flags.push(["var(--warn)",`${h.t}: ״${(h.opts.find(o=>o[0]===h.warnIf)||[])[1]}״ ב-${n} ימים`])}
     if(h.type==="cups"&&h.target){const xs=vals.filter(v=>v>0);if(xs.length>=3){const avg=xs.reduce((a,b)=>a+b,0)/xs.length;if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${h.liters?Lit(Math.round(avg))+" ל׳":Math.round(avg)} (היעד ${h.liters?Lit(h.target)+" ל׳":h.target})`])}}});
   logs.filter(l=>l.date>=last7[6]).forEach(l=>{const wn=(c.wo[l.wid]||{}).title||"אימון";
-    Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"} (${fmt(l.date)})`])}});
+    Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"}${pzX(l,k)} (${fmt(l.date)})`])}});
     if(l.feel>=5)flags.push(["var(--warn)",`״קשה מאוד״ ב-${wn} (${fmt(l.date)})`])});
   const wq=c.weekly[wk];if(wq&&(wq.energy<=2||wq.mood<=2||wq.hunger<=2))flags.push(["var(--wk)",`צ׳ק-אין: אנרגיה ${wq.energy}/5, רעב ${wq.hunger}/5, שביעות רצון ${wq.mood}/5`]);
   const fl=p.paused?[]:flags.filter(f=>!ACK[id+"|"+f[1]]);
@@ -1837,6 +1856,8 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
     a.ms.concat(((p.menu&&p.menu.meals)||[]).filter(m=>m.optional)).forEach(m=>{const x=d.meals[m.id];if(x&&x.x&&x.x.trim())feed.push(`<div><em>${fmt(k)} · ${esc(m.t)} · משהו אחר</em>${esc(x.x)}</div>`)});
     if(d.note&&d.note.trim())feed.push(`<div><em>${fmt(k)} · הערה</em>${esc(d.note)}</div>`)});
   Object.values(c.wlog).filter(l=>l.note).sort((x,y)=>y.date.localeCompare(x.date)).slice(0,6).forEach(l=>feed.push(`<div><em>${fmt(l.date)} · אימון · ${esc((c.wo[l.wid]||{}).title||"")}</em>${esc(l.note)}</div>`));
+  Object.values(c.wlog).filter(l=>l.date>=addDays(TODAY,-13)).sort((x,y)=>y.date.localeCompare(x.date)).forEach(l=>{const wo=c.wo[l.wid]||{};[...new Set([...Object.keys(l.pain||{}),...Object.keys(l.pz||{})])].forEach(k=>{const p=(l.pz||{})[k]||{},v=(l.pain||{})[k];if(v==null&&!p.a&&!p.t)return;const [bi,ii]=k.split("-").map(Number),it=(((wo.blocks||[])[bi]||{}).items||[])[ii]||{};
+    feed.push(`<div><em>${fmt(l.date)} · כאב בתרגיל · ${esc(it.n||"תרגיל")}</em>${v!=null?`<b style="color:${v>=7?"var(--bad)":v>=4?"var(--warn)":"var(--ok)"}">${v}/10</b> `:""}${esc([p.a,p.s,p.p,p.t].filter(Boolean).join(" · "))}</div>`)})});
   const prog=[];Object.entries(c.wo).forEach(([wid,w])=>(w.blocks||[]).forEach((b,bi)=>(b.items||[]).forEach((it,ii)=>{if(!it.sets)return;const key=bi+"-"+ii;
     const pts=Object.values(c.wlog).filter(l=>l.wid===wid&&l.sets&&l.sets[key]).map(l=>({d:l.date,kg:Math.max(0,...l.sets[key].filter(s=>s&&s.kg).map(s=>s.kg))})).filter(x=>x.kg>0).sort((x,y)=>x.d.localeCompare(y.d));
     if(pts.length)prog.push([it.n,pts[0],pts[pts.length-1],pts.length])})));
