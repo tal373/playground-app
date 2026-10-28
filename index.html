@@ -1716,9 +1716,10 @@ $("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five bu
   wkAns[q]=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===b))});
 
 /* ===== COACH ===== */
-const C={},ACK={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[];
+const C={},ACK={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[],INV=[];
 async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave("טוען…");
-  try{const [ps,ts,tl,mt]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]}))]);
+  try{const [ps,ts,tl,mt,iv]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]})),db.collection("inv").get().catch(()=>({docs:[]}))]);
+    INV=iv.docs.map(d=>({email:lowN(d.id),...d.data()})).filter(x=>x.tpl&&!x.uid);
     meta=Object.fromEntries(mt.docs.map(d=>[d.id,d.data()]));
     try{const a=await db.doc("cfg/acks").get();Object.keys(ACK).forEach(k=>delete ACK[k]);if(a.exists)Object.assign(ACK,a.data()||{})}catch(e){}
     if(db.admins){try{adminMails=await db.admins()}catch(e){}}
@@ -1778,6 +1779,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   <button class="card recbtn" type="button" id="cRec"><b>מפענח מתכונים</b><small>כותבים מתכון, מקבלים קלוריות וערכים, ומשייכים למתאמנים${Object.keys(LIB).length?` · ${Object.keys(LIB).length} בספרייה`:""}</small></button>
   <div class="sh"><h2>דורש תשומת לב</h2><span>${allFlags.length||"הכול תקין"}</span></div>
   <div class="flags">${allFlags.length?allFlags.slice(0,30).map(([c,t,id,raw])=>`<div class="flag fl2" style="--c:${c}"><button class="ft" type="button" data-tr="${id}">${esc(t)}</button><button class="ack" type="button" data-ack="${esc(id+"|"+raw)}" aria-label="טופל">✓</button></div>`).join(""):`<div class="flag" style="--c:var(--ok)">אין חריגות כרגע</div>`}</div>
+  ${INV.length?`<div class="sh"><h2>הוזמנו · עוד לא נרשמו</h2><span>שיקוף לפני הרשמה</span></div><div class="past" style="gap:10px">${INV.map(v=>{const t=tpls.find(x=>x.id===v.tpl)||{};return `<button class="trc" type="button" data-ipv="${esc(v.email)}"><div class="r1"><span class="av">${esc((t.name||v.email).slice(0,1))}</span><div><b>${esc(t.name||v.email)}</b><small style="display:block;direction:ltr;text-align:right">${esc(v.email)}</small><small>${esc(t.goal||"")}</small></div><span class="pill" style="--c:var(--warn)">שיקוף</span></div></button>`}).join("")}</div>`:""}
   <div class="sh"><h2>המתאמנים</h2><span>לחיצה לפרטים</span></div>
   <div class="past" style="gap:10px">${act.map(id=>{const a=A[id];const st=a.p.paused?["var(--muted)","בהשהיה"]:a.flags.length?["var(--bad)",`${a.flags.length} התראות`]:["var(--ok)","תקין"];
     return `<button class="trc" type="button" data-tr="${id}"><div class="r1"><span class="av">${esc(nameOf(id).slice(0,1))}</span><div><b>${esc(nameOf(id))}</b>${mailOf(id)?`<small style="display:block;direction:ltr;text-align:right">${esc(mailOf(id))}</small>`:""}<small>${esc(a.p.goal||"")} · ${a.lastAct?`פעילות אחרונה ${a.lastAct===TODAY?"היום":fmt(a.lastAct)}`:"עוד לא דיווח/ה"}</small></div><span class="pill" style="--c:${st[0]}">${st[1]}</span></div>
@@ -1905,7 +1907,11 @@ async function assign(id){const sel=$("as-"+id);if(!sel)return;const t=tpls.find
   try{const {workouts:wos,...pr}=t;await db.doc(`p/${id}`).set({...pr,tpl:t.id,assigned:TODAY});
     for(const w of (wos||[])){const {id:wid,...rest}=w;await db.doc(`p/${id}/workouts/${wid}`).set(rest)}
     toast(`${t.name} שויך/ה`);await loadCoach()}catch(e){fail(e)}}
+async function pendPv(em){em=lowN(em);const v=INV.find(x=>x.email===em);if(!v)return;
+  try{const tp=await db.doc(`tpl/${v.tpl}`).get();if(!tp.exists){toast("התכנית לא נמצאה");return}const {workouts:wos,...pr}=tp.data()||{},wo={};(wos||[]).forEach(w=>{const {id:wid,...r}=w;wo[wid]=r});
+    const pu="inv:"+em;C[pu]={prof:{...pr,tpl:v.tpl,assigned:TODAY},t:{email:em},days:{},weigh:{},weekly:{},wlog:{},recs:{},wo,msgs:{},photos:null,pend:true};pvFrom="coach";enterPreview(pu)}catch(e){toast("לא נטען")}}
 $("v-coach").addEventListener("click",ev=>{const t=ev.target;
+  const ip=t.closest("[data-ipv]");if(ip){pendPv(ip.dataset.ipv);return}
   const as=t.closest("[data-assign]");if(as){assign(as.dataset.assign);return}
   const rm=t.closest("[data-rm]");if(rm){removeTrainee(rm);return}
   const pz=t.closest("[data-pz]");if(pz){const id=pz.dataset.pz,p=C[id]&&C[id].prof;if(!p)return;const on=!p.paused;pz.disabled=true;
