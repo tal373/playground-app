@@ -1028,8 +1028,11 @@ const SET=new WeakMap();
 const PEND=new Map(),Q=new Set();let qT=null,tries=0,warmed=false;
 function hold(key,t,apply){if(t)Q.add(t);PEND.set(key,{t,apply});clearTimeout(qT);qT=setTimeout(flush,350)}
 async function flush(){if(!Q.size&&warmed)return;const id=typeof uid!=="undefined"?uid:null;if(!id||!window.pgAI||!pgAI.translate){qT=setTimeout(flush,800);return}
-  const list=[...Q].slice(0,250);list.forEach(x=>Q.delete(x));const all=!warmed;warmed=true;
-  const res=await pgAI.translate({uid:id,strings:list,all});
+  const list=[...Q].slice(0,250);list.forEach(x=>Q.delete(x));
+  /* first time: translate everything of this trainee in the background, while what's on screen goes first */
+  if(!warmed){warmed=true;pgAI.translate({uid:id,all:true}).then(r=>{if(r&&r.tr)Object.assign(LOCAL,r.tr)})}
+  if(!list.length&&!PEND.size)return;
+  const res=list.length?await pgAI.translate({uid:id,strings:list}):{tr:{}};
   if(res&&res.tr)Object.assign(LOCAL,res.tr);
   const fail=!res||list.some(x=>look(x)==null);if(fail&&tries<2){tries++;list.forEach(x=>{if(look(x)==null)Q.add(x)});qT=setTimeout(flush,1500);return}
   tries=0;for(const [k,p] of [...PEND]){if(Q.has(p.t))continue;PEND.delete(k);p.apply(look(p.t)||tr(p.t))}if(Q.size)qT=setTimeout(flush,350)}
