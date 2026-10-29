@@ -765,6 +765,7 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 .ex-row a.th i svg{width:10px;height:10px;fill:#fff;transform:scaleX(-1)}
 .stage.has-th{background:linear-gradient(180deg,#0c1d3300 0%,#0c1d3333 30%,#0c1d33e6 68%,#0c1d33 100%),var(--th) center/auto 136% no-repeat,var(--s1)}
 .pzbox{margin:0 16px 12px;background:#ff5a5a0d;border:1px solid #ff5a5a2e;border-radius:14px;padding:10px 12px}.pzbox summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);list-style:none}.pzbox summary::-webkit-details-marker{display:none}.pzbox summary::before{content:"+ "}.pzbox[open] summary::before{content:"\2212  "}.pzbox .pzl{font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}.pzbox .pzv{color:var(--warn)}.pzbox .pzv.hi{color:var(--bad)}.pzbox .pzn{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}.pzbox .pzn button{padding:7px 0;min-width:0;text-align:center}.pzbox .pzt{width:100%;margin-top:12px;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:inherit}#pWork .pzbox{margin:14px 0 0;text-align:right}
+.ptrow{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;padding:0 16px 14px}.ptrow.nk{grid-template-columns:1.4fr 1fr}.ptrow input,.ptrow select{width:100%;min-width:0;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;color:inherit}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
@@ -872,7 +873,8 @@ const db={doc,collection:p=>coll(p),
   async coachList(){const {data,error}=await SB.from("coaches").select("email,name,added");if(error)throw E(error);return data||[]},
   async addCoach(email,name){const {error}=await SB.from("coaches").upsert({email:email.toLowerCase(),name});if(error)throw E(error)},
   async delCoach(email){const {error}=await SB.from("coaches").delete().eq("email",email);if(error)throw E(error)},
-  async reports(since){const {data,error}=await SB.from("docs").select("path,data").like("parent","c/%/reports").gte("data->>date",since).limit(1000);if(error)throw E(error);return (data||[]).map(r=>({id:r.path,data:r.data}))}};
+  async reports(since){const {data,error}=await SB.from("docs").select("path,data").like("parent","c/%/reports").gte("data->>date",since).limit(1000);if(error)throw E(error);return (data||[]).map(r=>({id:r.path,data:r.data}))},
+  async ptAll(since){const [a,b]=await Promise.all([SB.from("docs").select("path,data").like("parent","pt/%").gte("data->>date",since).limit(500),SB.from("docs").select("path,data").like("parent","c/%/pt").limit(500)]);if(a.error)throw E(a.error);return {pt:(a.data||[]).map(r=>({path:r.path,data:r.data})),rep:(b.data||[]).map(r=>({path:r.path,data:r.data}))}}};
 const user={
   async id(){return me&&me.id},
   async isOwner(){const {data}=await SB.rpc("is_admin");return !!data},
@@ -2383,7 +2385,8 @@ $("v-studio").addEventListener("click",ev=>{const t=ev.target;
 const DASH=["coach","studio","clients","coaches"];let dashLast="coach",COA=null,coaOpen=null,coaDel=null;
 function dashSeg(){const v=$("v-"+tab);if(!v||v.querySelector(".dseg"))return;const d=document.createElement("div");d.className="dseg";
   d.innerHTML=[["coach","ליווי אישי"],["studio","סטודיו"],["clients","לקוחות"],["coaches","מאמנים"]].map(([k,l])=>`<button type="button" data-dseg="${k}" aria-pressed="${k===tab}">${l}</button>`).join("");v.prepend(d)}
-async function loadCoaches(){try{COA=await db.coachList()}catch(e){COA=[]}if(tab==="coaches")render()}
+let PTA=null;
+async function loadCoaches(){try{COA=await db.coachList()}catch(e){COA=[]}try{PTA=db.ptAll?await db.ptAll(addDays(TODAY,-14)):null}catch(e){PTA=null}if(tab==="coaches")render()}
 function renderCoaches(){const v=$("v-coaches");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
   if(!COA){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadCoaches();return}
@@ -2395,6 +2398,8 @@ function renderCoaches(){const v=$("v-coaches");
   v.innerHTML=`
   <div class="hello"><span class="avatar">מ</span><div><small>הצוות</small><b>מאמנים</b></div><button class="ghost" type="button" id="coRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
   <div class="kpis"><div class="kpi"><b>${COA.length}</b><small>מאמנים באפליקציה</small></div><div class="kpi"><b>${reps.filter(([,r])=>r.date>=wk).length}</b><small>דיווחי שיעור השבוע</small></div></div>
+  ${PTA&&PTA.pt.length?`<div class="sh"><h2>אימונים אישיים</h2><span>14 יום</span></div><div class="flags">${PTA.pt.slice().sort((a,b)=>(b.data.date||"").localeCompare(a.data.date||"")).map(x=>{const id=x.path.split("/").pop(),em=x.path.split("/")[1],co=((COA||[]).find(c=>c.email===em)||{}).name||em,rp=(PTA.rep.find(r=>r.path.split("/").pop()===id)||{}).data,hi=rp&&Object.values(rp.ex||{}).some(e=>e.pain>=5);
+    return `<div class="flag" style="--c:${hi?"var(--bad)":rp?"var(--ok)":"var(--warn)"}"><div style="flex:1"><b>${esc(x.data.trainee||"")} · ${esc(fmt(x.data.date))} · ${esc(co)}</b><div class="hint">${esc(x.data.title||"")}${rp?"":" · עוד לא דווח"}</div>${rp?`<div class="hint">${esc(Object.values(rp.ex||{}).map(e=>[e.n,e.kg?e.kg+" ק״ג":"",e.r||"",e.pain!=null?"כאב "+e.pain+"/10":""].filter(Boolean).join(" ")).join(" · "))}</div>${rp.note?`<div class="hint">״${esc(rp.note)}״</div>`:""}`:""}</div></div>`}).join("")}</div>`:""}
   <div class="flags">${list.map(c=>{const rs=by(c.name),w7=rs.filter(([,r])=>r.date>=wk),last=rs[0],flags=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).some(t=>t==="red"||t==="pain")).length,0),ppl=w7.reduce((a,[,r])=>a+(r.people||[]).length,0),op=coaOpen===c.email;
     return `<div class="rp-p${op?" open":""}"><button class="rp-h" type="button" data-coa="${esc(c.email)}"><span class="av">${esc(ini(c.name||c.email))}</span><div style="flex:1;min-width:0"><b>${esc(c.name||c.email)}</b>
       <div class="hint">${(()=>{const ac=arb(c.name).length;return ac?`דיווח ${Math.min(w7.length,ac)}/${ac} שיעורים (${Math.round(Math.min(w7.length,ac)/ac*100)}%)`:`${w7.length} שיעורים השבוע`})()} · ${ppl} מתאמנים${flags?` · ${flags} דגלים`:""}${(()=>{const pr=w7.reduce((a,[,r])=>a+(r.people||[]).filter(p=>(p.tags||[]).includes("pr")).length,0);return pr?` · ${pr} שיאים`:""})()}</div><div class="hint">${last?"דיווח אחרון: "+esc(fmt(last[1].date))+" "+esc(last[1].time||""):"עוד לא דיווח"}</div></div><span class="chev">${op?"▲":"▼"}</span></button>
@@ -2414,10 +2419,10 @@ $("v-coaches").addEventListener("click",async ev=>{const t=ev.target;
   const c=t.closest("[data-coa]");if(c){coaOpen=coaOpen===c.dataset.coa?null:c.dataset.coa;coaDel=null;render()}});
 /* owner: live mirror of a coach's screens (read-only) */
 let coachPv=null,coachNameOwn="";
-function enterCoachView(name){coachPv=name;coachNameOwn=coachName;coachName=name;
+function enterCoachView(name){ptLoaded=false;ptSel=null;fill(PT,{});fill(PTR,{});coachPv=name;coachNameOwn=coachName;coachName=name;
   ["coach","claude","today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);["class","brief","prog"].forEach(t=>NB(t).hidden=false);
   const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${name} (מאמן)`;b.hidden=false;window.scrollTo(0,0);go("class")}
-function exitCoachView(){coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;
+function exitCoachView(){ptLoaded=false;ptSel=null;fill(PT,{});fill(PTR,{});coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;
   if(!isCoach)["class","brief","prog"].forEach(t=>NB(t).hidden=true);go("coaches")}
 
 /* ---------- coach brief (in-app, from b/<date>-<type>) ---------- */
@@ -2430,7 +2435,35 @@ async function loadBriefs(){if(!db||bfLoading)return;bfLoading=true;
     try{const d=JSON.parse(localStorage.pgBDone||"{}");Object.keys(d).forEach(k=>BDONE[k]=new Set(d[k]))}catch(e){}bfLoaded=true}catch(e){setSave("שגיאה בטעינה","err")}
   bfLoading=false;if(tab==="brief")render()}
 const bdSave=()=>{try{localStorage.pgBDone=JSON.stringify(Object.fromEntries(Object.entries(BDONE).map(([k,v])=>[k,[...v]])))}catch(e){}};
-function renderBrief(){const v=$("v-brief");
+/* ---------- personal sessions for a coach: pt/<coach email>/<id>, report to c/<coach uid>/pt/<id> ---------- */
+const PT={},PTR={};let ptSel=null,ptLoaded=false,ptLoading=false;
+const ptMail=()=>coachPv?(((COA||[]).find(c=>(c.name||c.email)===coachPv)||{}).email||""):(window.pgMember?pgMember.email():"");
+async function loadPT(){if(!db||ptLoading)return;ptLoading=true;
+  try{const em=lowN(ptMail());if(em){const s=await db.collection("pt/"+em).get();fill(PT,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
+    if(!coachPv&&uid){const r=await db.collection(`c/${uid}/pt`).get().catch(()=>({docs:[]}));fill(PTR,Object.fromEntries(r.docs.map(d=>[d.id,d.data()])))}}}catch(e){}
+  ptLoaded=true;ptLoading=false;if(tab==="brief")render()}
+function ptListHTML(){const ids=Object.keys(PT).filter(k=>(PT[k].date||"")>=addDays(TODAY,-7)).sort((a,b)=>((PT[a].date||"")+(PT[a].time||"")).localeCompare((PT[b].date||"")+(PT[b].time||"")));
+  if(!ids.length)return "";
+  return `<div class="sh" style="margin-top:14px"><h2>אימונים אישיים</h2><span>${ids.length}</span></div><div class="past" style="gap:10px;margin-bottom:18px">${ids.map(k=>{const p=PT[k],r=PTR[k];
+    return `<button class="trc" type="button" data-ptsel="${esc(k)}"><div class="r1"><span class="av">${esc((p.trainee||"?").slice(0,1))}</span><div><b>${esc(p.trainee||"")}</b><small>${esc(p.title||"")} · ${p.date===TODAY?"היום":esc(fmt(p.date))}${p.time?" · "+esc(p.time):""}</small></div><span class="pill" style="--c:${r?"var(--ok)":"var(--warn)"}">${r?"דווח ✓":"לדיווח"}</span></div></button>`}).join("")}</div>`}
+function renderPT(){const v=$("v-brief"),k=ptSel,p=PT[k];if(!p){ptSel=null;renderBrief();return}const r=PTR[k]||{},ex=r.ex||{};
+  v.innerHTML=`<div class="hello"><button class="ghost" type="button" data-ptback style="padding:8px 14px">→ חזרה</button><div><small>אימון אישי · ${p.date===TODAY?"היום":esc(fmt(p.date))}${p.time?" · "+esc(p.time):""}</small><b>${esc(p.trainee||"")}</b></div></div>
+  <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>אימון אישי</small><h2>${esc(p.title||"")}</h2>${p.note?`<p>${esc(p.note)}</p>`:""}</div>
+  ${(p.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name||"")}</b><small>${esc(b.format||"")}</small></div></div>
+    ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,e=ex[key]||{};return `<div class="ex-row"><div><b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:it.reps?`<small>${esc(it.reps)}</small>`:""}</div>${vids(it)}</div>
+      <div class="ptrow${it.nokg?" nk":""}">${it.nokg?"":`<input type="text" inputmode="decimal" placeholder="ק״ג" data-ptk="${key}" value="${esc(e.kg||"")}" aria-label="משקל">`}<input type="text" placeholder="חזרות / סטים" data-ptr="${key}" value="${esc(e.r||"")}" aria-label="חזרות"><select data-ptp="${key}" aria-label="כאב">${["",0,1,2,3,4,5,6,7,8,9,10].map(n=>`<option value="${n}" ${String(e.pain??"")===String(n)?"selected":""}>${n===""?"כאב":n+"/10"}</option>`).join("")}</select></div>`}).join("")}</div>`).join("")}
+  <div class="card"><b>דיווח לטל</b><textarea id="ptNote" rows="3" placeholder="איך היה, מה השתנה, משהו שטל צריך לדעת">${esc(r.note||"")}</textarea>
+    <div class="btns" style="margin-top:0"><button class="cta" type="button" id="ptSend">${r.at?"עדכון הדיווח":"שליחת הדיווח לטל"}</button></div>${r.at?`<p class="hint">דווח ב-${esc(fmt(r.date||""))}</p>`:""}</div>`}
+async function ptSend(){const k=ptSel,p=PT[k];if(!p)return;if(coachPv){toast("מצב שיקוף — לא נשמר");return}
+  const ex={};document.querySelectorAll("#v-brief [data-ptr]").forEach(el=>{const key=el.dataset.ptr,kg=document.querySelector(`#v-brief [data-ptk="${key}"]`),pn=document.querySelector(`#v-brief [data-ptp="${key}"]`),o={};
+    if(kg&&kg.value.trim())o.kg=kg.value.trim();if(el.value.trim())o.r=el.value.trim();if(pn&&pn.value!=="")o.pain=+pn.value;
+    if(Object.keys(o).length){const [bi,ii]=key.split("-").map(Number);o.n=((((p.blocks||[])[bi]||{}).items||[])[ii]||{}).n||"";ex[key]=o}});
+  const o={at:new Date().toISOString(),date:TODAY,coach:coachName,trainee:p.trainee||"",title:p.title||"",pdate:p.date||"",ex,note:($("ptNote").value||"").trim()};
+  try{await db.doc(`c/${uid}/pt/${k}`).set(o);PTR[k]=o;toast("הדיווח נשלח לטל ✓");render()}catch(e){toast("לא נשלח, נסו שוב")}}
+$("v-brief").addEventListener("click",ev=>{const s=ev.target.closest("[data-ptsel]");if(s){ptSel=s.dataset.ptsel;render();window.scrollTo(0,0);return}
+  if(ev.target.closest("[data-ptback]")){ptSel=null;render();window.scrollTo(0,0);return}if(ev.target.closest("#ptSend"))ptSend()});
+function renderBrief(){if(!ptLoaded)loadPT();if(ptSel&&PT[ptSel]){renderPT();return}ptSel=null;renderBrief0();const h=ptListHTML();if(h)$("v-brief").insertAdjacentHTML("afterbegin",h)}
+function renderBrief0(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
   const ids=winIds(BRF);
   if(!ids.length&&ARCH){v.innerHTML=`<div class="bf">${archSeg()}${archPick(BRF,null,"bsel")}</div>`;return}
