@@ -975,13 +975,13 @@ const EN={
 "מלפפון":"Cucumber","עגבנייה":"Tomato","חסה ועלים":"Lettuce and greens","גזר":"Carrot","ברוקולי":"Broccoli","כרובית":"Cauliflower","קישוא":"Zucchini","פטריות":"Mushrooms","שעועית ירוקה":"Green beans","בצל":"Onion","פלפל מבושל":"Cooked pepper","תרד":"Spinach","דלעת":"Pumpkin","כרוב":"Cabbage","סלק":"Beet","אבוקדו":"Avocado","רוטב עגבניות":"Tomato sauce",
 "שמן זית":"Olive oil","טחינה גולמית":"Raw tahini","טחינה מוכנה":"Prepared tahini","שקדים":"Almonds","אגוזי מלך":"Walnuts","קשיו":"Cashews","בוטנים":"Peanuts","חמאת בוטנים":"Peanut butter","זרעי צ׳יה":"Chia seeds","זרעי המפ":"Hemp seeds","זרעי דלעת":"Pumpkin seeds","זיתים":"Olives","חמאה":"Butter",
 "אבקת חלבון אפונה":"Pea protein powder","אבקת חלבון מי גבינה":"Whey protein powder","דבש":"Honey","שוקולד מריר 70%":"Dark chocolate 70%","עגבניות שרי":"Cherry tomatoes","שום":"Garlic","מיץ לימון":"Lemon juice","סוכר":"Sugar","שמן":"Oil","שמנת לבישול 15%":"Cooking cream 15%","חלב קוקוס":"Coconut milk","קמח לבן":"White flour",
-"בצל ירוק":"Green onion","פטרוזיליה":"Parsley","כוסברה":"Cilantro","שמיר":"Dill","נענע":"Mint","חציל":"Eggplant","פלפל":"Pepper","רסק עגבניות":"Tomato paste","אבקת קקאו":"Cocoa powder","קמח תירס":"Cornmeal","פסטה ללא גלוטן מבושלת":"Cooked gluten-free pasta"
+"בצל ירוק":"Green onion","פטרוזיליה":"Parsley","כוסברה":"Cilantro","שמיר":"Dill","נענע":"Mint","חציל":"Eggplant","פלפל":"Pepper","רסק עגבניות":"Tomato paste","אבקת קקאו":"Cocoa powder","קמח תירס":"Cornmeal","פסטה ללא גלוטן מבושלת":"Cooked gluten-free pasta","חזה עוף מבושל":"Cooked chicken breast","סלמון אפוי":"Baked salmon","פילה דג לבן אפוי":"Baked white fish fillet","טונה במים מסוננת":"Tuna in water, drained","יוגורט PRO 0%":"PRO yogurt 0%","משקה שיבולת שועל לא ממותק":"Unsweetened oat milk","קרקר זרעים":"Seed cracker","זרעי פשתן טחונים":"Ground flaxseed","קופסה":"can"
 };
 const DD=s=>s==="יום אחד"?"1 day":s.replace(/^(\d+) ימים$/,(m,n)=>n+(n==="1"?" day":" days"));
 const UNIT={"חלבון":"protein","פחמימה":"carbs","שומן":"fat"};
 const N="(\\d[\\d.,]*(?:\\s*[–-]\\s*\\d[\\d.,]*)?)";
 const R=(s,f)=>[new RegExp("^"+s+"$","s"),f];
-const UNM={"גרם":"g","כף":"tbsp","כפות":"tbsp","כפית":"tsp","כפיות":"tsp","כוס":"cup","כוסות":"cups","גביע":"container","גביעים":"containers","יחידה":"piece","יחידות":"pieces","פרוסה":"slice","פרוסות":"slices","סקופ":"scoop","סקופים":"scoops","חופן":"handful","חופנים":"handfuls"};
+const UNM={"גרם":"g","כף":"tbsp","כפות":"tbsp","כפית":"tsp","כפיות":"tsp","כוס":"cup","כוסות":"cups","גביע":"container","גביעים":"containers","יחידה":"piece","יחידות":"pieces","פרוסה":"slice","פרוסות":"slices","סקופ":"scoop","סקופים":"scoops","חופן":"handful","חופנים":"handfuls","קופסה":"can","קופסאות":"cans"};
 const PAT=[
   R("([\\d.]+) (\\S+)",m=>UNM[m[2]]?m[1]+" "+UNM[m[2]]:null),R("([\\d.]+) (\\S+) = (\\d+) ג׳",m=>UNM[m[2]]?m[1]+" "+UNM[m[2]]+" = "+m[3]+" g":null),R("(\\S+) \\(([\\d.]+) ג׳\\)",m=>(EN[m[1]]||UNM[m[1]])?(EN[m[1]]||UNM[m[1]])+" ("+m[2]+" g)":null),
   R(N+"\\s*קק״ל",m=>m[1]+" kcal"),R("כ-"+N+"\\s*קק״ל",m=>"about "+m[1]+" kcal"),
@@ -1595,7 +1595,7 @@ function parseRecipe(text,FOODS){const FOOD=FOODS;const out=[],bad=[],zero=[];
     if(g==null){bad.push(seg);continue}
     g=Math.round(g);out.push({src:seg,n,g,per:f.slice(1)})}
   return {items:out,bad,zero}}
-FOOD.push(...EXTRA_FOOD);
+FOOD.push(...EXTRA_FOOD,["חזה עוף מבושל",165,31,0,3.6],["סלמון אפוי",206,22,0,12.4],["פילה דג לבן אפוי",125,25,0,2.7],["טונה במים מסוננת",116,25.5,0,0.8],["יוגורט PRO 0%",60,10,4,0.2],["משקה שיבולת שועל לא ממותק",40,0.5,6.5,1.2],["קרקר זרעים",470,16,22,35],["זרעי פשתן טחונים",534,18,29,42]);
 
 const recipes={};let SV=null;
 const r1=n=>Math.round(n*10)/10,ri=n=>Math.round(n);
@@ -1631,17 +1631,19 @@ const regram=(x,g)=>{if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].
 
 /* household measures per product: [singular, grams, plural] */
 const SOFTD=["קוטג׳","גבינה לבנה","יוגורט","סקיר","ריקוטה"];
-const CONTW=[["קוטג׳",250],["גבינה לבנה",250],["יוגורט יווני",170],["יוגורט חלבון",200],["סקיר",150],["ריקוטה",250]];
-const TBSPW=[["משקה",15],["קמח שקדים",8],["חמאת בוטנים",16],["קוטג׳",20],["גבינה לבנה",20],["יוגורט",20],["סקיר",20],["ריקוטה",20],["ממרח",15],["חומוס מבושל",15],["עדשים מבושל",15],["שעועית לבנה",15],["שעועית אדומה",15],["אורז",12],["קינואה",12],["כוסמת",12],["דוחן",12],["פסטת",12],["אטריות",12],["תירס",10],["אפונה",10],["פירות יער",12],["גרנולה",8],["זרעי",10],["שקדים",9],["אגוזי",8],["קשיו",9],["בוטנים",9],["זיתים",10],["משקה",15],["חלב",15],["מיץ לימון",15],["שמנת",15],["אבקת חלבון",8],...SPOON];
+const CONTW=[["יוגורט PRO",200],["קוטג׳",250],["גבינה לבנה",250],["יוגורט יווני",170],["יוגורט חלבון",200],["סקיר",150],["ריקוטה",250]];
+const TBSPW=[["פשתן",7],["משקה",15],["קמח שקדים",8],["חמאת בוטנים",16],["קוטג׳",20],["גבינה לבנה",20],["יוגורט",20],["סקיר",20],["ריקוטה",20],["ממרח",15],["חומוס מבושל",15],["עדשים מבושל",15],["שעועית לבנה",15],["שעועית אדומה",15],["אורז",12],["קינואה",12],["כוסמת",12],["דוחן",12],["פסטת",12],["אטריות",12],["תירס",10],["אפונה",10],["פירות יער",12],["גרנולה",8],["זרעי",10],["שקדים",9],["אגוזי",8],["קשיו",9],["בוטנים",9],["זיתים",10],["משקה",15],["חלב",15],["מיץ לימון",15],["שמנת",15],["אבקת חלבון",8],...SPOON];
 const SPOONY=n=>TBSPW.some(([k])=>n.includes(k));
 const DEFSP=n=>SOFTD.some(k=>n.includes(k))||/שמן|טחינה|חמאת|דבש|זרעי|ממרח|שמנת/.test(n);
 function unitsFor(n){n=n||"";const u=[["גרם",1,"גרם"]];
   if(/אבקת חלבון/.test(n)){u.push(["סקופ",30,"סקופים"],["כף",8,"כפות"]);return u}
   const m=n.replace(/חלבון/g," ");
   const c=pick(CONTW,n,0);if(c)u.push(["גביע",c,"גביעים"]);
-  if(SPOONY(m)){const t=pick(TBSPW,m,15);u.push(["כף",t,"כפות"],["כפית",Math.round(t/3*10)/10,"כפיות"])}
-  const cu=pick(CUP,m,0)||(SOFTD.some(k=>n.includes(k))?240:0);if(cu)u.push(["כוס",cu,"כוסות"]);
+  if(SPOONY(m)&&!/קרקר|טונה/.test(n)){const t=pick(TBSPW,m,15);u.push(["כף",t,"כפות"],["כפית",Math.round(t/3*10)/10,"כפיות"])}
+  const cu=/טונה|קרקר/.test(n)?0:/משקה|^חלב/.test(n)?240:pick(CUP,m,0)||(SOFTD.some(k=>n.includes(k))?240:0);if(cu)u.push(["כוס",cu,"כוסות"]);
   if(!c&&!/אבקת|קמח|עמילן|שמן|סוכר|דבש|טחינה|חמאת|רוטב|רסק|מיץ|משקה|חלב|שמנת|זרעי|קקאו/.test(m)){const w=pick(UNITW,n,0);if(w)u.push(/לחם|גבינה צהובה/.test(n)?["פרוסה",w,"פרוסות"]:["יחידה",w,"יחידות"])}
+  if(/טונה/.test(n))u.push(["קופסה",112,"קופסאות"]);
+  if(/קרקר/.test(n))u.push(["יחידה",15,"יחידות"]);
   if(/שקדים|אגוזי|קשיו|בוטנים|פירות יער|ענבים|עגבניות שרי|תותים|חסה/.test(n)&&!/משקה|קמח|חמאת/.test(n))u.push(["חופן",30,"חופנים"]);
   return u}
 const qtTxt=(a,u)=>`${r1(a)} ${a===1?u[0]:u[2]}`;
