@@ -861,7 +861,7 @@ window.pgSetLang=n=>{n=n==="en"?"en":"he";if(n===L)return;try{localStorage.setIt
 window.pgLangSync=saved=>{let ls=null;try{ls=localStorage.getItem("pgLang")}catch(e){}
   if(!ls&&(saved==="en"||saved==="he")&&saved!==L){try{localStorage.setItem("pgLang",saved)}catch(e){}location.reload();return}
   if(ls&&saved!==ls&&(saved||ls==="en"))saveLang(ls)};
-const btns=()=>document.querySelectorAll("[data-lang]").forEach(b=>{b.textContent=L==="en"?"עב":"EN";b.setAttribute("lang",L==="en"?"he":"en");b.setAttribute("aria-label",L==="en"?"להחליף לעברית":"Switch to English")});
+const btns=()=>document.querySelectorAll("[data-lang]").forEach(b=>{b.textContent=L==="en"?"HE":"EN";b.setAttribute("lang",L==="en"?"he":"en");b.setAttribute("aria-label",L==="en"?"Switch to Hebrew":"Switch to English")});
 document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-lang]");if(b){ev.preventDefault();window.pgSetLang(L==="en"?"he":"en")}});
 btns();
 
@@ -1008,7 +1008,8 @@ const gloss=s=>{const r=s.replace(GRE,(m,o,str)=>{const b=str[o-1],a=str[o+m.len
 const TRX=()=>{try{return (typeof prof!=="undefined"&&prof&&prof.tr)||{}}catch(e){return {}}};
 const swap=s=>s.replace(/[→←]/g,c=>c==="→"?"←":"→");
 const AFF=/^([\s+·✓→←•]*)([\s\S]*?)((?:\s*×[\d½¼¾.]+)?[\s✓…:.!?·→←]*)$/;
-function look(s){const x=TRX();if(x[s]!=null)return x[s];if(EN[s]!=null)return EN[s];return null}
+const LOCAL={};
+function look(s){const x=TRX();if(x[s]!=null)return x[s];if(LOCAL[s]!=null)return LOCAL[s];if(EN[s]!=null)return EN[s];return null}
 function tr(s){if(!s||!HEB.test(s))return s;let r=look(s);if(r!=null)return r;
   if(s.includes("\n"))return s.split("\n").map(tr).join("\n");
   const a=s.match(AFF);if(a&&(a[1]||a[3])&&a[2]){const c=tr(a[2]);if(c!==a[2])return swap(a[1])+c+swap(a[3])}
@@ -1019,10 +1020,23 @@ window.pgT=tr;
 const SKIP="#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar,#bfRs,script,style,textarea,[data-noi18n]";
 const skip=el=>!el||!!el.closest(SKIP);
 const SET=new WeakMap();
-function text(n){const v=n.nodeValue;if(!v||!HEB.test(v)||SET.get(n)===v||skip(n.parentElement))return;const t=v.trim(),de=n.parentElement.dataset.en,r=de||tr(t);if(r!==t){const nv=v.replace(t,()=>r);SET.set(n,nv);n.nodeValue=nv}}
+/* anything the dictionary can't fully translate is hidden, sent to Claude, and shown once translated (and saved for next time) */
+const PEND=new Map(),Q=new Set();let qT=null,tries=0,warmed=false;
+function hold(key,t,apply){if(t)Q.add(t);PEND.set(key,{t,apply});clearTimeout(qT);qT=setTimeout(flush,350)}
+async function flush(){if(!Q.size&&warmed)return;const id=typeof uid!=="undefined"?uid:null;if(!id||!window.pgAI||!pgAI.translate){qT=setTimeout(flush,800);return}
+  const list=[...Q].slice(0,250);list.forEach(x=>Q.delete(x));const all=!warmed;warmed=true;
+  const res=await pgAI.translate({uid:id,strings:list,all});
+  if(res&&res.tr)Object.assign(LOCAL,res.tr);
+  const fail=!res||list.some(x=>look(x)==null);if(fail&&tries<2){tries++;list.forEach(x=>{if(look(x)==null)Q.add(x)});qT=setTimeout(flush,1500);return}
+  tries=0;for(const [k,p] of [...PEND]){if(Q.has(p.t))continue;PEND.delete(k);p.apply(look(p.t)||tr(p.t))}if(Q.size)qT=setTimeout(flush,350)}
+function text(n){const v=n.nodeValue;if(!v||!HEB.test(v)||SET.get(n)===v||skip(n.parentElement))return;const t=v.trim(),de=n.parentElement.dataset.en,r=de||tr(t);
+  if(HEB.test(r)){SET.set(n,"");n.nodeValue="";hold(n,t,x=>{if(!n.isConnected||n.nodeValue!=="")return;const nv=v.replace(t,()=>x);SET.set(n,nv);n.nodeValue=nv});return}
+  if(r!==t){const nv=v.replace(t,()=>r);SET.set(n,nv);n.nodeValue=nv}}
 const ATTR=["placeholder","aria-label","title","alt"];
 const SKIPA=SKIP.replace(",script,style,textarea","");
-function attr(el,a){const v=el.getAttribute(a);if(!v||!HEB.test(v)||!!el.closest(SKIPA))return;const r=tr(v.trim());if(r!==v.trim())el.setAttribute(a,r)}
+function attr(el,a){const v=el.getAttribute(a);if(!v||!HEB.test(v)||!!el.closest(SKIPA))return;const t=v.trim(),r=tr(t);
+  if(HEB.test(r)){el.setAttribute(a,"");hold(el.tagName+a+Math.random(),t,x=>{if(el.isConnected&&el.getAttribute(a)==="")el.setAttribute(a,x)});return}
+  if(r!==t)el.setAttribute(a,r)}
 function walk(root){if(root.nodeType===3){text(root);return}if(root.nodeType!==1)return;
   ATTR.forEach(a=>root.hasAttribute(a)&&attr(root,a));root.querySelectorAll("textarea[placeholder]").forEach(t=>attr(t,"placeholder"));if(skip(root))return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,{acceptNode:n=>n.nodeType===1&&n.matches(SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
@@ -1032,7 +1046,7 @@ function on(){if(live)return;live=true;L="en";window.pgLang="en";const H=documen
   /* coach and owner screens stay Hebrew, right to left */
   document.querySelectorAll("#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar").forEach(e=>{e.dir="rtl";e.lang="he"});
   try{if(typeof DN!=="undefined"&&DN[0]!=="Sun")DN.splice(0,7,"Sun","Mon","Tue","Wed","Thu","Fri","Sat")}catch(e){}
-  window.pgT=tr;btns();walk(document.body);
+  window.pgT=tr;btns();walk(document.body);hold("warm","",()=>{});
   new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")text(m.target);else if(m.type==="attributes")attr(m.target,m.attributeName);else m.addedNodes.forEach(walk)}})
     .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR})}
 window.pgT=s=>s;
@@ -1093,7 +1107,8 @@ const user={
     const {data}=await SB.from("docs").select("path,data").in("path",ids.map(i=>`t/${i}`));
     (data||[]).forEach(r=>{const id=idOf(r.path);out[id]={id,name:(r.data&&r.data.name)||"",email:(r.data&&r.data.email)||null}});
     ids.forEach(i=>{if(!out[i])out[i]={id:i,name:"",email:null}});return out}};
-window.pgAI={async report(o){try{const {data,error}=await SB.functions.invoke("report-parse",{body:o});if(error||!data||!Array.isArray(data.people))return null;return data}catch(e){return null}},
+window.pgAI={async translate(o){try{const {data,error}=await SB.functions.invoke("translate",{body:o});return error?null:data}catch(e){return null}},
+  async report(o){try{const {data,error}=await SB.functions.invoke("report-parse",{body:o});if(error||!data||!Array.isArray(data.people))return null;return data}catch(e){return null}},
   async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}},
   async improve(o){try{const {data,error}=await SB.functions.invoke("recipe",{body:{mode:"improve",...o}});if(error||!data||!Array.isArray(data.items)||!data.items.length)return null;return data}catch(e){return null}}};
 window.pgMember={async link(){try{const {data}=await SB.functions.invoke("member-link");return data||null}catch(e){return null}},
