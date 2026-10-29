@@ -862,7 +862,11 @@ window.pgLangSync=saved=>{let ls=null;try{ls=localStorage.getItem("pgLang")}catc
   if(!ls&&(saved==="en"||saved==="he")&&saved!==L){try{localStorage.setItem("pgLang",saved)}catch(e){}location.reload();return}
   if(ls&&saved!==ls&&(saved||ls==="en"))saveLang(ls)};
 const btns=()=>document.querySelectorAll("[data-lang]").forEach(b=>{b.textContent=L==="en"?"HE":"EN";b.setAttribute("lang",L==="en"?"he":"en");b.setAttribute("aria-label",L==="en"?"Switch to Hebrew":"Switch to English")});
-document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-lang]");if(b){ev.preventDefault();window.pgSetLang(L==="en"?"he":"en")}});
+window.pgPvMode=false;
+document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-lang]");if(!b)return;ev.preventDefault();
+  /* owner/coach mirroring a trainee: switch only the preview, nothing is saved */
+  if(window.pgPvMode){if(L==="en")location.reload();else{on();try{render()}catch(e){}}return}
+  window.pgSetLang(L==="en"?"he":"en")});
 btns();
 
 const EN={
@@ -879,7 +883,7 @@ const EN={
 "צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
 "נשלח מייל. פותחים את הקישור שבו מהטלפון הזה":"Email sent. Open the link in it on this phone","נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים":"We sent you a confirmation email. After confirming, come back here and sign in",
 /* saving */
-"לא מחובר":"Not connected","החשבון בהשהיה כרגע":"Your account is paused right now","מצב תצוגה — לא נשמר":"Preview mode — not saved","אין הרשאת שמירה":"No permission to save","לא נשמר":"Not saved","שומר":"Saving","נשמר":"Saved","החיבור נותק":"Connection lost","טוען":"Loading",
+"לא מחובר":"Not connected","החשבון בהשהיה כרגע":"Your account is paused right now","מצב תצוגה — לא נשמר":"Preview mode — not saved","אין הרשאת שמירה":"No permission to save","לא נשמר":"Not saved","שומר":"Saving","נשמר":"Saved","מעודכן":"Up to date","מוחק":"Deleting","משייך":"Assigning","שגיאה":"Error","שגיאה בטעינה":"Loading error","החיבור נותק":"Connection lost","טוען":"Loading",
 "השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.":"Saving failed. Try logging out and back in, and if it happens again let Tal know.","נגמר המקום לשמירת נתונים. ספרו לטל.":"Out of storage space. Let Tal know.",
 "ברוכים הבאים לפלייגראונד":"Welcome to Playground","קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"You're in. Tal will connect you to your personal plan very soon, and then everything will show up here.",
 "כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין.":"To use the app, sign in with the same email Tal invited.",
@@ -1052,7 +1056,8 @@ function on(){if(live)return;live=true;L="en";window.pgLang="en";const H=documen
 window.pgT=s=>s;
 if(L==="en")on();
 /* owner or coach previewing a trainee: show the trainee's own language */
-window.pgPreviewLang=l=>{if(l==="en")on()};
+window.pgPreviewLang=l=>{window.pgPvMode=true;document.querySelectorAll(".brand [data-lang]").forEach(b=>b.hidden=false);if(l==="en")on()};
+window.pgPreviewEnd=()=>{window.pgPvMode=false;document.querySelectorAll(".brand [data-lang]").forEach(b=>b.hidden=true)};
 /* owner and coaches always work in Hebrew; the switch is for trainees */
 window.pgStaff=()=>{document.querySelectorAll(".brand [data-lang]").forEach(b=>b.hidden=true);let ls=null;try{ls=localStorage.getItem("pgLang")}catch(e){}
   if(ls==="en"){try{localStorage.setItem("pgLang","he")}catch(e){}location.reload();return true}return false};
@@ -2814,12 +2819,12 @@ async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS};MEM=nul
     if(!aid){const mm=await db.doc(`m/${id}`).get();if(mm.exists)aid=String((mm.data()||{}).aid||"")}
     if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
   pvStLoading=false;if(preview===id){applyPause();if(!typing())render()}}
-async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;if(window.pgPreviewLang){try{const t=await db.doc(`t/${id}`).get();if(t.exists)pgPreviewLang((t.data()||{}).lang)}catch(e){}}preview=id;uid=id;prof=c.prof;pvStudio(id);
+async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;if(window.pgPreviewLang){let l;try{const t=await db.doc(`t/${id}`).get();if(t.exists)l=(t.data()||{}).lang}catch(e){}pgPreviewLang(l)}preview=id;uid=id;prof=c.prof;pvStudio(id);
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=c.pend?[]:subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(window.pgPreviewEnd)pgPreviewEnd();if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
