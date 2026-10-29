@@ -1272,7 +1272,7 @@ function studioBody(full){
     <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0;
       return `<div class="ml-r"><div><b class="en">${esc(exName(x).replace(/\s*\([^)]*\)/g,"").replace(/\s+-\s+.*$/,"").trim()||exName(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
         <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}</div></div>`}).join("")}</div>`
-    :`<div class="card"><div class="empty">${MEM?"אחרי השיעור הבא המאמן ירשום את המשקלים שלך, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
+    :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון שלי״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
   ${full?`  <div class="sh"><h2>ליווי אישי</h2></div>
   <p class="hint lead">חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.</p>
   ${UPS.map(([k,t,d,ic])=>{const sent=LEADM[k];return `<div class="card ups"><div class="ups-h"><span class="ups-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic}"/></svg></span><b>${esc(t)}</b><span class="ups-l">${LOCK}</span></div>
@@ -2184,7 +2184,7 @@ let isCoach=false,coachName="";
 const RO={},MYR={},WD={},REPS={},RR={};
 let rDate=TODAY,rType=null,rTime=null,DR=null,openP=null,stLoaded=false,stLoading=false,stAt=0,stSel=null,stLogs=null,stQ="",repOpen=null;
 const TIMES=["06:30","08:00","09:00","10:00","11:00","17:30","18:00","18:30","19:00","19:30"];
-const TAGS=[["pain","כאב / פציעה","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
+const TAGS=[["pain","כאב / פציעה","var(--bad)"],["red","דגל אדום","var(--bad)"],["hard","לא עבד","var(--warn)"],["pr","שיפור","var(--ok)"],["happy","מרוצה","var(--ok)"]];
 const TL=Object.fromEntries(TAGS.map(t=>[t[0],t]));
 const tagPills=a=>(a||[]).map(t=>TL[t]?`<span style="--c:${TL[t][2]}">${TL[t][1]}</span>`:"").join("");
 const exClean=n=>String(n||"").replace(/^(Super Set|Buy In|Buy Out)\s*:\s*/i,"").replace(/^Min\s*\d+\s*:\s*/i,"").replace(/^[\d:\/\-\.]+(\s*(Reps|Cal|M))?\s+/i,"").trim();
@@ -2246,7 +2246,7 @@ function renderClass(){const v=$("v-class");
   const names=Object.entries(RO).filter(([id])=>!DR.people.some(p=>p.id===id)).map(([,r])=>r.name).sort((a,b)=>a.localeCompare(b,"he"));
   const mine=Object.entries(MYR).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
   const here=DR.people.filter(p=>!p.absent),cnt=k=>here.filter(p=>(p.tags||[]).includes(k)).length;
-  const sum=[[cnt("pain"),"כאב"],[cnt("hard"),"קושי"],[cnt("pr"),"שיא"],[cnt("red"),"דגל אדום"]].filter(x=>x[0]).map(([n,l])=>`${n} ${l}`);
+  const sum=[[cnt("red"),"דגל אדום"],[cnt("pain"),"כאב"],[cnt("hard"),"לא עבד"],[cnt("pr"),"שיפור"],[cnt("happy"),"מרוצה"]].filter(x=>x[0]).map(([n,l])=>`${n} ${l}`);
   const abs=DR.people.length-here.length;if(abs)sum.push(`${abs} לא הגיעו`);
   const pr=prepRows();
   v.innerHTML=`
@@ -2254,7 +2254,7 @@ function renderClass(){const v=$("v-class");
   <div class="card clsbar">
     <div class="cb-row"><div class="cb-t"><b>${esc(typeOf(rType))} · ${esc(rTime||"בחרו שעה")}</b><small>${esc(dayL)}${rrc?` · ${(rrc.names||[]).length} רשומים בארבוקס`:""}${rrc&&rrc.coach?` · ${esc(rrc.coach)}`:""}</small></div>
       <button type="button" class="chipb" id="rpPick">${pickOpen?"סגירה":"שינוי"}</button></div>
-    ${w?`<p class="hint en">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של השיעור הזה עוד לא עלה לאפליקציה. אפשר לדווח בלי משקלים.</p>`}
+    ${w?`<p class="hint en">${esc(w.title||"")}</p>`:`<p class="hint warn">האימון של השיעור הזה עוד לא עלה לאפליקציה. אפשר לדווח כרגיל.</p>`}
     ${exist?`<p class="hint">כבר שלחת דיווח לשיעור הזה. שליחה נוספת תעדכן אותו.</p>`:""}
     ${pickOpen?`<div class="pick">
       <div class="chips">${days.map(([k,l])=>`<button type="button" data-rd="${k}" aria-pressed="${k===rDate}">${l}</button>`).join("")}</div>
@@ -2271,7 +2271,7 @@ function renderClass(){const v=$("v-class");
       <button class="ghost" type="button" id="vcGo">מלא את הדיווח מזה</button>`:`<button type="button" class="linkb" id="vcType">או לכתוב חופשי</button>`}
     <p class="hint">מספרים רק על מי שהיה איתו משהו. Claude ממלא את הדיווח, אתה בודק ושולח.</p></div>
   <div class="sh"><h2>מי היה בשיעור</h2><span>${here.length}${abs?` מתוך ${DR.people.length}`:""}</span></div>
-  ${DR.people.length?`<p class="hint lead">כולם מסומנים כ״בסדר״. מסמנים רק את מי שהיה איתו משהו, ובכל מתאמן ממלאים גרסה ומשקל לכל תרגיל. לחיצה על העיגול = לא הגיע.</p>`:`<p class="hint lead">${rrc?"אין רשומים לשיעור הזה בארבוקס.":"אין רשימה מארבוקס לשיעור הזה."} מוסיפים מתאמנים למטה.</p>`}
+  ${DR.people.length?`<p class="hint lead">כולם מסומנים כ״בסדר״. מסמנים רק את מי שהיה איתו משהו: כאב, דגל אדום, משהו שלא עבד, שיפור או מישהו מרוצה. את המשקלים והגרסאות המתאמנים רושמים בעצמם. לחיצה על העיגול = לא הגיע.</p>`:`<p class="hint lead">${rrc?"אין רשומים לשיעור הזה בארבוקס.":"אין רשימה מארבוקס לשיעור הזה."} מוסיפים מתאמנים למטה.</p>`}
   ${pr?`<div class="card prepc"><button type="button" class="prep-h" id="rpPrep"><b>לפני השיעור · מה לדעת</b><span class="chev">${prepOpen?"▲":"▼"}</span></button>${prepOpen?pr:""}</div>`:""}
   <div class="rplist">${DR.people.map((p,i)=>personCard(p,i,exs,met)).join("")}</div>
   <div class="addrow sm"><input type="text" id="rpAdd" list="rpNames" placeholder="+ הוספת מתאמן שלא ברשימה" autocomplete="off"><button class="ghost" type="button" id="rpAddB">הוספה</button></div>
@@ -2338,7 +2338,7 @@ function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
   const lx=Object.entries(r.lx||{}).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||""))[0];if(lx)bits.push(`<span style="--c:var(--mes)">${esc(lx[0].slice(0,22))}: ${esc(lx[1].kg||"")}${lx[1].ver?" · "+esc(lx[1].ver):""}</span>`);
   return bits.length?`<div class="prep"><b>${esc(p.name)}</b><div class="mini">${bits.join("")}</div></div>`:""}).join("")}
 const PREG={"1":"הריון · שליש ראשון","2":"הריון · שליש שני","3":"הריון · שליש שלישי","pp":"אחרי לידה"};
-const QT=[["pain","כאב","var(--bad)"],["hard","קושי","var(--warn)"],["pr","שיא","var(--ok)"],["red","דגל אדום","var(--bad)"]];
+const QT=[["pain","כאב","var(--bad)"],["red","דגל אדום","var(--bad)"],["hard","לא עבד","var(--warn)"],["pr","שיפור","var(--ok)"],["happy","מרוצה","var(--ok)"]];
 const WIDE=()=>matchMedia("(min-width:820px)").matches;
 try{matchMedia("(min-width:820px)").addEventListener("change",()=>{if(tab==="class"&&!typing())render()})}catch(e){}
 function exBlocks(w){const out=[];if(!w||!w.blocks)return out;
@@ -2410,11 +2410,9 @@ function personCard(p,i,exs,met){const r=RO[p.id]||{},wide=WIDE(),op=(wide||open
       <span class="lbl">כמה חזק (1–10)</span><div class="chips sm lvl">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-pl="${n}" data-i="${i}" aria-pressed="${pn.lvl===n}" style="--c:${n>=7?"var(--bad)":n>=4?"var(--warn)":"var(--ok)"}">${n}</button>`).join("")}</div>
       ${ex2.length?`<span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-px="${esc(x)}" data-i="${i}" aria-pressed="${pn.ex===x}" class="en">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div>`:""}
       <input type="text" data-pm="${i}" value="${esc(pn.mod||"")}" placeholder="מה שינית? למשל: ירדנו ל-Goblet, טווח חלקי"></div>`:""}
-    ${tags.includes("pr")&&ex2.length?`<div class="painbox prb"><b class="bx">שיא</b><span class="lbl">באיזה תרגיל</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div></div>`:""}
-    ${bl.map(b=>`<span class="lbl blk">${esc(b.name)}</span>${b.items.map(x=>liftRow(p,i,x,r,b.str,b.meta[x]&&{...b.meta[x],core:b.core})).join("")}`).join("")}
+    ${tags.includes("pr")&&ex2.length?`<div class="painbox prb"><b class="bx">שיפור</b><span class="lbl">באיזה תרגיל (לא חובה)</span><div class="chips sm">${ex2.map(x=>`<button type="button" data-prx="${esc(x)}" data-i="${i}" aria-pressed="${p.prx===x}" class="en" style="--c:var(--ok)">${esc(x.length>26?x.slice(0,26)+"…":x)}</button>`).join("")}</div></div>`:""}
     ${mis.length?`<span class="lbl">מה תיקנת (מהבריף)</span><div class="chips sm">${mis.map(m=>`<button type="button" data-er="${esc(m)}" data-i="${i}" aria-pressed="${(p.err||[]).includes(m)}">${esc(m)}</button>`).join("")}</div>`:""}
-    ${met?`<div class="kg"><label>תוצאה במטקון</label><input type="text" data-f="score" data-i="${i}" value="${esc(p.score||"")}" placeholder="זמן / סבבים"></div>`:""}
-    <textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
+    <textarea rows="2" data-f="note" data-i="${i}" placeholder="${tags.includes("red")?"מה קרה? (חובה בדגל אדום)":tags.includes("hard")?"מה לא עבד? (חובה)":tags.includes("pain")?"עוד משהו על הכאב (לא חובה)":tags.includes("pr")||tags.includes("happy")?"במה? מה עבד טוב? (לא חובה)":"הערה (לא חובה)"}">${esc(p.note||"")}</textarea>
     <input type="text" data-f="inj" data-i="${i}" value="${esc(p.inj!=null?p.inj:(r.inj||""))}" placeholder="פציעות / רגישויות קבועות (נשמר בכרטיס שלו)">
     <div class="rp-f">${wide?"":`<button class="ghost" type="button" data-pp="${esc(p.id)}">סגירה</button>`}<button class="ghost" type="button" data-rm="${i}">הסרה מהשיעור</button></div>
   </div>`:""}</div>`}
@@ -2429,7 +2427,7 @@ function loadMine(k){const r=MYR[k];if(!r)return;rDate=r.date;rTime=r.time;rType
   DR={cls:r.cls,people:[...JSON.parse(JSON.stringify(r.people||[])),...(r.absent||[]).map(n=>{const hit=Object.entries(RO).find(([,o])=>lowN(o.name)===lowN(n));return {id:hit?hit[0]:newId(),name:n,absent:true,tags:[]}})],note:r.note||"",tal:r.tal||"",edit:1,k:`${rDate}-${(rTime||"").replace(":","")}-${slug(typeOf(rType))}`};openP=null;draftSave();render();window.scrollTo(0,0)}
 
 async function sendReport(){if(coachPv){toast("מצב שיקוף — לא נשמר");return}const pres=DR.people.filter(p=>!p.absent);if(!pres.length){toast(DR.people.length?"סמנו לפחות מתאמן אחד שהגיע":"הוסיפו לפחות מתאמן אחד");return}if(!rTime){toast("בחרו שעה");return}
-  const miss=pres.find(p=>(p.tags||[]).includes("red")&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast("בדגל אדום כותבים מה קרה");return}
+  const miss=pres.find(p=>((p.tags||[]).includes("red")||(p.tags||[]).includes("hard"))&&!(p.note||"").trim());if(miss){openP=miss.id;render();toast((miss.tags||[]).includes("red")?"בדגל אדום כותבים מה קרה":"כותבים בקצרה מה לא עבד");return}
   for(const p of pres){for(const [x,L] of Object.entries(p.lx||{})){if(!L)continue;const vs=varsOf(x),m0=metaOf(x,L),logged=(L.sets||[]).some(setDone)||!!L.kg||!!L.reps||(L.fail&&Object.keys(L.fail).length);
     const go=msg=>{openP=p.id;render();toast(msg);setTimeout(()=>{const el=[...document.querySelectorAll(".lift-r")].find(e=>e.querySelector(`[data-lx="${CSS.escape(x)}"][data-i="${DR.people.indexOf(p)}"]`));if(el)el.scrollIntoView({block:"center",behavior:"smooth"})},80)};
     if(vs.length&&logged&&!L.ver){go(`${p.name} · ${exName(x)}: באיזו גרסה עבד?`);return}
