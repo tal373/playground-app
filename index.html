@@ -2441,7 +2441,7 @@ const ptMail=()=>coachPv?(((COA||[]).find(c=>(c.name||c.email)===coachPv)||{}).e
 async function loadPT(){if(!db||ptLoading)return;ptLoading=true;
   try{const em=lowN(ptMail());if(em){const s=await db.collection("pt/"+em+"/s").get();fill(PT,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
     if(!coachPv&&uid){const r=await db.collection(`c/${uid}/pt`).get().catch(()=>({docs:[]}));fill(PTR,Object.fromEntries(r.docs.map(d=>[d.id,d.data()])))}}}catch(e){}
-  ptLoaded=true;ptLoading=false;if(tab==="brief")render()}
+  ptLoaded=true;ptLoading=false;if(tab==="brief"||tab==="prog")render()}
 function ptListHTML(){const ids=Object.keys(PT).filter(k=>(PT[k].date||"")>=addDays(TODAY,-7)).sort((a,b)=>((PT[a].date||"")+(PT[a].time||"")).localeCompare((PT[b].date||"")+(PT[b].time||"")));
   if(!ids.length)return "";
   return `<div class="sh" style="margin-top:14px"><h2>אימונים אישיים</h2><span>${ids.length}</span></div><div class="past" style="gap:10px;margin-bottom:18px">${ids.map(k=>{const p=PT[k],r=PTR[k];
@@ -2550,7 +2550,13 @@ const fmtD=k=>{const d=fromKey(k);return `${d.getDate()}.${d.getMonth()+1}`};
 function dayPick(store,sel,attr){const ids=winIds(store),days=[...new Set(ids.map(id=>store[id].date))].sort(),cur=store[sel]?store[sel].date:null,types=ids.filter(id=>store[id].date===cur);
   return `<div class="chips dpk">${days.map(d=>`<button type="button" data-${attr}d="${d}" aria-pressed="${d===cur}">${d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":esc(fmt(d))}</button>`).join("")}</div>${types.length>1?`<div class="chips">${types.map(id=>`<button type="button" data-${attr}="${esc(id)}" aria-pressed="${id===sel}">${esc(typeOf(id))}</button>`).join("")}</div>`:""}`}
 const pgCol=n=>/mobil|movement|warm|חימום|מוביליטי/i.test(n)?"var(--pA)":/core|קור/i.test(n)?"var(--pB)":/metcon|מטקון|chipper|buy|game|משחק/i.test(n)?"var(--pD)":"var(--pC)";
-function renderProg(){const v=$("v-prog");
+function ptProgHTML(){const ids=Object.keys(PT).filter(k=>(PT[k].date||"")>=TODAY&&(PT[k].date||"")<=addDays(TODAY,7)).sort((a,b)=>((PT[a].date||"")+(PT[a].time||"")).localeCompare((PT[b].date||"")+(PT[b].time||"")));
+  if(!ids.length)return "";
+  return ids.map(k=>{const p=PT[k];return `<div class="pg" style="margin-bottom:22px"><div class="pg-hero"><small>אימון אישי · ${p.date===TODAY?"היום":esc(fmt(p.date))}${p.time?" · "+esc(p.time):""}</small><h1>${esc(p.trainee||"")}</h1>${p.title?`<small>${esc(p.title)}</small>`:""}</div>
+  ${(p.blocks||[]).map(b=>{let k2=0;return `<div class="pg-blk" style="--c:${pgCol(b.name||"")}"><div class="pg-bh"><b>${esc(b.name||"")}</b></div>${b.format?`<div class="pg-fmt">${esc(b.format)}</div>`:""}
+    ${(b.items||[]).map(it=>{k2++;const extra=[it.sets&&!/round/i.test(b.format||"")?it.sets+" sets":"",it.reps&&!String(it.n||"").includes(String(it.reps).split(" ")[0])?it.reps:""].filter(Boolean).join(" · ");return `<div class="pg-ln"><span>${esc(it.n)}${extra?`<small>${esc(extra)}</small>`:""}</span><i>${k2}</i></div>`}).join("")}</div>`}).join("")}</div>`}).join("")}
+function renderProg(){if(!ptLoaded)loadPT();renderProg0();const h=ptProgHTML();if(h)$("v-prog").insertAdjacentHTML("afterbegin",h)}
+function renderProg0(){const v=$("v-prog");
   if(!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadStudio();return}
   const ids=winIds(WD);
   if(!ids.length&&ARCH){v.innerHTML=`<div class="pg">${archSeg()}${archPick(WD,null,"pgs")}</div>`;return}
