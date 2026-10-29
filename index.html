@@ -766,9 +766,21 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 .stage.has-th{background:linear-gradient(180deg,#0c1d3300 0%,#0c1d3333 30%,#0c1d33e6 68%,#0c1d33 100%),var(--th) center/auto 136% no-repeat,var(--s1)}
 .pzbox{margin:0 16px 12px;background:#ff5a5a0d;border:1px solid #ff5a5a2e;border-radius:14px;padding:10px 12px}.pzbox summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);list-style:none}.pzbox summary::-webkit-details-marker{display:none}.pzbox summary::before{content:"+ "}.pzbox[open] summary::before{content:"\2212  "}.pzbox .pzl{font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 6px}.pzbox .pzv{color:var(--warn)}.pzbox .pzv.hi{color:var(--bad)}.pzbox .pzn{display:grid;grid-template-columns:repeat(11,1fr);gap:4px}.pzbox .pzn button{padding:7px 0;min-width:0;text-align:center}.pzbox .pzt{width:100%;margin-top:12px;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:inherit}#pWork .pzbox{margin:14px 0 0;text-align:right}
 .ptrow{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;padding:0 16px 14px}.ptrow.nk{grid-template-columns:1.4fr 1fr}.ptrow input,.ptrow select{width:100%;min-width:0;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:9px 10px;color:inherit}
+.brand .bt{min-width:0;flex:0 1 auto}.brand .save{min-width:0;overflow:hidden;text-overflow:ellipsis}.brand .logout{padding:5px 10px;flex:none}
+.lang{flex:none;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;color:var(--ink);background:none;white-space:nowrap;font-family:inherit}
+.alang{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));inset-inline-start:16px}
+.qrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:-2px 0 4px;padding:0 4px;font-size:13px;color:var(--muted)}.opts.multi .qrow{grid-column:1/-1}
+.qrow select{font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--food);border-radius:10px;padding:7px 10px;color:var(--ink)}
+.qrow small{margin-inline-start:auto;font-size:12.5px}
+.numin{width:130px;font:inherit;font-size:17px;font-weight:700;text-align:center;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:9px 10px;color:var(--ink)}
+html[dir=ltr] body{direction:ltr}
+html[dir=ltr] :is(.meal,.tog,.opt,.past button,.trc,.fi,.rp-h,.rp-h .nm,.cl,.linkb,.prep-h,.bf-leg button,.bf-exh,.lbl.blk,button.cl-n,.fl2 .ft,td:first-child,th:first-child,#pWork .pzbox,.ex-row b,.pg-hero h1,.pg-bh b,.pg-fmt,.pg-ln span,.pg-ln small,.lift-r label,.kg label,.bf-en,.bf-bh h2,.bf-bh small,.bf-lift h3,.bf-ex .nm){text-align:left}
+html[dir=ltr] .stage h2{direction:ltr!important;text-align:left}
+html[dir=ltr] :is(.fact span,.ml-v){text-align:right}
+html[dir=ltr] :is(.ex-row a svg,.stage .vids svg,.ex-row a.th i svg,#guided svg){transform:none!important}
 </style></head><body>
 <div class="app">
-  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span></div>
+  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
   <div class="banner" id="banner" hidden></div>
   <div class="pvbar" id="pvbar" hidden><b></b><span>מתעדכן בזמן אמת · לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
   <section class="view" id="v-today"></section>
@@ -819,7 +831,7 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 </div>
 
 <div class="auth" id="auth" hidden>
-  <div class="authin">
+  <div class="authin"><button type="button" class="lang alang" data-lang data-noi18n>EN</button>
     <img src="pg-logo.png" alt="Playground">
     <div class="aby"><b>PLAYGROUND STUDIO</b><span>ליווי אישי · טל ליפשטט</span></div>
     <h1 id="aTitle">כניסה לאפליקציה</h1>
@@ -836,6 +848,191 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
   </div>
 </div>
 <button type="button" class="logout" id="aOut" hidden>התנתקות</button>
+<script>
+/* ===== language: Hebrew / English (trainee screens) ===== */
+(()=>{
+let L="he";try{L=localStorage.getItem("pgLang")==="en"?"en":"he"}catch(e){}
+window.pgLang=L;
+const HEB=/[֐-׿]/;
+function saveLang(n){try{if(typeof db!=="undefined"&&db&&typeof uid!=="undefined"&&uid&&!(typeof preview!=="undefined"&&preview))return Promise.race([db.doc("t/"+uid).update({lang:n}),new Promise(r=>setTimeout(r,1500))]).catch(()=>{})}catch(e){}return Promise.resolve()}
+window.pgSetLang=n=>{n=n==="en"?"en":"he";if(n===L)return;try{localStorage.setItem("pgLang",n)}catch(e){}saveLang(n).then(()=>location.reload())};
+/* a new device picks up the choice saved on the account */
+window.pgLangSync=saved=>{let ls=null;try{ls=localStorage.getItem("pgLang")}catch(e){}
+  if(!ls&&(saved==="en"||saved==="he")&&saved!==L){try{localStorage.setItem("pgLang",saved)}catch(e){}location.reload();return}
+  if(ls&&saved!==ls&&(saved||ls==="en"))saveLang(ls)};
+const btns=()=>document.querySelectorAll("[data-lang]").forEach(b=>{b.textContent=L==="en"?"עב":"EN";b.setAttribute("lang",L==="en"?"he":"en");b.setAttribute("aria-label",L==="en"?"להחליף לעברית":"Switch to English")});
+document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-lang]");if(b){ev.preventDefault();window.pgSetLang(L==="en"?"he":"en")}});
+btns();
+if(L!=="en"){window.pgT=s=>s;return}
+document.documentElement.lang="en";document.documentElement.dir="ltr";document.title="Playground";
+
+const EN={
+/* shell */
+"ליווי אישי":"Personal coaching","טל ליפשטט":"Tal Lipshtat","מתחבר":"Connecting","מחובר":"Connected","מתעדכן בזמן אמת":"Live","לא נשמר כלום":"nothing is saved","חזרה ללוח":"Back to dashboard",
+"ליווי אישי של טל ליפשטט":"Personal coaching by Tal Lipshtat","אימון, תזונה ושיקום":"Training, nutrition and rehab",
+"היום":"Today","אימון":"Workout","תפריט":"Menu","מדדים":"Progress","סטודיו":"Studio","תכנית":"Program","בריף":"Brief","שיעור":"Class","דשבורד":"Dashboard",
+"בחירת ארוחה":"Choose a meal","אימון מודרך":"Guided workout","סגירה":"Close","מנוחה":"Rest","דלג":"Skip",
+/* auth */
+"כניסה לאפליקציה":"Sign in","אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
+"המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
+"הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
+"שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים":"Wrong email or password","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
+"צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
+"נשלח מייל. פותחים את הקישור שבו מהטלפון הזה":"Email sent. Open the link in it on this phone","נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים":"We sent you a confirmation email. After confirming, come back here and sign in",
+/* saving */
+"לא מחובר":"Not connected","החשבון בהשהיה כרגע":"Your account is paused right now","מצב תצוגה — לא נשמר":"Preview mode — not saved","אין הרשאת שמירה":"No permission to save","לא נשמר":"Not saved","שומר":"Saving","נשמר":"Saved","החיבור נותק":"Connection lost","טוען":"Loading",
+"השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.":"Saving failed. Try logging out and back in, and if it happens again let Tal know.","נגמר המקום לשמירת נתונים. ספרו לטל.":"Out of storage space. Let Tal know.",
+"ברוכים הבאים לפלייגראונד":"Welcome to Playground","קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"You're in. Tal will connect you to your personal plan very soon, and then everything will show up here.",
+"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין.":"To use the app, sign in with the same email Tal invited.",
+/* studio member */
+"תפריט ותזונה אישית":"Personal menu and nutrition","תפריט שבנוי בשבילך, מעקב יומי פשוט, מתכונים והתאמות מטל לאורך הדרך.":"A menu built for you, simple daily tracking, recipes and adjustments from Tal along the way.",
+"תכנית אימונים אישית לבית":"Personal home workout plan","אימונים לימים בלי סטודיו, עם סרטון לכל תרגיל, טיימר ומעקב התקדמות.":"Workouts for days without the studio, with a video for every exercise, a timer and progress tracking.",
+"פיזיו, טיפול ושיקום":"Physio, treatment and rehab","טיפול ידני ותכנית שיקום אישית לכאב, פציעה או חזרה לאימונים.":"Manual therapy and a personal rehab plan for pain, injury or getting back to training.",
+"מחר":"Tomorrow","סטודיו פלייגראונד":"Playground Studio","ברוכים הבאים":"Welcome",
+"מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.":"We found your studio membership. Once Tal approves the link, your weights and progress will show up here.",
+"האימון בסטודיו":"Studio class","התרגילים המרכזיים":"Main exercises","האימון של מחר יעלה כאן בערב.":"Tomorrow's class will be posted here in the evening.","הנתונים שלי":"My numbers","שיעורים מתועדים":"Logged classes","שיאים אישיים":"Personal records",
+"אחרי השיעור הבא המאמן ירשום את המשקלים שלך, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"After your next class the coach will log your weights, and they'll show up here with your progress over time.",
+"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן.":"Once your membership is linked, your weights and progress from classes will show up here.",
+"חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.":"Some of Tal's programs. Tapping “I want to hear more” sends Tal a message and he'll get back to you.",
+"טל קיבל את הפנייה ויחזור אליך":"Tal got your request and will get back to you","אני רוצה לשמוע":"I want to hear more","הליווי מוקפא":"Coaching is paused","לא מנוי בסטודיו":"Not a studio member",
+"השיעורים שלך בפלייגראונד":"Your classes at Playground","הסטודיו שלי":"My studio","ס":"S","הליווי מוקפא כרגע":"Coaching is paused right now",
+"כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.":"When you come back to coaching, your plan, menu and all your tracking will be waiting here exactly as you left them.",
+"נשלח לטל":"Sent to Tal","לא נשלח, נסו שוב":"Not sent, try again","מצב שיקוף":"Mirror mode","לא נשלח":"not sent","טוען שיקוף":"Loading mirror","לא הצלחנו לטעון":"Couldn't load",
+"סבבים":"Rounds","חימום":"Warm-up","החזקה":"Hold","חזרות":"Reps","סט":"Set","סבב":"Round","לא סיימתי":"Didn't finish","מאמץ":"Effort","אין תרגילי כוח לרישום באימון הזה":"No strength exercises to log in this class",
+"מאמץ: 6 = עוד 4 חזרות בטנק · 8 = עוד 2 · 10 = לא הייתה עוד חזרה. בסבב החימום רושמים את המשקל הקל שהתחממת איתו.":"Effort: 6 = 4 more reps in the tank · 8 = 2 more · 10 = not one more rep. In the warm-up set, log the light weight you warmed up with.",
+"עדכון":"Update","רישום האימון שלי":"Log my class","בוחרים שיעור ורושמים משקל וחזרות לכל סט, חימום ומאמץ. המאמן רואה את זה בשיעור הבא.":"Pick a class and log weight and reps for each set, the warm-up and your effort. Your coach sees it at the next class.",
+"אחרי שיעור שנרשמת אליו בארבוקס, הוא יופיע כאן ותוכל לרשום משקלים וסטים.":"After a class you booked in Arbox, it shows up here and you can log weights and sets.","עוד לא רשמת כלום":"You haven't logged anything yet","לא נשמר, נסו שוב":"Not saved, try again",
+"ק״ג / BW":"kg / BW","ק״ג":"kg","ג׳":"g","קק״ל":"kcal","שנ׳":"sec",
+/* rewards */
+"יום ראשון":"Day one","הדיווח הראשון שלך":"Your first check-in","3 ימים ברצף":"3 days in a row","שלושה ימים בלי לפספס":"Three days without missing","שבוע שלם":"A full week","7 ימים ברצף":"7 days in a row",
+"21 ימים":"21 days","הרגל נבנה":"A habit is built","60 ימים":"60 days","זה כבר אורח חיים":"It's a lifestyle now","יום מושלם":"Perfect day","כל הארוחות סומנו":"All meals logged","10 ימים מושלמים":"10 perfect days","עקביות בתפריט":"Sticking to the menu",
+"שבוע של מים":"A week of water","יעד המים 7 ימים ברצף":"Water goal 7 days in a row","אימון ראשון":"First workout","סיימת אימון באפליקציה":"You finished a workout in the app","10 אימונים":"10 workouts","עשרה אימונים שהושלמו":"Ten completed workouts",
+"חודש של שקילות":"A month of weigh-ins","4 שקילות":"4 weigh-ins","תמונת התחלה":"Starting photo","צילום ההתקדמות הראשון":"Your first progress photo","יום מושלם! כל הארוחות סומנו":"Perfect day! All meals logged",
+"התקדמות 7 הימים האחרונים":"Last 7 days","מים":"Water","תמונה אחרונה":"Latest photo","התחלה":"Start","עכשיו":"Now",
+"תזכורות בטלפון":"Phone reminders","סיכום ערב על המתאמנים":"Evening summary of trainees","תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון":"A reminder at midday and in the evening if something's missing, and a weekly summary on Sunday","הפעלה":"Turn on","פעילות":"On",
+"באייפון התזכורות עובדות רק מהאייקון במסך הבית. מוסיפים דרך כפתור השיתוף ← ״הוסף למסך הבית״, נכנסים מהאייקון ולוחצים כאן שוב.":"On iPhone, reminders only work from the Home Screen icon. Tap the Share button → “Add to Home Screen”, open the app from the icon and tap here again.",
+"ההתראות חסומות. אפשר לפתוח אותן בהגדרות הטלפון ← התראות ← פלייגראונד.":"Notifications are blocked. You can allow them in your phone's Settings → Notifications → Playground.",
+"הדפדפן הזה לא תומך בתזכורות. באייפון פותחים מהאייקון במסך הבית, ובאנדרואיד מכרום.":"This browser doesn't support reminders. On iPhone open the app from the Home Screen icon, on Android use Chrome.",
+"התזכורות הופעלו":"Reminders are on","לא הצלחנו להפעיל תזכורות":"Couldn't turn on reminders",
+/* today */
+"בוקר טוב":"Good morning","צהריים טובים":"Good afternoon","ערב טוב":"Good evening","לילה טוב":"Good night","קלוריות":"Calories","חלבון":"Protein","ארוחות":"Meals","בוצע":"Done","מחכה":"Pending",
+"יום ברצף":"day in a row","ימים ברצף":"days in a row","הסיכום השבועי מטל":"Weekly summary from Tal","המאמן שלך":"your coach","התור הבא":"Up next","לבחירה":"Your pick","התכנית הקבועה שלך":"Your regular plan","האימון שלך מטל":"Your workout from Tal","לחיצה לפתיחה":"Tap to open",
+"לחיצה לבחירה":"Tap to choose","הרגלים":"Habits","הערה לטל":"Note for Tal","איך היה היום? משהו שטל צריך לדעת":"How was today? Anything Tal should know","פחות":"Less","עוד":"More","דילגתי":"Skipped","צילום ארוחה":"Meal photo",
+"צעדים":"Steps","צעדים היום":"Steps today",
+/* weekly summary lines */
+"שבוע מעולה. ממשיכים ככה 💪":"Great week. Keep it up 💪","שבוע טוב. השבוע ננסה להוסיף עוד יום אחד של דיווח.":"Good week. This week let's try to add one more day of check-ins.","שבוע חדש, התחלה חדשה. מתחילים מהארוחה הבאה.":"New week, fresh start. Start with your next meal.",
+/* food log */
+"לא נמצא. אפשר להוסיף רכיב משלך למטה.":"Not found. You can add your own ingredient below.","חזרה":"Back","רכיב למתכון":"Ingredient for the recipe","הוספת רכיב":"Add an ingredient","חיפוש ברשימה, ואז כמה גרם":"Search the list, then enter grams",
+"למשל: קוטג׳, עדשים, אורז":"e.g. cottage cheese, lentils, rice","גרמים":"Grams","הוספה":"Add","רכיב שלא ברשימה":"Ingredient that's not on the list","שם":"Name","קק״ל ל-100 ג׳":"kcal per 100 g","פחמימה":"Carbs","שומן":"Fat","בחירה":"Choose",
+"כמה גרם?":"How many grams?","נוסף":"Added","הוסר":"Removed","שם וקלוריות ל-100 ג׳":"Name and calories per 100 g","המתכונים שלי":"My recipes","בוחרים מהשמורים או בונים חדש. האפליקציה אומרת כמה לקחת.":"Pick a saved one or build a new one. The app tells you how much to take.",
+"מתכון חדש":"New recipe","עוד אין מתכונים שמורים.":"No saved recipes yet.","מתכון או מיקס":"Recipe or mix",
+"כותבים את המתכון במילים, כמו בהודעה. האפליקציה מפענחת, מחשבת קלוריות וערכים, ואומרת כמה מזה לאכול בכל ארוחה":"Write the recipe in words, like a message. The app decodes it, works out calories and nutrition, and tells you how much of it to eat at each meal",
+"שם, למשל פשטידת ברוקולי":"Name, e.g. broccoli quiche","למשל:\n4 ביצים\n300 גרם ברוקולי\nחצי כוס קמח חומוס\nכף שמן זית\n100 גרם בולגרית 5%":"e.g.\n4 eggs\n300 g broccoli\n½ cup chickpea flour\n1 tbsp olive oil\n100 g Bulgarian cheese 5%",
+"פענוח וחישוב":"Decode and calculate","מפענח":"Decoding","כותבים קודם את הרכיבים":"Write the ingredients first","לא זיהיתי מה שנשאר בתיבה.":"I couldn't recognize what's left in the box.",
+"אפשר לנסח אחרת, למשל ״200 גרם עדשים מבושלות״, או להוסיף דרך ״+ רכיב מהרשימה״":"Try wording it differently, e.g. “200 g cooked lentils”, or add it with “+ Ingredient from the list”",
+"הרכיבים":"Ingredients","אפשר לתקן גרמים":"you can fix the grams","רכיב מהרשימה":"Ingredient from the list","משקל כל המנה אחרי בישול (ג׳)":"Weight of the whole dish after cooking (g)","לא חובה, אבל מדייק":"optional, but more accurate",
+"כל המנה":"Whole dish","ל-100 ג׳":"Per 100 g","כמה לאכול":"How much to eat","שם למנה":"Name the dish","צריך לפחות רכיב אחד":"You need at least one ingredient","כמה גרם לקחת?":"How many grams to take?",
+"בגרמים":"In grams","קלוריות וחלבון":"calories and protein","הסרה":"Remove","רכיב":"Ingredient","מתכון שלי":"My recipe",
+"החלפת הצילום":"Replace the photo","צילום הארוחה":"Photo of the meal","צילום":"Photo","הכמות מחושבת לארוחה הזו":"amount worked out for this meal","מטל":"From Tal","כותבים והאפליקציה מחשבת":"write it and the app calculates","אפשר כמה":"you can pick several",
+"הצלחת שלך":"Your plate","אכלתי משהו אחר":"I ate something else","מה אכלת? טל יראה את זה":"What did you eat? Tal will see it","סיום":"Done","ניקוי":"Clear","מעלה את הצילום":"Uploading the photo","לא הצלחתי לקרוא את התמונה":"Couldn't read the photo",
+"כמות":"Amount","חצי מנה":"Half portion","¾ מנה":"¾ portion","מנה רגילה":"Regular portion","מנה ורבע":"1¼ portions","מנה וחצי":"1½ portions","מנה כפולה":"Double portion",
+/* workout */
+"האימונים שלך":"Your workouts","טל עוד לא העלה אימון":"Tal hasn't posted a workout yet","כשיעלה אימון הוא יופיע כאן, עם סרטון לכל תרגיל.":"Once he does, it'll show up here with a video for every exercise.",
+"האימון של היום הושלם":"Today's workout is done","המשך אימון מודרך":"Continue guided workout","התחל אימון מודרך":"Start guided workout","לא חובה":"Optional","בחרתי":"Picked",
+"דיווח כאב והערה":"Pain report and note","כאב בתרגיל (0–10)":"Pain during the exercise (0–10)","איפה":"Where","צד":"Side","מתי":"When",
+"צוואר":"Neck","כתף":"Shoulder","מרפק / יד":"Elbow / hand","גב עליון":"Upper back","גב תחתון":"Lower back","ישבן":"Glutes","אגן / ירך":"Hip / thigh","ברך":"Knee","קרסול / כף רגל":"Ankle / foot","יורד לרגל":"Radiates down the leg","אחר":"Other",
+"ימין":"Right","שמאל":"Left","שני הצדדים":"Both sides","בירידה":"Going down","בעלייה":"Coming up","בהחזקה":"In the hold","כל התנועה":"Through the whole movement","משהו להוסיף":"Anything to add","הערה לתרגיל":"Note for this exercise",
+"כאב 5 ומעלה: לא ממשיכים את התרגיל היום. טל יראה את הדיווח":"Pain 5 or higher: stop this exercise for today. Tal will see the report",
+"איך היה האימון?":"How was the workout?","משהו שכאב, שהיה קשה, או שעבד מעולה":"Anything that hurt, felt hard, or worked great","עדכון הדיווח":"Update the report","סיימתי את האימון":"I finished the workout","אימונים נוספים":"More workouts","קבוע":"Regular","חימום ומוביליטי":"Warm-up and mobility","כוח":"Strength","קפיצות":"Jumps","ליבה":"Core","מוביליטי":"Mobility","מתיחות":"Stretching","הדיווח נשלח לטל":"Report sent to Tal","סרטון":"Video",
+"קל מדי":"Too easy","קל":"Easy","בדיוק":"Just right","קשה":"Hard","קשה מאוד":"Very hard",
+/* guided player */
+"מתכוננים":"Get ready","מתחילים בעוד":"Starting in","מתחילים עכשיו":"Start now","התוצאה שלך":"Your result","סך החזרות בכל הסבבים":"Total reps across all rounds","כמה סבבים וחזרות":"How many rounds and reps","הזמן של הסבב הארוך":"Time of your longest round","הזמן שלך (או Cap + חזרות)":"Your time (or Cap + reps)",
+"תוצאה":"Result","שמירה והמשך":"Save and continue","נשאר":"left","סיימתי":"Done","לתרגיל הבא":"next exercise","הבא":"next","עבודה":"Work","עצירה":"Pause","המשך":"Resume","כל צד":"each side","התחל טיימר":"Start timer","צד ימין":"Right side","צד שמאל":"Left side",
+"נשאר בחלון":"Left in this window","הקודם":"Previous","סוף האימון":"End of workout","כל הכבוד! עכשיו ספר/י לטל איך היה":"Well done! Now tell Tal how it went","משקל (ק״ג)":"Weight (kg)","משקל":"Weight",
+/* menu */
+"התפריט":"Menu","בתכנית שלך אין כרגע תפריט":"Your plan doesn't include a menu right now","התפריט שלך":"Your menu","מאת טל":"By Tal","החשבון שלך בהשהיה":"Your account is paused","אפשר לצפות בתפריט. לחידוש הליווי המלא, דברו עם טל.":"You can view the menu. To resume full coaching, talk to Tal.",
+"מפענח מתכונים":"Recipe decoder","כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב":"Write a recipe in words and get calories, protein and how much to eat at lunch and dinner","שימו לב":"Note",
+/* progress */
+"השבוע שלך":"Your week","ארוחות, אימונים ומים":"Meals, workouts and water","ארוחות שסומנו":"Meals logged","יעד מים":"Water goal","הישגים":"Achievements","תמונות התקדמות":"Progress photos","פעם בשבועיים":"Every two weeks",
+"תמונה מהמראה, באותה תאורה ובאותה תנוחה. רק את/ה וטל רואים אותן.":"A mirror photo, same lighting and same pose. Only you and Tal see them.","צילום תמונת התקדמות":"Take a progress photo","שקילה":"Weigh-in","עוד אין שקילה":"No weigh-in yet",
+"פעם בשבוע, באותו יום, בבוקר על בטן ריקה":"Once a week, on the same day, in the morning on an empty stomach","תאריך":"Date","היקפים בס״מ":"Measurements in cm","שמירת שקילה":"Save weigh-in","המשקל":"Weight","אחרי השקילה הראשונה יופיע כאן הגרף":"The chart shows up here after your first weigh-in","גרף משקל":"Weight chart",
+"צ׳ק-אין שבועי":"Weekly check-in","נשלח ✓ אפשר לעדכן":"Sent ✓ you can update it","דקה אחת":"One minute","אנרגיה השבוע":"Energy this week","נמוכה":"Low","גבוהה":"High","רעב במהלך השבוע":"Hunger during the week","הרבה":"A lot","כמעט אין":"Almost none",
+"איכות השינה":"Sleep quality","גרועה":"Poor","מצוינת":"Excellent","כמה את/ה מרוצה מהשבוע":"How happy are you with your week","בכלל לא":"Not at all","מאוד":"Very","משהו שטל צריך לדעת?":"Anything Tal should know?",
+"מה עבד, מה היה קשה, אירועים בשבוע הבא":"What worked, what was hard, events coming up next week","שליחה לטל":"Send to Tal","כתבו משקל תקין, למשל 70.4":"Enter a valid weight, e.g. 70.4","אי אפשר לשקול בעתיד":"You can't weigh in on a future date",
+"השקילה נשמרה":"Weigh-in saved","מעלה":"Uploading","התמונה נשמרה":"Photo saved","לא הצלחנו לקרוא את התמונה":"Couldn't read the photo","ענו על כל 4 השאלות":"Please answer all 4 questions","הצ׳ק-אין נשלח לטל":"Check-in sent to Tal",
+/* ingredients */
+"קוטג׳ 5%":"Cottage cheese 5%","קוטג׳ 3%":"Cottage cheese 3%","גבינה לבנה 5%":"White cheese 5%","גבינה לבנה 3%":"White cheese 3%","יוגורט יווני 0%":"Greek yogurt 0%","יוגורט יווני 3%":"Greek yogurt 3%","יוגורט חלבון":"Protein yogurt","סקיר":"Skyr",
+"גבינה צהובה 28%":"Yellow cheese 28%","גבינה צהובה 9%":"Yellow cheese 9%","בולגרית 5%":"Bulgarian cheese 5%","צפתית 5%":"Tzfatit cheese 5%","ריקוטה 5%":"Ricotta 5%","חלומי":"Halloumi","מוצרלה":"Mozzarella","פרמזן":"Parmesan","חלב 1%":"Milk 1%","חלב 3%":"Milk 3%",
+"משקה שקדים לא ממותק":"Unsweetened almond milk","ביצה":"Egg","חלבון ביצה":"Egg white","טופו קשה":"Firm tofu","רוטב סויה ללא גלוטן (טמארי)":"Gluten-free soy sauce (tamari)","עדשים מבושלות":"Cooked lentils","עדשים יבשות":"Dry lentils","חומוס מבושל":"Cooked chickpeas",
+"שעועית לבנה מבושלת":"Cooked white beans","שעועית אדומה מבושלת":"Cooked red beans","אפונה ירוקה":"Green peas","ממרח חומוס":"Hummus","קמח חומוס":"Chickpea flour","קמח עדשים":"Lentil flour","קמח אורז":"Rice flour","קמח כוסמת":"Buckwheat flour","קמח שקדים":"Almond flour","עמילן תירס":"Cornstarch",
+"אורז לבן מבושל":"Cooked white rice","אורז מלא מבושל":"Cooked brown rice","קינואה מבושלת":"Cooked quinoa","כוסמת מבושלת":"Cooked buckwheat","דוחן מבושל":"Cooked millet","פסטת עדשים מבושלת":"Cooked lentil pasta","פסטת חומוס מבושלת":"Cooked chickpea pasta","פסטת אורז מלא מבושלת":"Cooked brown rice pasta",
+"אטריות אורז מבושלות":"Cooked rice noodles","תפוח אדמה מבושל":"Boiled potato","בטטה אפויה":"Baked sweet potato","תירס":"Corn","שיבולת שועל ללא גלוטן":"Gluten-free oats","גרנולה ללא גלוטן":"Gluten-free granola","לחם ללא גלוטן":"Gluten-free bread","פריכית אורז":"Rice cake","פריכית תירס":"Corn cake","דף אורז":"Rice paper","טורטיית תירס":"Corn tortilla",
+"תפוח":"Apple","בננה":"Banana","תפוז":"Orange","אגס":"Pear","ענבים":"Grapes","תותים":"Strawberries","פירות יער":"Berries","אבטיח":"Watermelon","מלון":"Melon","אפרסק":"Peach","מנגו":"Mango","קיווי":"Kiwi","תמר מג׳הול":"Medjool date",
+"מלפפון":"Cucumber","עגבנייה":"Tomato","חסה ועלים":"Lettuce and greens","גזר":"Carrot","ברוקולי":"Broccoli","כרובית":"Cauliflower","קישוא":"Zucchini","פטריות":"Mushrooms","שעועית ירוקה":"Green beans","בצל":"Onion","פלפל מבושל":"Cooked pepper","תרד":"Spinach","דלעת":"Pumpkin","כרוב":"Cabbage","סלק":"Beet","אבוקדו":"Avocado","רוטב עגבניות":"Tomato sauce",
+"שמן זית":"Olive oil","טחינה גולמית":"Raw tahini","טחינה מוכנה":"Prepared tahini","שקדים":"Almonds","אגוזי מלך":"Walnuts","קשיו":"Cashews","בוטנים":"Peanuts","חמאת בוטנים":"Peanut butter","זרעי צ׳יה":"Chia seeds","זרעי המפ":"Hemp seeds","זרעי דלעת":"Pumpkin seeds","זיתים":"Olives","חמאה":"Butter",
+"אבקת חלבון אפונה":"Pea protein powder","אבקת חלבון מי גבינה":"Whey protein powder","דבש":"Honey","שוקולד מריר 70%":"Dark chocolate 70%","עגבניות שרי":"Cherry tomatoes","שום":"Garlic","מיץ לימון":"Lemon juice","סוכר":"Sugar","שמן":"Oil","שמנת לבישול 15%":"Cooking cream 15%","חלב קוקוס":"Coconut milk","קמח לבן":"White flour",
+"בצל ירוק":"Green onion","פטרוזיליה":"Parsley","כוסברה":"Cilantro","שמיר":"Dill","נענע":"Mint","חציל":"Eggplant","פלפל":"Pepper","רסק עגבניות":"Tomato paste","אבקת קקאו":"Cocoa powder","קמח תירס":"Cornmeal","פסטה ללא גלוטן מבושלת":"Cooked gluten-free pasta"
+};
+const DD=s=>s==="יום אחד"?"1 day":s.replace(/^(\d+) ימים$/,(m,n)=>n+(n==="1"?" day":" days"));
+const UNIT={"חלבון":"protein","פחמימה":"carbs","שומן":"fat"};
+const N="(\\d[\\d.,]*(?:\\s*[–-]\\s*\\d[\\d.,]*)?)";
+const R=(s,f)=>[new RegExp("^"+s+"$","s"),f];
+const PAT=[
+  R(N+"\\s*קק״ל",m=>m[1]+" kcal"),R("כ-"+N+"\\s*קק״ל",m=>"about "+m[1]+" kcal"),
+  R(N+"\\s*ג׳ (חלבון|פחמימה|שומן)",m=>m[1]+" g "+UNIT[m[2]]),R(N+" ג׳ חלבון ל-100 ג׳",m=>m[1]+" g protein per 100 g"),
+  R("([\\d.,]+(?:\\s*/\\s*[\\d.,]+)?)\\s*ג׳",m=>m[1]+" g"),R("כ-"+N+"\\s*ג׳",m=>"about "+m[1]+" g"),R("לארוחה הזו כ-(\\d+) ג׳",m=>"About "+m[1]+" g for this meal"),
+  R("([+-]?[\\d.,]+)\\s*ק״ג",m=>m[1]+" kg"),R("([+-]?[\\d.,]+) ק״ג מההתחלה",m=>m[1]+" kg since the start"),R("בפעם הקודמת: (.*) ק״ג",m=>"Last time: "+m[1]+" kg"),
+  R("([\\d.]+) (?:ליטר|ל׳)",m=>m[1]+" L"),R("(\\d+) מתוך (\\d+)",m=>m[1]+" of "+m[2]),R("(\\d+) מתוך (\\d+) סטים היום",m=>m[1]+" of "+m[2]+" sets done today"),
+  R("סט (\\d+(?:/\\d+)?)",m=>"Set "+m[1]),R("סבב (\\d+(?:/\\d+)?)",m=>"Round "+m[1]),R("דקה (\\d+/\\d+)",m=>"Minute "+m[1]),R("חלון (\\d+/\\d+)",m=>"Window "+m[1]),
+  R("(\\d+) סטים × (.*)",m=>m[1]+" sets × "+tr(m[2])),R("(\\d+) סבבים ברצף",m=>m[1]+" rounds back to back"),R(N+" סבבים",m=>m[1]+" rounds"),R(N+" חזרות",m=>m[1]+" reps"),R("(\\d+) שנ׳ עבודה",m=>m[1]+" sec work"),R("\\+?"+N+" שנ׳",m=>(m[0][0]==="+"?"+":"")+m[1]+" sec"),
+  R("מנוחה (.+)",m=>"Rest "+tr(m[1])),R("בוחרים (\\d+) מתוך (\\d+)",m=>"Pick "+m[1]+" of "+m[2]),R("תוצאה: (.*)",m=>"Result: "+m[1]),
+  R("משקל סט (\\d+)",m=>"Set "+m[1]+" weight"),R("חזרות סט (\\d+)",m=>"Set "+m[1]+" reps"),R("סט (\\d+) בוצע",m=>"Set "+m[1]+" done"),R("כוס (\\d+)",m=>"Glass "+m[1]),
+  R("הבא: (.*)",m=>"Next: "+tr(m[1])),R("קודם (.*)",m=>"last time "+m[1]),R("היי (.+)",m=>"Hi "+tr(m[1])),R("(היום|מחר) (.*)",m=>(m[1]==="היום"?"Today ":"Tomorrow ")+tr(m[2])),
+  R("(\\d+) שיעורים",m=>m[1]+" classes"),R("(\\d+) פעמים",m=>m[1]+" times"),R("(\\d+) תמונות",m=>m[1]+" photos"),R("(\\d+) ימים",m=>m[1]+(m[1]==="1"?" day":" days")),
+  R("אחרונה: (.*)",m=>"Last: "+m[1]),R("התחלה ([\\d.]+)",m=>"Start "+m[1]),R("עכשיו \\((\\d+) ימים\\)",m=>"Now ("+m[1]+" days)"),
+  R("אכלתי: (.*)",m=>"I ate: "+m[1]),R("הוספה ל(.+)",m=>"Add to "+low(tr(m[1]))),R("מומלץ ל(.+)",m=>"Recommended for "+low(tr(m[1]))),R("בארוחה הזו: (.*)",m=>"This meal: "+tr(m[1])),
+  R("(.+): כ-(\\d+) ג׳",m=>tr(m[1])+": about "+m[2]+" g"),
+  R("זיהיתי (\\d+) רכיבים( \\(פוענח ע״י Claude\\))?\\. כדאי לעבור על הגרמים",m=>"Found "+m[1]+" ingredients"+(m[2]?" (decoded by Claude)":"")+". Worth checking the grams"),R("תבלינים לא נספרים: (.*)",m=>"Spices aren't counted: "+m[1]),
+  R("לא מצאנו מנוי בארבוקס עם המייל (.*)\\. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם\\.",m=>"We couldn't find an Arbox membership with the email "+m[1]+". If you signed up at the studio with a different email, tell Tal and he'll link you."),
+  R("דיווחת (\\d+) מתוך 7 ימים",m=>"You checked in "+m[1]+" of 7 days"),
+  R("ארוחות: (\\d+)% סומנו(?:, (.+))?",m=>"Meals: "+m[1]+"% logged"+(m[2]?", "+(m[2]==="יום מושלם אחד"?"one perfect day":m[2].replace(/^(\d+) ימים מושלמים$/,"$1 perfect days")):"")),
+  R("אימונים: (\\d+)",m=>"Workouts: "+m[1]),R("מים: הגעת ליעד ב-(.+)",m=>"Water: goal reached on "+DD(m[1])),
+  R("משקל: ([\\d.]+) ק״ג(?: \\(([+-]?[\\d.]+) מהשקילה הקודמת\\))?",m=>"Weight: "+m[1]+" kg"+(m[2]?" ("+m[2]+" since the last weigh-in)":"")),
+  R("רצף נוכחי: (.+) 🔥",m=>"Current streak: "+DD(m[1])+" 🔥"),
+  R("(.*\\S) (\\d[\\d.,]*)",m=>{const h=tr(m[1]);return h!==m[1]?h+" "+m[2]:null})
+];
+const low=s=>/^(Breakfast|Lunch|Dinner)$/.test(s)?s.toLowerCase():s;
+/* words for reps and short labels; used only when nothing Hebrew is left */
+const GL=[["לכל צד","each side"],["לכל רגל","each leg"],["לכל יד","each arm"],["לצד","per side"],["לרגל","per leg"],["ליד","per arm"],["כל צד","each side"],["שניות","seconds"],["שנ׳","sec"],["דקות","minutes"],["דק׳","min"],["דקה","minute"],["חזרות","reps"],["סבבים","rounds"],["סבב","round"],["סטים","sets"],["סט","set"],["נשימות","breaths"],["צעדים","steps"],["החזקה","hold"],["מתוך","of"],["ק״ג","kg"],["ג׳","g"],["קק״ל","kcal"],["ימין","right"],["שמאל","left"]].sort((a,b)=>b[0].length-a[0].length);
+const GM=Object.fromEntries(GL),GRE=new RegExp(GL.map(x=>x[0]).join("|"),"g");
+const gloss=s=>{const r=s.replace(GRE,(m,o,str)=>{const b=str[o-1],a=str[o+m.length];return (b&&HEB.test(b))||(a&&HEB.test(a))?m:GM[m]});return HEB.test(r)?null:r};
+const TRX=()=>{try{return (typeof prof!=="undefined"&&prof&&prof.tr)||{}}catch(e){return {}}};
+const swap=s=>s.replace(/[→←]/g,c=>c==="→"?"←":"→");
+const AFF=/^([\s+·✓→←•]*)([\s\S]*?)((?:\s*×[\d½¼¾.]+)?[\s✓…:.!?·→←]*)$/;
+function look(s){const x=TRX();if(x[s]!=null)return x[s];if(EN[s]!=null)return EN[s];return null}
+function tr(s){if(!s||!HEB.test(s))return s;let r=look(s);if(r!=null)return r;
+  if(s.includes("\n"))return s.split("\n").map(tr).join("\n");
+  const a=s.match(AFF);if(a&&(a[1]||a[3])&&a[2]){const c=tr(a[2]);if(c!==a[2])return swap(a[1])+c+swap(a[3])}
+  for(const sep of [" · "," + "])if(s.includes(sep)){const p=s.split(sep),q=p.map(tr);if(q.some((v,i)=>v!==p[i]))return q.join(sep)}
+  for(const [re,f] of PAT){const m=s.match(re);if(m){const v=f(m);if(v!=null)return v}}
+  return gloss(s)||s}
+window.pgT=tr;
+const SKIP="#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar,script,style,textarea,[data-noi18n]";
+const skip=el=>!el||!!el.closest(SKIP);
+const SET=new WeakMap();
+function text(n){const v=n.nodeValue;if(!v||!HEB.test(v)||SET.get(n)===v||skip(n.parentElement))return;const t=v.trim(),r=tr(t);if(r!==t){const nv=v.replace(t,()=>r);SET.set(n,nv);n.nodeValue=nv}}
+const ATTR=["placeholder","aria-label","title","alt"];
+const SKIPA=SKIP.replace(",script,style,textarea","");
+function attr(el,a){const v=el.getAttribute(a);if(!v||!HEB.test(v)||!!el.closest(SKIPA))return;const r=tr(v.trim());if(r!==v.trim())el.setAttribute(a,r)}
+function walk(root){if(root.nodeType===3){text(root);return}if(root.nodeType!==1)return;
+  ATTR.forEach(a=>root.hasAttribute(a)&&attr(root,a));root.querySelectorAll("textarea[placeholder]").forEach(t=>attr(t,"placeholder"));if(skip(root))return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,{acceptNode:n=>n.nodeType===1&&n.matches(SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+  let n;while(n=w.nextNode()){if(n.nodeType===3)text(n);else ATTR.forEach(a=>n.hasAttribute(a)&&attr(n,a))}}
+walk(document.body);
+new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")text(m.target);else if(m.type==="attributes")attr(m.target,m.attributeName);else m.addedNodes.forEach(walk)}})
+  .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 /* Supabase backend behind the same db/user API the app already uses */
@@ -958,7 +1155,7 @@ const dk=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getD
 const fromKey=k=>{const [y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
 const addDays=(k,n)=>{const d=fromKey(k);d.setDate(d.getDate()+n);return dk(d)};
 const weekStart=k=>{const d=fromKey(k);d.setDate(d.getDate()-d.getDay());return dk(d)};
-const DN=["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
+const DN=window.pgLang==="en"?["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]:["א׳","ב׳","ג׳","ד׳","ה׳","ו׳","ש׳"];
 const fmt=k=>{if(!k)return "";const d=fromKey(k);return `${DN[d.getDay()]} ${d.getDate()}.${d.getMonth()+1}`};
 const daysBetween=(a,b)=>Math.round((fromKey(b)-fromKey(a))/864e5);
 const Lit=c=>{const v=c*0.25;return (Math.round(v*100)/100).toString()};
@@ -983,12 +1180,12 @@ function mealDone(day,m){const x=day.meals[m.id];return !!x&&((x.food||[]).lengt
 const mealsCount=(day,ms)=>(ms||reqMeals()).filter(m=>mealDone(day,m)).length;
 const hasData=d=>!!d&&(Object.keys(d.meals||{}).length>0||Object.values(d.h||{}).some(v=>Array.isArray(v)?v.length:!!v)||!!(d.note||"").trim());
 function mealLabel(day,m){const x=day.meals[m.id];if(!x)return null;if(x.skip)return {t:"דילגתי"};
-  const parts=Object.entries(x.sel||{}).flatMap(([g,v])=>selIdx(v).map(i=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]:"")).filter(Boolean);
+  const parts=Object.entries(x.sel||{}).flatMap(([g,v])=>selIdx(v).map(i=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]+qTag(x,g,i):"")).filter(Boolean);
   if(x.food&&x.food.length)parts.push(...x.food.map(f=>f.n));
   if(parts.length)return {t:parts.join(" + ")};if(x.x&&x.x.trim())return {t:x.x,other:true};if(x.ph)return {t:"צילום ארוחה"};return null}
 function hv(h,v){if(h.type==="toggle")return v?"✓":"—";if(h.type==="cups")return h.liters?`${Lit(v||0)} ל׳`:`${v||0}/${h.target||h.max}`;
   if(h.type==="counter")return `${v||0}${h.max?"/"+h.max:""}`;if(h.type==="choice"){const o=(h.opts||[]).find(o=>o[0]===(v||""));return o?o[1]:"—"}
-  if(h.type==="chips")return (v||[]).join(", ")||"—";return ""}
+  if(h.type==="chips")return (v||[]).join(", ")||"—";if(h.type==="num")return v?Number(v).toLocaleString("en-US")+(h.target?"/"+Number(h.target).toLocaleString("en-US"):""):"—";return ""}
 
 /* ===== saving ===== */
 const timers={},inflight={},queued={};
@@ -1263,7 +1460,7 @@ function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const l
 function todayWorkout(){const l=woList();return nextFixed()||l[0]||null}
 function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
-  const first=(prof.name||"").split(" ")[0];
+  const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
   let strip="";for(let i=6;i>=0;i--){const k=addDays(TODAY,-i),d=fromKey(k);
     strip+=`<button class="dy ${hasData(days[k])||Object.keys(wlog).some(x=>x.endsWith("_"+k)&&wlog[x].done)?"has":""}" type="button" data-day="${k}" aria-pressed="${k===sel}"><small>${i===0?"היום":DN[d.getDay()]}</small><b>${d.getDate()}</b><i></i></button>`}
   const msgs=Object.keys(MSG).map(id=>({id,...MSG[id]})).sort((a,b)=>(b.at||"").localeCompare(a.at||""));
@@ -1300,6 +1497,7 @@ function habitHTML(x,day){const v=day.h[x.id];
   if(x.type==="counter"){const n=v||0;return `<div class="row" style="justify-content:space-between"><span>${esc(x.t)}</span><div class="stepper"><button type="button" data-cnt="${x.id}" data-d="-1" aria-label="פחות">−</button><b>${n}</b><button type="button" data-cnt="${x.id}" data-d="1" aria-label="עוד">+</button></div></div>${x.d?`<span class="hint ${x.max&&n>x.max?"warn":""}">${esc(x.d)}</span>`:""}`}
   if(x.type==="choice")return `<span class="lbl">${esc(x.t)}</span><div class="chips">${x.opts.map(([val,t])=>`<button type="button" data-ch="${x.id}" data-v="${esc(val)}" aria-pressed="${(v||"")===val}">${esc(t)}</button>`).join("")}</div>${x.d?`<span class="hint">${esc(x.d)}</span>`:""}`;
   if(x.type==="chips")return `<span class="lbl">${esc(x.t)}</span><div class="chips issues">${x.opts.map(t=>`<button type="button" data-chips="${x.id}" data-v="${esc(t)}" aria-pressed="${(v||[]).includes(t)}">${esc(t)}</button>`).join("")}</div>`;
+  if(x.type==="num")return `<div class="row" style="justify-content:space-between;align-items:center"><span>${esc(x.t)}</span><input class="numin" type="number" inputmode="numeric" min="0" step="1" data-num="${x.id}" value="${v>0?v:""}" placeholder="0" aria-label="${esc(x.t)}"></div>${x.d?`<span class="hint">${esc(x.d)}</span>`:""}`;
   return ""}
 
 /* ===== food log: ingredients & home recipes (values per 100g, approximate) ===== */
@@ -1369,7 +1567,12 @@ const sumF=a=>a.reduce((s,x)=>({k:s.k+(+x.k||0),p:s.p+(+x.p||0),c:s.c+(+x.c||0),
 const dayFood=d=>Object.values(d.meals||{}).flatMap(x=>x.food||[]);
 /* menu items may carry nutrition as a 3rd element {k,p,c,f}: selected options count too */
 const selIdx=v=>Array.isArray(v)?v:v==null?[]:[v];
-function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2])o.push(it[2])}));return o}
+/* portion size per selected option: x.q["group-item"] = factor */
+const QS=[[.5,"חצי מנה"],[.75,"¾ מנה"],[1,"מנה רגילה"],[1.25,"מנה ורבע"],[1.5,"מנה וחצי"],[2,"מנה כפולה"]];
+const qOf=(x,g,i)=>{const v=x&&x.q&&+x.q[g+"-"+i];return v>0?v:1};
+const qTag=(x,g,i)=>{const v=qOf(x,g,i);return v===1?"":" ×"+({0.5:"½",0.75:"¾",1.25:"1¼",1.5:"1½",2:"2"}[v]||v)};
+const qSel=(gi,ii,it,x)=>{const v=qOf(x,gi,ii),n=it[2];return `<div class="qrow"><span>כמות</span><select data-q="${gi}-${ii}" aria-label="כמות">${QS.map(([q,t])=>`<option value="${q}"${q===v?" selected":""}>${t}</option>`).join("")}</select>${n&&v!==1?`<small>כ-${ri(n.k*v)} קק״ל · ${ri(n.p*v)} ג׳ חלבון</small>`:""}</div>`};
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
 const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
@@ -1390,7 +1593,7 @@ async function decodeRecipe(r){const t=(r.tx||"").trim();if(!t){toast("כותב�
 const regram=(x,g)=>{if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].forEach(k=>x[k]=r1(x[k]*f));x.g=g};
 
 function addFood(mid,item){updDay(sel,d=>{const y=d.meals[mid]||{};y.food=[...(y.food||[]),item];y.skip=false;d.meals[mid]=y})}
-function searchHTML(q){const s=(q||"").trim();const hits=s?FOOD.filter(f=>f[0].includes(s)).slice(0,10):[];
+function searchHTML(q){const s=(q||"").trim();const hits=s?FOOD.filter(f=>f[0].includes(s)||(window.pgLang==="en"&&pgT(f[0]).toLowerCase().includes(s.toLowerCase()))).slice(0,10):[];
   return hits.map(f=>`<button class="fi" type="button" data-fi="${esc(f[0])}"><b>${esc(f[0])}</b><small>${f[1]} קק״ל · ${f[2]} ג׳ חלבון ל-100 ג׳</small></button>`).join("")||(s?`<div class="hint">לא נמצא. אפשר להוסיף רכיב משלך למטה.</div>`:"")}
 function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
   if(SV.type==="ing"||SV.type==="recIng"){const forRec=SV.type==="recIng";
@@ -1459,7 +1662,7 @@ function drawSheet(){if(SV)return drawFood();const m=meals()[sheetMeal],day=getD
   <label class="photo-btn">${photos[pk]?"החלפת הצילום":"צילום הארוחה"}<input type="file" accept="image/*" id="photoIn"></label>
   ${photos[pk]?`<img class="ph" src="${photos[pk]}" alt="צילום">`:""}
   ${isMixMeal(m)?`<h4>המתכונים שלי <small class="mh">· הכמות מחושבת לארוחה הזו</small></h4>${recList().length?`<div class="opts">${recList().map(([id,r])=>{const g=mixGrams(r,m),t=nut(recPer100(r),g);return optBtn(r.name,`${r.from?"מטל · ":""}${g} ג׳ · ${ri(t.k)} קק״ל · ${ri(t.p)} ג׳ חלבון`,`data-mix="${id}"`,(x.food||[]).some(f=>f.rec===id))}).join("")}</div>`:""}<button class="ghost" type="button" id="mixNew" style="width:100%;margin-top:8px">+ מתכון חדש · כותבים והאפליקציה מחשבת</button>`:""}
-  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}${g.multi?` <small class="mh">· אפשר כמה</small>`:""}</h4>`:"<div style='height:12px'></div>"}<div class="opts${g.multi?" multi":""}">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?(g.multi?`${ri(it[2].k)} קק״ל`:`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`):""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,selIdx(sl[gi]).includes(ii))).join("")}</div>`).join("")}
+  ${(m.groups||[]).map((g,gi)=>`${g.h?`<h4>${esc(g.h)}${g.multi?` <small class="mh">· אפשר כמה</small>`:""}</h4>`:"<div style='height:12px'></div>"}<div class="opts${g.multi?" multi":""}">${g.items.map((it,ii)=>optBtn(it[0],[it[1],it[2]?(g.multi?`${ri(it[2].k)} קק״ל`:`כ-${ri(it[2].k)} קק״ל · ${ri(it[2].p)} ג׳ חלבון`):""].filter(Boolean).join(" · "),`data-g="${gi}" data-i="${ii}"`,selIdx(sl[gi]).includes(ii))+(selIdx(sl[gi]).includes(ii)?qSel(gi,ii,it,x):"")).join("")}</div>`).join("")}
   ${Object.keys(sl).length&&(m.groups||[]).length>1?`<div class="note-k plate" style="margin-top:12px"><b>הצלחת שלך</b> ${macroLine(sumF(mealItems(m,x)))}</div>`:""}
   ${m.note?`<div class="note-k" style="margin-top:12px">${esc(m.note)}</div>`:""}
   ${m.optional?`<div class="opts" style="margin-top:10px">${optBtn(m.skipText||"לא היה צורך","",`data-skip="1"`,x.skip)}</div>`:""}
@@ -1480,7 +1683,10 @@ $("sheet").addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b
     else{const g=b.dataset.g,i=+b.dataset.i,G=m.groups[g];y.skip=false;
       if(G.multi){const a=selIdx(y.sel[g]),on=a.includes(i),n=on?a.filter(v=>v!==i):[...a,i];if(n.length)y.sel[g]=n;else delete y.sel[g];if(!on)(G.excl||[]).forEach(o=>delete y.sel[o])}
       else if(y.sel[g]===i)delete y.sel[g];else{y.sel[g]=i;(G.excl||[]).forEach(o=>delete y.sel[o])}}
+    if(y.q){Object.keys(y.q).forEach(k=>{const [g,i]=k.split("-");if(!selIdx(y.sel[g]).includes(+i))delete y.q[k]});if(!Object.keys(y.q).length)delete y.q}
     d.meals[m.id]=y});drawSheet()});
+$("sheet").addEventListener("change",ev=>{const s=ev.target.closest("[data-q]");if(!s||sheetMeal===null)return;const m=meals()[sheetMeal],v=+s.value;
+  updDay(sel,d=>{const y=d.meals[m.id]||{};const q=Object.assign({},y.q||{});if(v===1)delete q[s.dataset.q];else q[s.dataset.q]=v;if(Object.keys(q).length)y.q=q;else delete y.q;d.meals[m.id]=y});drawSheet()});
 async function shrink(file){const url=URL.createObjectURL(file);
   const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
   let max=900,q=.72,out="";for(let t=0;t<6;t++){const s=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
@@ -1629,7 +1835,7 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
     $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
   if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
     PL.am=0;PL.rl=[];clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
-  if(g.kind==="score"){const sc=(getLog(w.id,TODAY).score||{})[g.bi]||PL.auto||(PL.am?`${PL.am} סבבים + `:"")||(g.q.includes("הארוך")&&PL.rl&&PL.rl.length?mss(Math.max(...PL.rl)):"");PL.auto="";W.innerHTML=`<div class="stage"><small>${esc(g.b.name)}</small><h2 style="direction:rtl">התוצאה שלך</h2><p>${esc(g.q)}</p></div>
+  if(g.kind==="score"){const sc=(getLog(w.id,TODAY).score||{})[g.bi]||PL.auto||(PL.am?`${PL.am} ${window.pgLang==="en"?"rounds":"סבבים"} + `:"")||(g.q.includes("הארוך")&&PL.rl&&PL.rl.length?mss(Math.max(...PL.rl)):"");PL.auto="";W.innerHTML=`<div class="stage"><small>${esc(g.b.name)}</small><h2 style="direction:rtl">התוצאה שלך</h2><p>${esc(g.q)}</p></div>
     <div class="meter" style="grid-template-columns:1fr"><div><small>תוצאה</small><input id="pSc" type="text" dir="ltr" value="${esc(sc)}" placeholder="${g.q.includes("זמן")?"12:30":"5 + 8"}"></div></div><button class="big" type="button" id="pDone">שמירה והמשך</button>${navHTML()}`;
     $("pDone").onclick=()=>{const v=$("pSc").value.trim();if(v)setLog(w.id,TODAY,l=>{l.score=Object.assign({},l.score||{},{[g.bi]:v})});next()};wireNav();return}
   if(g.kind==="amrap"){const its=g.its;let k=0,rd=0;const draw=()=>{const x=its[k];if(g.list){$("pA").innerHTML=`<div class="stage"><small>${esc(g.b.name)} · חלון ${g.win+1}/${g.nW}</small>${its.map(y=>`<h2 style="font-size:19px">${esc(y.it.n)}</h2>`).join("")}</div>`;return}$("pA").innerHTML=stageHTML({b:g.b,it:x.it,tag:`סבב ${rd+1}${g.nW?` · חלון ${g.win+1}/${g.nW}`:""}`},(x.it.reps?`<div class="pchip">${esc(repTxt(x.it.reps))}</div>`:""))};
@@ -1756,6 +1962,7 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
     if(h.type==="counter"&&h.max){const n=vals.filter(v=>v>h.max).length;if(n)flags.push(["var(--warn)",`${h.t} מעל ${h.max} ב-${n} ימים`])}
     if(h.type==="choice"&&h.warnIf){const n=vals.filter(v=>v===h.warnIf).length;if(n)flags.push(["var(--warn)",`${h.t}: ״${(h.opts.find(o=>o[0]===h.warnIf)||[])[1]}״ ב-${n} ימים`])}
     if(h.type==="cups"&&h.target){const xs=vals.filter(v=>v>0);if(xs.length>=3){const avg=xs.reduce((a,b)=>a+b,0)/xs.length;if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${h.liters?Lit(Math.round(avg))+" ל׳":Math.round(avg)} (היעד ${h.liters?Lit(h.target)+" ל׳":h.target})`])}}});
+  hs.filter(h=>h.type==="num"&&h.target).forEach(h=>{const xs=last7.map(k=>D(k)?+D(k).h[h.id]||0:0).filter(v=>v>0);if(xs.length>=3){const avg=Math.round(xs.reduce((a,b)=>a+b,0)/xs.length);if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${avg.toLocaleString("en-US")} (היעד ${Number(h.target).toLocaleString("en-US")})`])}});
   logs.filter(l=>l.date>=last7[6]).forEach(l=>{const wn=(c.wo[l.wid]||{}).title||"אימון";
     Object.entries(l.pain||{}).forEach(([k,v])=>{if(v>=5){const [bi,ii]=k.split("-").map(Number),it=((c.wo[l.wid]||{}).blocks||[])[bi];flags.push(["var(--bad)",`כאב ${v} ב-${it&&it.items[ii]?it.items[ii].n:"תרגיל"}${pzX(l,k)} (${fmt(l.date)})`])}});
     if(l.feel>=5)flags.push(["var(--warn)",`״קשה מאוד״ ב-${wn} (${fmt(l.date)})`])});
@@ -1935,7 +2142,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const cn=t.closest("[data-cnt]");if(cn){const id=cn.dataset.cnt;updDay(sel,d=>{d.h[id]=Math.max(0,Math.min(20,(d.h[id]||0)+ +cn.dataset.d))});render();return}
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
-$("v-today").addEventListener("input",ev=>{if(ev.target.id==="note"){const v=ev.target.value;updDay(sel,d=>{d.note=v})}});
+$("v-today").addEventListener("input",ev=>{const t=ev.target;if(t.id==="note"){const v=t.value;updDay(sel,d=>{d.note=v})}else if(t.dataset&&t.dataset.num){const id=t.dataset.num,n=Math.round(+t.value);updDay(sel,d=>{if(n>0)d.h[id]=Math.min(n,200000);else delete d.h[id]})}});
 function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients","smy"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
@@ -2619,7 +2826,7 @@ let liveU=[];
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
   const cw=await user.can("data.write");if(cw===false)readOnly=true;
-  try{const me=await db.doc(`t/${uid}`).get();if(!me.exists&&!readOnly)await db.doc(`t/${uid}`).set({joined:TODAY,seen:TODAY});else if(me.exists&&(me.data()||{}).seen!==TODAY&&!readOnly)await db.doc(`t/${uid}`).update({seen:TODAY})}catch(e){if(e&&e.code==="invalid_argument"){readOnly=true;showBanner("השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.")}}
+  try{const me=await db.doc(`t/${uid}`).get();if(!me.exists&&!readOnly)await db.doc(`t/${uid}`).set({joined:TODAY,seen:TODAY});else if(me.exists&&(me.data()||{}).seen!==TODAY&&!readOnly)await db.doc(`t/${uid}`).update({seen:TODAY});if(window.pgLangSync&&!readOnly)pgLangSync(me.exists?(me.data()||{}).lang:undefined)}catch(e){if(e&&e.code==="invalid_argument"){readOnly=true;showBanner("השמירה נכשלה. נסו להתנתק ולהתחבר שוב, ואם זה חוזר ספרו לטל.")}}
   subscribeAll();
   go("today");
 })();
