@@ -773,6 +773,7 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 .qrow select{font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--food);border-radius:10px;padding:7px 10px;color:var(--ink)}
 .qrow small{margin-inline-start:auto;font-size:12.5px}
 .pick select.fu{width:100%;font:inherit;font-size:16px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:12px 10px;color:var(--ink)}
+.mrow input{width:76px;font:inherit;font-size:15px;font-weight:700;text-align:center;background:var(--s2);border:1px solid var(--food);border-radius:10px;padding:7px 6px;color:var(--ink)}.mrow select{flex:1;min-width:0}
 .numin{width:130px;font:inherit;font-size:17px;font-weight:700;text-align:center;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:9px 10px;color:var(--ink)}
 html[dir=ltr] body{direction:ltr}
 html[dir=ltr] :is(.meal,.tog,.opt,.past button,.trc,.fi,.rp-h,.rp-h .nm,.cl,.linkb,.prep-h,.bf-leg button,.bf-exh,.lbl.blk,button.cl-n,.fl2 .ft,td:first-child,th:first-child,#pWork .pzbox,.ex-row b,.pg-hero h1,.pg-bh b,.pg-fmt,.pg-ln span,.pg-ln small,.lift-r label,.kg label,.bf-en,.bf-bh h2,.bf-bh small,.bf-lift h3,.bf-ex .nm):not([dir=rtl] *){text-align:left}
@@ -975,13 +976,13 @@ const EN={
 "מלפפון":"Cucumber","עגבנייה":"Tomato","חסה ועלים":"Lettuce and greens","גזר":"Carrot","ברוקולי":"Broccoli","כרובית":"Cauliflower","קישוא":"Zucchini","פטריות":"Mushrooms","שעועית ירוקה":"Green beans","בצל":"Onion","פלפל מבושל":"Cooked pepper","תרד":"Spinach","דלעת":"Pumpkin","כרוב":"Cabbage","סלק":"Beet","אבוקדו":"Avocado","רוטב עגבניות":"Tomato sauce",
 "שמן זית":"Olive oil","טחינה גולמית":"Raw tahini","טחינה מוכנה":"Prepared tahini","שקדים":"Almonds","אגוזי מלך":"Walnuts","קשיו":"Cashews","בוטנים":"Peanuts","חמאת בוטנים":"Peanut butter","זרעי צ׳יה":"Chia seeds","זרעי המפ":"Hemp seeds","זרעי דלעת":"Pumpkin seeds","זיתים":"Olives","חמאה":"Butter",
 "אבקת חלבון אפונה":"Pea protein powder","אבקת חלבון מי גבינה":"Whey protein powder","דבש":"Honey","שוקולד מריר 70%":"Dark chocolate 70%","עגבניות שרי":"Cherry tomatoes","שום":"Garlic","מיץ לימון":"Lemon juice","סוכר":"Sugar","שמן":"Oil","שמנת לבישול 15%":"Cooking cream 15%","חלב קוקוס":"Coconut milk","קמח לבן":"White flour",
-"בצל ירוק":"Green onion","פטרוזיליה":"Parsley","כוסברה":"Cilantro","שמיר":"Dill","נענע":"Mint","חציל":"Eggplant","פלפל":"Pepper","רסק עגבניות":"Tomato paste","אבקת קקאו":"Cocoa powder","קמח תירס":"Cornmeal","פסטה ללא גלוטן מבושלת":"Cooked gluten-free pasta","חזה עוף מבושל":"Cooked chicken breast","סלמון אפוי":"Baked salmon","פילה דג לבן אפוי":"Baked white fish fillet","טונה במים מסוננת":"Tuna in water, drained","יוגורט PRO 0%":"PRO yogurt 0%","משקה שיבולת שועל לא ממותק":"Unsweetened oat milk","קרקר זרעים":"Seed cracker","זרעי פשתן טחונים":"Ground flaxseed","קופסה":"can"
+"בצל ירוק":"Green onion","פטרוזיליה":"Parsley","כוסברה":"Cilantro","שמיר":"Dill","נענע":"Mint","חציל":"Eggplant","פלפל":"Pepper","רסק עגבניות":"Tomato paste","אבקת קקאו":"Cocoa powder","קמח תירס":"Cornmeal","פסטה ללא גלוטן מבושלת":"Cooked gluten-free pasta","חזה עוף מבושל":"Cooked chicken breast","סלמון אפוי":"Baked salmon","פילה דג לבן אפוי":"Baked white fish fillet","טונה במים מסוננת":"Tuna in water, drained","יוגורט PRO 0%":"PRO yogurt 0%","משקה שיבולת שועל לא ממותק":"Unsweetened oat milk","קרקר זרעים":"Seed cracker","זרעי פשתן טחונים":"Ground flaxseed","קופסה":"can","קערה":"bowl","יוגורט PRO וניל":"PRO vanilla yogurt","יוגורט קוקוס יופלה":"Yoplait coconut yogurt","יוגורט ג׳ו קוקוס":"Jo coconut yogurt","יוגורט Go וניל 1%":"Go vanilla yogurt 1%","גבינה קשה (מנצ׳גו)":"Hard cheese (manchego)","פטה":"Feta","קרקר קמח ערמונים ללא גלוטן":"Gluten-free chestnut flour cracker","אוכמניות":"Blueberries","פטל":"Raspberries","סלט קצוץ":"Chopped salad","ירקות מבושלים":"Cooked vegetables","ירקות בתנור":"Oven-roasted vegetables","מרק ירקות ביתי":"Homemade vegetable soup","אטריות קישוא":"Zucchini noodles","תפוח ירוק":"Green apple"
 };
 const DD=s=>s==="יום אחד"?"1 day":s.replace(/^(\d+) ימים$/,(m,n)=>n+(n==="1"?" day":" days"));
 const UNIT={"חלבון":"protein","פחמימה":"carbs","שומן":"fat"};
 const N="(\\d[\\d.,]*(?:\\s*[–-]\\s*\\d[\\d.,]*)?)";
 const R=(s,f)=>[new RegExp("^"+s+"$","s"),f];
-const UNM={"גרם":"g","כף":"tbsp","כפות":"tbsp","כפית":"tsp","כפיות":"tsp","כוס":"cup","כוסות":"cups","גביע":"container","גביעים":"containers","יחידה":"piece","יחידות":"pieces","פרוסה":"slice","פרוסות":"slices","סקופ":"scoop","סקופים":"scoops","חופן":"handful","חופנים":"handfuls","קופסה":"can","קופסאות":"cans"};
+const UNM={"גרם":"g","כף":"tbsp","כפות":"tbsp","כפית":"tsp","כפיות":"tsp","כוס":"cup","כוסות":"cups","גביע":"container","גביעים":"containers","יחידה":"piece","יחידות":"pieces","פרוסה":"slice","פרוסות":"slices","סקופ":"scoop","סקופים":"scoops","חופן":"handful","חופנים":"handfuls","קופסה":"can","קופסאות":"cans","קערה":"bowl","קערות":"bowls"};
 const PAT=[
   R("([\\d.]+) (\\S+)",m=>UNM[m[2]]?m[1]+" "+UNM[m[2]]:null),R("([\\d.]+) (\\S+) = (\\d+) ג׳",m=>UNM[m[2]]?m[1]+" "+UNM[m[2]]+" = "+m[3]+" g":null),R("(\\S+) \\(([\\d.]+) ג׳\\)",m=>(EN[m[1]]||UNM[m[1]])?(EN[m[1]]||UNM[m[1]])+" ("+m[2]+" g)":null),
   R(N+"\\s*קק״ל",m=>m[1]+" kcal"),R("כ-"+N+"\\s*קק״ל",m=>"about "+m[1]+" kcal"),
@@ -1217,7 +1218,7 @@ function mealDone(day,m){const x=day.meals[m.id];return !!x&&((x.food||[]).lengt
 const mealsCount=(day,ms)=>(ms||reqMeals()).filter(m=>mealDone(day,m)).length;
 const hasData=d=>!!d&&(Object.keys(d.meals||{}).length>0||Object.values(d.h||{}).some(v=>Array.isArray(v)?v.length:!!v)||!!(d.note||"").trim());
 function mealLabel(day,m){const x=day.meals[m.id];if(!x)return null;if(x.skip)return {t:"דילגתי"};
-  const parts=Object.entries(x.sel||{}).flatMap(([g,v])=>selIdx(v).map(i=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]+qTag(x,g,i):"")).filter(Boolean);
+  const parts=Object.entries(x.sel||{}).flatMap(([g,v])=>selIdx(v).map(i=>m.groups[g]&&m.groups[g].items[i]?m.groups[g].items[i][0]+(isM(m.groups[g].items[i])?" · "+mTxt(m.groups[g].items[i],mOf(x,g,i,m.groups[g].items[i])):qTag(x,g,i)):"")).filter(Boolean);
   if(x.food&&x.food.length)parts.push(...x.food.map(f=>f.n));
   if(parts.length)return {t:parts.join(" + ")};if(x.x&&x.x.trim())return {t:x.x,other:true};if(x.ph)return {t:"צילום ארוחה"};return null}
 function hv(h,v){if(h.type==="toggle")return v?"✓":"—";if(h.type==="cups")return h.liters?`${Lit(v||0)} ל׳`:`${v||0}/${h.target||h.max}`;
@@ -1595,7 +1596,7 @@ function parseRecipe(text,FOODS){const FOOD=FOODS;const out=[],bad=[],zero=[];
     if(g==null){bad.push(seg);continue}
     g=Math.round(g);out.push({src:seg,n,g,per:f.slice(1)})}
   return {items:out,bad,zero}}
-FOOD.push(...EXTRA_FOOD,["חזה עוף מבושל",165,31,0,3.6],["סלמון אפוי",206,22,0,12.4],["פילה דג לבן אפוי",125,25,0,2.7],["טונה במים מסוננת",116,25.5,0,0.8],["יוגורט PRO 0%",60,10,4,0.2],["משקה שיבולת שועל לא ממותק",40,0.5,6.5,1.2],["קרקר זרעים",470,16,22,35],["זרעי פשתן טחונים",534,18,29,42]);
+FOOD.push(...EXTRA_FOOD,["חזה עוף מבושל",165,31,0,3.6],["סלמון אפוי",206,22,0,12.4],["פילה דג לבן אפוי",125,25,0,2.7],["טונה במים מסוננת",116,25.5,0,0.8],["יוגורט PRO 0%",60,10,4,0.2],["משקה שיבולת שועל לא ממותק",40,0.5,6.5,1.2],["קרקר זרעים",470,16,22,35],["זרעי פשתן טחונים",534,18,29,42],["יוגורט PRO וניל",72,9.5,7.5,0.3],["יוגורט קוקוס יופלה",76,13.3,4,1.3],["יוגורט ג׳ו קוקוס",95,1,8,6.5],["יוגורט Go וניל 1%",75,7,10,1],["גבינה קשה (מנצ׳גו)",400,25,0.5,33],["פטה",264,14,4,21],["קרקר קמח ערמונים ללא גלוטן",420,6,65,14],["אוכמניות",57,0.7,14,0.3],["פטל",52,1.2,12,0.7],["סלט קצוץ",22,0.9,4.5,0.2],["ירקות מבושלים",32,1.5,6.5,0.2],["ירקות בתנור",55,1.5,8,2],["מרק ירקות ביתי",30,1,5.5,0.7],["אטריות קישוא",17,1.2,3.1,0.3],["תפוח ירוק",52,0.4,14,0.2]);
 
 const recipes={};let SV=null;
 const r1=n=>Math.round(n*10)/10,ri=n=>Math.round(n);
@@ -1608,8 +1609,18 @@ const selIdx=v=>Array.isArray(v)?v:v==null?[]:[v];
 const QS=[[.5,"חצי מנה"],[.75,"¾ מנה"],[1,"מנה רגילה"],[1.25,"מנה ורבע"],[1.5,"מנה וחצי"],[2,"מנה כפולה"]];
 const qOf=(x,g,i)=>{const v=x&&x.q&&+x.q[g+"-"+i];return v>0?v:1};
 const qTag=(x,g,i)=>{const v=qOf(x,g,i);return v===1?"":" ×"+({0.5:"½",0.75:"¾",1.25:"1¼",1.5:"1½",2:"2"}[v]||v)};
-const qSel=(gi,ii,it,x)=>{const v=qOf(x,gi,ii),n=it[2];return `<div class="qrow"><span>כמות</span><select data-q="${gi}-${ii}" aria-label="כמות">${QS.map(([q,t])=>`<option value="${q}"${q===v?" selected":""}>${t}</option>`).join("")}</select>${n&&v!==1?`<small>כ-${ri(n.k*v)} קק״ל · ${ri(n.p*v)} ג׳ חלבון</small>`:""}</div>`};
-function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
+/* menu items the trainee measures herself: it[2]={per:[k,p,c,f],a,u,fn,k,p,c,f} */
+const isM=it=>!!(it&&it[2]&&it[2].per);
+const mOf=(x,g,i,it)=>{const s=x&&x.m&&x.m[g+"-"+i];return s&&s.a>0?s:{a:it[2].a,u:it[2].u}};
+const mUnit=(it,s)=>{const us=unitsFor(it[2].fn||it[0]);return us.find(z=>z[0]===s.u)||us[0]};
+const mGrams=(it,s)=>Math.round(s.a*mUnit(it,s)[1]*10)/10;
+const mNut=(it,s)=>{const g=mGrams(it,s),p=it[2].per;return {k:p[0]*g/100,p:p[1]*g/100,c:p[2]*g/100,f:p[3]*g/100}};
+const mTxt=(it,s)=>{const u=mUnit(it,s);return u[1]===1?`${r1(s.a)} ג׳`:qtTxt(s.a,u)};
+const mLine=(it,s)=>{const t=mNut(it,s),u=mUnit(it,s);return `${u[1]===1?"":ri(mGrams(it,s))+" ג׳ · "}${ri(t.k)} קק״ל · ${r1(t.p)} ג׳ חלבון`};
+const mSel=(gi,ii,it,x)=>{const s=mOf(x,gi,ii,it),us=unitsFor(it[2].fn||it[0]);
+  return `<div class="qrow mrow"><input type="number" inputmode="decimal" step="0.25" min="0" data-ma="${gi}-${ii}" value="${s.a}" aria-label="כמה"><select data-mu="${gi}-${ii}" aria-label="איך מודדים">${us.map(z=>`<option value="${z[0]}"${z[0]===mUnit(it,s)[0]?" selected":""}>${z[0]}</option>`).join("")}</select><small data-mt="${gi}-${ii}">${mLine(it,s)}</small></div>`};
+const qSel=(gi,ii,it,x)=>{if(isM(it))return mSel(gi,ii,it,x);const v=qOf(x,gi,ii),n=it[2];return `<div class="qrow"><span>כמות</span><select data-q="${gi}-${ii}" aria-label="כמות">${QS.map(([q,t])=>`<option value="${q}"${q===v?" selected":""}>${t}</option>`).join("")}</select>${n&&v!==1?`<small>כ-${ri(n.k*v)} קק״ל · ${ri(n.p*v)} ג׳ חלבון</small>`:""}</div>`};
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it)){o.push(mNut(it,mOf(x,g,i,it)));return}const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
 const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
@@ -1631,8 +1642,8 @@ const regram=(x,g)=>{if(!(g>0)||!(x.g>0))return;const f=g/x.g;["k","p","c","f"].
 
 /* household measures per product: [singular, grams, plural] */
 const SOFTD=["קוטג׳","גבינה לבנה","יוגורט","סקיר","ריקוטה"];
-const CONTW=[["יוגורט PRO",200],["קוטג׳",250],["גבינה לבנה",250],["יוגורט יווני",170],["יוגורט חלבון",200],["סקיר",150],["ריקוטה",250]];
-const TBSPW=[["פשתן",7],["משקה",15],["קמח שקדים",8],["חמאת בוטנים",16],["קוטג׳",20],["גבינה לבנה",20],["יוגורט",20],["סקיר",20],["ריקוטה",20],["ממרח",15],["חומוס מבושל",15],["עדשים מבושל",15],["שעועית לבנה",15],["שעועית אדומה",15],["אורז",12],["קינואה",12],["כוסמת",12],["דוחן",12],["פסטת",12],["אטריות",12],["תירס",10],["אפונה",10],["פירות יער",12],["גרנולה",8],["זרעי",10],["שקדים",9],["אגוזי",8],["קשיו",9],["בוטנים",9],["זיתים",10],["משקה",15],["חלב",15],["מיץ לימון",15],["שמנת",15],["אבקת חלבון",8],...SPOON];
+const CONTW=[["יוגורט PRO",200],["יופלה",150],["ג׳ו קוקוס",150],["Go",150],["קוטג׳",250],["גבינה לבנה",250],["יוגורט יווני",170],["יוגורט חלבון",200],["סקיר",150],["ריקוטה",250]];
+const TBSPW=[["פשתן",7],["בולגרית",15],["פטה",15],["משקה",15],["קמח שקדים",8],["חמאת בוטנים",16],["קוטג׳",20],["גבינה לבנה",20],["יוגורט",20],["סקיר",20],["ריקוטה",20],["ממרח",15],["חומוס מבושל",15],["עדשים מבושל",15],["שעועית לבנה",15],["שעועית אדומה",15],["אורז",12],["קינואה",12],["כוסמת",12],["דוחן",12],["פסטת",12],["אטריות",12],["תירס",10],["אפונה",10],["פירות יער",12],["גרנולה",8],["זרעי",10],["שקדים",9],["אגוזי",8],["קשיו",9],["בוטנים",9],["זיתים",10],["משקה",15],["חלב",15],["מיץ לימון",15],["שמנת",15],["אבקת חלבון",8],...SPOON];
 const SPOONY=n=>TBSPW.some(([k])=>n.includes(k));
 const DEFSP=n=>SOFTD.some(k=>n.includes(k))||/שמן|טחינה|חמאת|דבש|זרעי|ממרח|שמנת/.test(n);
 function unitsFor(n){n=n||"";const u=[["גרם",1,"גרם"]];
@@ -1640,10 +1651,13 @@ function unitsFor(n){n=n||"";const u=[["גרם",1,"גרם"]];
   const m=n.replace(/חלבון/g," ");
   const c=pick(CONTW,n,0);if(c)u.push(["גביע",c,"גביעים"]);
   if(SPOONY(m)&&!/קרקר|טונה/.test(n)){const t=pick(TBSPW,m,15);u.push(["כף",t,"כפות"],["כפית",Math.round(t/3*10)/10,"כפיות"])}
-  const cu=/טונה|קרקר/.test(n)?0:/משקה|^חלב/.test(n)?240:pick(CUP,m,0)||(SOFTD.some(k=>n.includes(k))?240:0);if(cu)u.push(["כוס",cu,"כוסות"]);
+  const VEGC=[["סלט",150],["ירקות מבושלים",160],["ירקות בתנור",130],["אטריות קישוא",120],["מרק",250],["אוכמניות",145],["פטל",125]],vc=pick(VEGC,n,0);
+  if(vc){u.push(["כוס",vc,"כוסות"]);if(/מרק/.test(n))u.push(["קערה",400,"קערות"])}
+  if(/גבינה קשה/.test(n))u.push(["פרוסה",20,"פרוסות"]);
+  const cu=vc||/טונה|קרקר/.test(n)?0:/משקה|^חלב/.test(n)?240:pick(CUP,m,0)||(SOFTD.some(k=>n.includes(k))?240:0);if(cu)u.push(["כוס",cu,"כוסות"]);
   if(!c&&!/אבקת|קמח|עמילן|שמן|סוכר|דבש|טחינה|חמאת|רוטב|רסק|מיץ|משקה|חלב|שמנת|זרעי|קקאו/.test(m)){const w=pick(UNITW,n,0);if(w)u.push(/לחם|גבינה צהובה/.test(n)?["פרוסה",w,"פרוסות"]:["יחידה",w,"יחידות"])}
   if(/טונה/.test(n))u.push(["קופסה",112,"קופסאות"]);
-  if(/קרקר/.test(n))u.push(["יחידה",15,"יחידות"]);
+  if(/קרקר/.test(n))u.push(["יחידה",/ערמונים/.test(n)?10:15,"יחידות"]);
   if(/שקדים|אגוזי|קשיו|בוטנים|פירות יער|ענבים|עגבניות שרי|תותים|חסה/.test(n)&&!/משקה|קמח|חמאת/.test(n))u.push(["חופן",30,"חופנים"]);
   return u}
 const qtTxt=(a,u)=>`${r1(a)} ${a===1?u[0]:u[2]}`;
@@ -1705,7 +1719,7 @@ function drawFood(){const m=meals()[sheetMeal],sh=$("sheet");
     $("svBack").onclick=()=>{SV={type:"recs"};drawFood()};return}}
 function foodSection(m,x){const fl=x.food||[],t=sumF(mealItems(m,x));
   return `<h4>בגרמים · קלוריות וחלבון</h4>
-  ${fl.length?`<div class="ings">${fl.map((f,i)=>`<div class="ing"><span><b>${esc(f.n)}</b><small>${f.qt?esc(f.qt)+" · ":""}${ri(f.g)} ג׳ · ${ri(f.k)} קק״ל · ${r1(f.p)} ג׳ חלבון</small></span><button type="button" data-fdel="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>`:""}${t.k>0?`<p class="hint">בארוחה הזו: ${macroLine(t)}</p>`:""}
+  ${fl.length?`<div class="ings">${fl.map((f,i)=>`<div class="ing"><span><b>${esc(f.n)}</b><small>${f.qt?esc(f.qt)+" · ":""}${f.g?ri(f.g)+" ג׳ · ":""}${ri(f.k)} קק״ל · ${r1(f.p)} ג׳ חלבון</small></span><button type="button" data-fdel="${i}" aria-label="הסרה">×</button></div>`).join("")}</div>`:""}${t.k>0?`<p class="hint">בארוחה הזו: ${macroLine(t)}</p>`:""}
   <div class="askb"><button class="ghost" type="button" id="fIng">+ רכיב</button><button class="ghost" type="button" id="fRec">+ מתכון שלי</button></div>`}
 
 /* meal sheet */
@@ -1742,7 +1756,14 @@ $("sheet").addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b
       if(G.multi){const a=selIdx(y.sel[g]),on=a.includes(i),n=on?a.filter(v=>v!==i):[...a,i];if(n.length)y.sel[g]=n;else delete y.sel[g];if(!on)(G.excl||[]).forEach(o=>delete y.sel[o])}
       else if(y.sel[g]===i)delete y.sel[g];else{y.sel[g]=i;(G.excl||[]).forEach(o=>delete y.sel[o])}}
     if(y.q){Object.keys(y.q).forEach(k=>{const [g,i]=k.split("-");if(!selIdx(y.sel[g]).includes(+i))delete y.q[k]});if(!Object.keys(y.q).length)delete y.q}
+    if(y.m){Object.keys(y.m).forEach(k=>{const [g,i]=k.split("-");if(!selIdx(y.sel[g]).includes(+i))delete y.m[k]});if(!Object.keys(y.m).length)delete y.m}
     d.meals[m.id]=y});drawSheet()});
+$("sheet").addEventListener("input",ev=>{const a=ev.target.closest("[data-ma]");if(!a||sheetMeal===null)return;const key=a.dataset.ma,[g,i]=key.split("-"),m=meals()[sheetMeal],it=m.groups[g].items[+i],v=+a.value;
+  let s=null;updDay(sel,d=>{const y=d.meals[m.id]||{};const cur=mOf(y,g,i,it);s={a:v,u:mUnit(it,cur)[0]};y.m=Object.assign({},y.m||{},{[key]:s});d.meals[m.id]=y});
+  const el=$("sheet").querySelector(`[data-mt="${key}"]`);if(el&&s&&v>0)el.textContent=mLine(it,s)});
+$("sheet").addEventListener("change",ev=>{const u=ev.target.closest("[data-mu]"),a=ev.target.closest("[data-ma]");if((!u&&!a)||sheetMeal===null)return;
+  if(u){const key=u.dataset.mu,[g,i]=key.split("-"),m=meals()[sheetMeal],it=m.groups[g].items[+i];updDay(sel,d=>{const y=d.meals[m.id]||{};const cur=mOf(y,g,i,it),gr=mGrams(it,cur),nu=unitsFor(it[2].fn||it[0]).find(z=>z[0]===u.value);if(!nu)return;const na=nu[1]===1?Math.round(gr):Math.max(0.25,Math.round(gr/nu[1]*4)/4);y.m=Object.assign({},y.m||{},{[key]:{a:na,u:nu[0]}});d.meals[m.id]=y})}
+  drawSheet()});
 $("sheet").addEventListener("change",ev=>{const s=ev.target.closest("[data-q]");if(!s||sheetMeal===null)return;const m=meals()[sheetMeal],v=+s.value;
   updDay(sel,d=>{const y=d.meals[m.id]||{};const q=Object.assign({},y.q||{});if(v===1)delete q[s.dataset.q];else q[s.dataset.q]=v;if(Object.keys(q).length)y.q=q;else delete y.q;d.meals[m.id]=y});drawSheet()});
 async function shrink(file){const url=URL.createObjectURL(file);
