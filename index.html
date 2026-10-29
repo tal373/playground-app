@@ -2435,11 +2435,11 @@ async function loadBriefs(){if(!db||bfLoading)return;bfLoading=true;
     try{const d=JSON.parse(localStorage.pgBDone||"{}");Object.keys(d).forEach(k=>BDONE[k]=new Set(d[k]))}catch(e){}bfLoaded=true}catch(e){setSave("שגיאה בטעינה","err")}
   bfLoading=false;if(tab==="brief")render()}
 const bdSave=()=>{try{localStorage.pgBDone=JSON.stringify(Object.fromEntries(Object.entries(BDONE).map(([k,v])=>[k,[...v]])))}catch(e){}};
-/* ---------- personal sessions for a coach: pt/<coach email>/<id>, report to c/<coach uid>/pt/<id> ---------- */
+/* ---------- personal sessions for a coach: pt/<coach email>/s/<id>, report to c/<coach uid>/pt/<id> ---------- */
 const PT={},PTR={};let ptSel=null,ptLoaded=false,ptLoading=false;
 const ptMail=()=>coachPv?(((COA||[]).find(c=>(c.name||c.email)===coachPv)||{}).email||""):(window.pgMember?pgMember.email():"");
 async function loadPT(){if(!db||ptLoading)return;ptLoading=true;
-  try{const em=lowN(ptMail());if(em){const s=await db.collection("pt/"+em).get();fill(PT,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
+  try{const em=lowN(ptMail());if(em){const s=await db.collection("pt/"+em+"/s").get();fill(PT,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
     if(!coachPv&&uid){const r=await db.collection(`c/${uid}/pt`).get().catch(()=>({docs:[]}));fill(PTR,Object.fromEntries(r.docs.map(d=>[d.id,d.data()])))}}}catch(e){}
   ptLoaded=true;ptLoading=false;if(tab==="brief")render()}
 function ptListHTML(){const ids=Object.keys(PT).filter(k=>(PT[k].date||"")>=addDays(TODAY,-7)).sort((a,b)=>((PT[a].date||"")+(PT[a].time||"")).localeCompare((PT[b].date||"")+(PT[b].time||"")));
