@@ -774,10 +774,11 @@ button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.c
 .qrow small{margin-inline-start:auto;font-size:12.5px}
 .numin{width:130px;font:inherit;font-size:17px;font-weight:700;text-align:center;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:9px 10px;color:var(--ink)}
 html[dir=ltr] body{direction:ltr}
-html[dir=ltr] :is(.meal,.tog,.opt,.past button,.trc,.fi,.rp-h,.rp-h .nm,.cl,.linkb,.prep-h,.bf-leg button,.bf-exh,.lbl.blk,button.cl-n,.fl2 .ft,td:first-child,th:first-child,#pWork .pzbox,.ex-row b,.pg-hero h1,.pg-bh b,.pg-fmt,.pg-ln span,.pg-ln small,.lift-r label,.kg label,.bf-en,.bf-bh h2,.bf-bh small,.bf-lift h3,.bf-ex .nm){text-align:left}
+html[dir=ltr] :is(.meal,.tog,.opt,.past button,.trc,.fi,.rp-h,.rp-h .nm,.cl,.linkb,.prep-h,.bf-leg button,.bf-exh,.lbl.blk,button.cl-n,.fl2 .ft,td:first-child,th:first-child,#pWork .pzbox,.ex-row b,.pg-hero h1,.pg-bh b,.pg-fmt,.pg-ln span,.pg-ln small,.lift-r label,.kg label,.bf-en,.bf-bh h2,.bf-bh small,.bf-lift h3,.bf-ex .nm):not([dir=rtl] *){text-align:left}
 html[dir=ltr] .stage h2{direction:ltr!important;text-align:left}
-html[dir=ltr] :is(.fact span,.ml-v){text-align:right}
-html[dir=ltr] :is(.ex-row a svg,.stage .vids svg,.ex-row a.th i svg,#guided svg){transform:none!important}
+html[dir=ltr] :is(.fact span,.ml-v):not([dir=rtl] *){text-align:right}
+html[dir=ltr] :is(.ex-row a svg,.stage .vids svg,.ex-row a.th i svg,#guided svg):not([dir=rtl] *){transform:none!important}
+html[dir=ltr] #bfRs{direction:rtl}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -863,8 +864,6 @@ window.pgLangSync=saved=>{let ls=null;try{ls=localStorage.getItem("pgLang")}catc
 const btns=()=>document.querySelectorAll("[data-lang]").forEach(b=>{b.textContent=L==="en"?"עב":"EN";b.setAttribute("lang",L==="en"?"he":"en");b.setAttribute("aria-label",L==="en"?"להחליף לעברית":"Switch to English")});
 document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("[data-lang]");if(b){ev.preventDefault();window.pgSetLang(L==="en"?"he":"en")}});
 btns();
-if(L!=="en"){window.pgT=s=>s;return}
-document.documentElement.lang="en";document.documentElement.dir="ltr";document.title="Playground";
 
 const EN={
 /* shell */
@@ -909,7 +908,7 @@ const EN={
 "שבוע של מים":"A week of water","יעד המים 7 ימים ברצף":"Water goal 7 days in a row","אימון ראשון":"First workout","סיימת אימון באפליקציה":"You finished a workout in the app","10 אימונים":"10 workouts","עשרה אימונים שהושלמו":"Ten completed workouts",
 "חודש של שקילות":"A month of weigh-ins","4 שקילות":"4 weigh-ins","תמונת התחלה":"Starting photo","צילום ההתקדמות הראשון":"Your first progress photo","יום מושלם! כל הארוחות סומנו":"Perfect day! All meals logged",
 "התקדמות 7 הימים האחרונים":"Last 7 days","מים":"Water","תמונה אחרונה":"Latest photo","התחלה":"Start","עכשיו":"Now",
-"תזכורות בטלפון":"Phone reminders","סיכום ערב על המתאמנים":"Evening summary of trainees","תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון":"A reminder at midday and in the evening if something's missing, and a weekly summary on Sunday","הפעלה":"Turn on","פעילות":"On",
+"תזכורות בטלפון":"Phone reminders","סיכום ערב על המתאמנים":"Evening summary of trainees","תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון":"A reminder at midday and in the evening if something's missing, and a weekly summary on Sunday","פעילות":"On",
 "באייפון התזכורות עובדות רק מהאייקון במסך הבית. מוסיפים דרך כפתור השיתוף ← ״הוסף למסך הבית״, נכנסים מהאייקון ולוחצים כאן שוב.":"On iPhone, reminders only work from the Home Screen icon. Tap the Share button → “Add to Home Screen”, open the app from the icon and tap here again.",
 "ההתראות חסומות. אפשר לפתוח אותן בהגדרות הטלפון ← התראות ← פלייגראונד.":"Notifications are blocked. You can allow them in your phone's Settings → Notifications → Playground.",
 "הדפדפן הזה לא תומך בתזכורות. באייפון פותחים מהאייקון במסך הבית, ובאנדרואיד מכרום.":"This browser doesn't support reminders. On iPhone open the app from the Home Screen icon, on Android use Chrome.",
@@ -1013,14 +1012,14 @@ function look(s){const x=TRX();if(x[s]!=null)return x[s];if(EN[s]!=null)return E
 function tr(s){if(!s||!HEB.test(s))return s;let r=look(s);if(r!=null)return r;
   if(s.includes("\n"))return s.split("\n").map(tr).join("\n");
   const a=s.match(AFF);if(a&&(a[1]||a[3])&&a[2]){const c=tr(a[2]);if(c!==a[2])return swap(a[1])+c+swap(a[3])}
-  for(const sep of [" · "," + "])if(s.includes(sep)){const p=s.split(sep),q=p.map(tr);if(q.some((v,i)=>v!==p[i]))return q.join(sep)}
+  for(const sep of [" · "," + "])if(s.includes(sep)){const p=s.split(sep),q=p.map(tr);if(q.some((v,i)=>v!==p[i])&&!q.some(v=>HEB.test(v)))return q.join(sep)}
   for(const [re,f] of PAT){const m=s.match(re);if(m){const v=f(m);if(v!=null)return v}}
   return gloss(s)||s}
 window.pgT=tr;
-const SKIP="#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar,script,style,textarea,[data-noi18n]";
+const SKIP="#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar,#bfRs,script,style,textarea,[data-noi18n]";
 const skip=el=>!el||!!el.closest(SKIP);
 const SET=new WeakMap();
-function text(n){const v=n.nodeValue;if(!v||!HEB.test(v)||SET.get(n)===v||skip(n.parentElement))return;const t=v.trim(),r=tr(t);if(r!==t){const nv=v.replace(t,()=>r);SET.set(n,nv);n.nodeValue=nv}}
+function text(n){const v=n.nodeValue;if(!v||!HEB.test(v)||SET.get(n)===v||skip(n.parentElement))return;const t=v.trim(),de=n.parentElement.dataset.en,r=de||tr(t);if(r!==t){const nv=v.replace(t,()=>r);SET.set(n,nv);n.nodeValue=nv}}
 const ATTR=["placeholder","aria-label","title","alt"];
 const SKIPA=SKIP.replace(",script,style,textarea","");
 function attr(el,a){const v=el.getAttribute(a);if(!v||!HEB.test(v)||!!el.closest(SKIPA))return;const r=tr(v.trim());if(r!==v.trim())el.setAttribute(a,r)}
@@ -1028,9 +1027,21 @@ function walk(root){if(root.nodeType===3){text(root);return}if(root.nodeType!==1
   ATTR.forEach(a=>root.hasAttribute(a)&&attr(root,a));root.querySelectorAll("textarea[placeholder]").forEach(t=>attr(t,"placeholder"));if(skip(root))return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,{acceptNode:n=>n.nodeType===1&&n.matches(SKIP)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
   let n;while(n=w.nextNode()){if(n.nodeType===3)text(n);else ATTR.forEach(a=>n.hasAttribute(a)&&attr(n,a))}}
-walk(document.body);
-new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")text(m.target);else if(m.type==="attributes")attr(m.target,m.attributeName);else m.addedNodes.forEach(walk)}})
-  .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR});
+let live=false;
+function on(){if(live)return;live=true;L="en";window.pgLang="en";const H=document.documentElement;H.lang="en";H.dir="ltr";document.title="Playground";
+  /* coach and owner screens stay Hebrew, right to left */
+  document.querySelectorAll("#v-coach,#v-claude,#v-prog,#v-brief,#v-class,#v-studio,#v-coaches,#v-biz,#v-clients,.pvbar").forEach(e=>{e.dir="rtl";e.lang="he"});
+  try{if(typeof DN!=="undefined"&&DN[0]!=="Sun")DN.splice(0,7,"Sun","Mon","Tue","Wed","Thu","Fri","Sat")}catch(e){}
+  window.pgT=tr;btns();walk(document.body);
+  new MutationObserver(ms=>{for(const m of ms){if(m.type==="characterData")text(m.target);else if(m.type==="attributes")attr(m.target,m.attributeName);else m.addedNodes.forEach(walk)}})
+    .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTR})}
+window.pgT=s=>s;
+if(L==="en")on();
+/* owner or coach previewing a trainee: show the trainee's own language */
+window.pgPreviewLang=l=>{if(l==="en")on()};
+/* owner and coaches always work in Hebrew; the switch is for trainees */
+window.pgStaff=()=>{document.querySelectorAll(".brand [data-lang]").forEach(b=>b.hidden=true);let ls=null;try{ls=localStorage.getItem("pgLang")}catch(e){}
+  if(ls==="en"){try{localStorage.setItem("pgLang","he")}catch(e){}location.reload();return true}return false};
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -1443,7 +1454,7 @@ function weekBars(){const ks=[...Array(7)].map((_,i)=>addDays(TODAY,i-6));
 function compareHTML(src){const ks=Object.keys(src||{}).sort();if(!ks.length)return "";const a=ks[0],b=ks[ks.length-1];
   return `<div class="cmp">${ks.length>1?`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure><figure><img src="${src[b]}" alt="תמונה אחרונה"><figcaption>${fmt(b)} · עכשיו (${daysBetween(a,b)} ימים)</figcaption></figure>`:`<figure><img src="${src[a]}" alt="תמונת התחלה"><figcaption>${fmt(a)} · התחלה</figcaption></figure>`}</div>`}
 
-const remindHTML=who=>`<div class="card remind" id="remind"><div class="rr"><div><b>תזכורות בטלפון</b><small>${who==="coach"?"סיכום ערב על המתאמנים":"תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון"}</small></div><button type="button" class="cta" id="remBtn" hidden>הפעלה</button><span class="remst" id="remSt"></span></div><p class="hint" id="remHint" hidden></p></div>`;
+const remindHTML=who=>`<div class="card remind" id="remind"><div class="rr"><div><b>תזכורות בטלפון</b><small>${who==="coach"?"סיכום ערב על המתאמנים":"תזכורת בצהריים ובערב אם חסר דיווח, וסיכום שבועי ביום ראשון"}</small></div><button type="button" class="cta" id="remBtn" data-en="Turn on" hidden>הפעלה</button><span class="remst" id="remSt"></span></div><p class="hint" id="remHint" hidden></p></div>`;
 async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(!b||!window.pgPush)return;
   const show=v=>{b.hidden=v==="on"||v==="unsupported";st.textContent=v==="on"?"פעילות ✓":"";h.hidden=!(v==="needs-home"||v==="denied"||v==="unsupported");
     h.textContent=v==="needs-home"?"באייפון התזכורות עובדות רק מהאייקון במסך הבית. מוסיפים דרך כפתור השיתוף ← ״הוסף למסך הבית״, נכנסים מהאייקון ולוחצים כאן שוב.":v==="denied"?"ההתראות חסומות. אפשר לפתוח אותן בהגדרות הטלפון ← התראות ← פלייגראונד.":v==="unsupported"?"הדפדפן הזה לא תומך בתזכורות. באייפון פותחים מהאייקון במסך הבית, ובאנדרואיד מכרום.":"";if(v==="needs-home")b.hidden=true};
@@ -2790,12 +2801,12 @@ async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS};MEM=nul
     if(!aid){const mm=await db.doc(`m/${id}`).get();if(mm.exists)aid=String((mm.data()||{}).aid||"")}
     if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
   pvStLoading=false;if(preview===id){applyPause();if(!typing())render()}}
-async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;preview=id;uid=id;prof=c.prof;pvStudio(id);
+async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;if(window.pgPreviewLang){try{const t=await db.doc(`t/${id}`).get();if(t.exists)pgPreviewLang((t.data()||{}).lang)}catch(e){}}preview=id;uid=id;prof=c.prof;pvStudio(id);
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=c.pend?[]:subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
@@ -2819,6 +2830,7 @@ let liveU=[];
   if(user){isOwner=await user.isOwner();uid=await user.id();ownerUid=uid;try{isCoach=await user.isCoach();if(isCoach)coachName=await user.coachName()}catch(e){}}
   booted=true;
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
+  if((isOwner||isCoach)&&window.pgStaff&&pgStaff())return;
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;
     if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}
     ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(CLW){try{history.replaceState(null,"",location.pathname)}catch(e){}dashLast="clients";go("clients");return}if(!(isCoach&&openRep()))go("coach");return}
