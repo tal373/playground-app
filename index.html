@@ -736,7 +736,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .sets-h{gap:8px}.sets-h>span{flex:1}.sadj{display:flex;gap:4px;flex:none}.sadj button{border:1px solid var(--line);background:var(--s1);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12.5px;min-width:30px}.sadj button:disabled{opacity:.35}
 .sl-c{flex-wrap:wrap}.slf{gap:10px}.sl-h{display:flex;flex-direction:column}.sl-h small{color:var(--muted);font-size:12.5px}
 .cl-b button.cl-pv{min-width:0;font-size:12.5px;font-weight:700;color:var(--muted);padding:9px 10px}
-button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}
+button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}.ldw{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;line-height:1.45;margin:4px 0 6px}
 .cl-card{display:flex;flex-direction:column;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:-2px 0 6px}.cl-card label{font-size:13px;font-weight:700}.cl-card label small{font-weight:500;color:var(--muted);margin-inline-start:6px}
 .cl-card input,.cl-card textarea{padding:9px 10px;font-size:14px}.cl-card .cta{flex:none;padding:10px 18px}
 .arseg{margin-bottom:10px}.arch-l{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.arch-w{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}.arch-w b{font-size:14px}.arch-w .chips{flex-wrap:wrap}
@@ -1394,7 +1394,7 @@ function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach"
   <div class="addrow sm"><input type="text" id="clQ" value="${esc(clQ)}" placeholder="חיפוש שם או מנוי" autocomplete="off"></div>
   ${clF==="pending"&&list.length>1?`<button type="button" class="linkb" id="clAllIn">סימון כל ${list.length} הממתינים שברשימה כ״כן״</button>`:""}
   <div class="cl-l">${list.length?list.map(([id,c])=>{const s=st(c);return `<div class="cl-r${s==="out"?" out":""}">
-    <button type="button" class="cl-n" data-clo="${esc(id)}"><b>${esc(c.name||"")}</b>${(()=>{const sd=RO[sidOf(id,c)]||{};return [sd.inj?`<span class="cl-tag w">פציעה</span>`:"",sd.preg?`<span class="cl-tag w">הריון</span>`:"",sd.cnote||sd.tnote?`<span class="cl-tag">הערה</span>`:""].join("")})()}${isNew(c)?`<span class="cl-new">חדש</span>`:""}${c.app?`<span class="cl-app">באפליקציה</span>`:""}<small>${esc(c.plan||"")}${c.end?` · עד ${esc(fmt(c.end))}`:""}</small></button>
+    <button type="button" class="cl-n" data-clo="${esc(id)}"><b>${esc(c.name||"")}</b>${(()=>{const s0=sidOf(id,c),sd=RO[s0]||{};return [s0&&LDW(s0).length?`<span class="cl-tag w">⚠️ עומס</span>`:"",sd.inj?`<span class="cl-tag w">פציעה</span>`:"",sd.preg?`<span class="cl-tag w">הריון</span>`:"",sd.cnote||sd.tnote?`<span class="cl-tag">הערה</span>`:""].join("")})()}${isNew(c)?`<span class="cl-new">חדש</span>`:""}${c.app?`<span class="cl-app">באפליקציה</span>`:""}<small>${esc(c.plan||"")}${c.end?` · עד ${esc(fmt(c.end))}`:""}</small></button>
     <div class="cl-b"><button type="button" class="cl-pv" data-clpv="${esc(id)}" aria-label="שיקוף">שיקוף</button><button type="button" data-cli="${esc(id)}" data-v="1" aria-pressed="${s==="in"}">כן</button><button type="button" data-cli="${esc(id)}" data-v="0" aria-pressed="${s==="out"}">לא</button></div></div>${clOpen===id?clCard(id,c):""}`}).join(""):`<div class="card"><div class="empty">${clF==="pending"?"אין ממתינים. הכל מסומן.":"אין לקוחות כאן"}</div></div>`}</div>`;
   const qi=$("clQ");qi.oninput=()=>{clQ=qi.value;const p=qi.selectionStart;dirty=false;renderClients();const n=$("clQ");n.focus();try{n.setSelectionRange(p,p)}catch(e){}};
   const ab=$("clAllIn");if(ab)ab.onclick=async()=>{ab.disabled=true;const ids=list.map(([id])=>id);let bad=0;
@@ -1417,7 +1417,7 @@ $("v-clients").addEventListener("click",async ev=>{const co=ev.target.closest("[
 let clOpen=null,pvFrom=null;
 const sidOf=(aid,c)=>{const a=String(aid);const hit=Object.entries(RO).find(([,r])=>String(r.aid||"")===a)||Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(c&&c.name));return hit?hit[0]:null};
 function clCard(id,c){const sid=sidOf(id,c),r=(sid&&RO[sid])||{};
-  return `<div class="cl-card">
+  return `<div class="cl-card">${sid?ldBox(sid,1):""}
     <label>פציעות ורגישויות <small>המאמנים רואים ליד השם בשיעור</small></label><input type="text" id="ccInj" value="${esc(r.inj||"")}" placeholder="למשל: כתף ימין רגישה, להימנע מלחיצה מעל הראש">
     <label>הריון</label><div class="chips sm">${[["","לא"],["1","שליש ראשון"],["2","שליש שני"],["3","שליש שלישי"],["pp","אחרי לידה"]].map(([k,l])=>`<button type="button" data-ccp="${k}" aria-pressed="${(r.preg||"")===k}">${l}</button>`).join("")}</div>
     <label>הערה למאמנים <small>מופיעה בשיעור</small></label><input type="text" id="ccCn" value="${esc(r.cnote||"")}" placeholder="למשל: מתחיל, לעבוד על טכניקה לפני משקל">
@@ -2249,7 +2249,11 @@ const fmtTime=iso=>{if(!iso)return "";const d=new Date(iso);return `${fmt(dk(d))
 
 /* ===== studio: coach end-of-class reports + Tal's studio view ===== */
 let isCoach=false,coachName="";
-const RO={},MYR={},WD={},REPS={},RR={};
+const RO={},MYR={},WD={},REPS={},RR={},LD={};
+const LDW=(sid,d)=>(LD[sid]||[]).filter(x=>d?x.date===d:x.date>=TODAY).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
+const LDC=sid=>LDW(sid,rDate).filter(x=>!x.cls||!DR||!DR.cls||x.cls===DR.cls);
+const ldTxt=x=>[x.area?"עומס "+x.area:"עומס",x.text,x.tip?"הצעה: "+x.tip:""].filter(Boolean).join(" · ");
+const ldBox=(sid,withDate)=>(withDate?LDW(sid):LDC(sid)).map(x=>`<div class="ldw">⚠️ ${withDate?esc(fmt(x.date))+(x.cls?" · "+esc(x.cls):"")+(x.time?" "+esc(x.time):"")+" — ":""}${esc(ldTxt(x))}</div>`).join("");
 let rDate=TODAY,rType=null,rTime=null,DR=null,openP=null,stLoaded=false,stLoading=false,stAt=0,stSel=null,stLogs=null,stQ="",repOpen=null;
 const TIMES=["06:30","08:00","09:00","10:00","11:00","17:30","18:00","18:30","19:00","19:30"];
 const TAGS=[["pain","כאב / פציעה","var(--bad)"],["red","דגל אדום","var(--bad)"],["hard","לא עבד","var(--warn)"],["pr","שיפור","var(--ok)"],["happy","מרוצה","var(--ok)"]];
@@ -2282,8 +2286,9 @@ function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
 function blankDR(){return {cls:rType?typeOf(rType):"Power Lab",people:[],note:"",tal:""}}
 
 async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&Date.now()-stAt<60000)return;stLoading=true;
-  try{const [ro,ws,mr,rr]=await Promise.all([db.collection("s").get(),db.collection("w").where("date",">=",addDays(TODAY,-7)).get(),
-      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]}),db.collection("r").where("date",">=",addDays(TODAY,isOwner?-8:-2)).get().catch(()=>({docs:[]}))]);
+  try{const [ro,ws,mr,rr,ld]=await Promise.all([db.collection("s").get(),db.collection("w").where("date",">=",addDays(TODAY,-7)).get(),
+      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]}),db.collection("r").where("date",">=",addDays(TODAY,isOwner?-8:-2)).get().catch(()=>({docs:[]})),db.collection("ld").where("date",">=",addDays(TODAY,-1)).get().catch(()=>({docs:[]}))]);
+    {const m={};ld.docs.forEach(d=>{const x=d.data()||{};if(!x.sid)return;(x.items||[]).forEach(it=>(m[x.sid]=m[x.sid]||[]).push({...it,date:x.date}))});fill(LD,m)}
     fill(RR,Object.fromEntries(rr.docs.map(d=>[d.id,d.data()])));if(!bfLoaded)loadBriefs();
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
     fill(MYR,Object.fromEntries(mr.docs.map(d=>[d.id,d.data()])));
@@ -2399,6 +2404,7 @@ function sugg(r,ex){const L=(r.lx||{})[ex];if(!L){const k=(r.last||{})[ex];retur
   const step=kg>=20?2.5:1,n=L.rpe<=7?kg+step:L.rpe>=10?Math.max(0,kg-step):kg;
   return {t:base+` · הצעה: ${n}`,kg:String(n)}}
 function prepRows(){return DR.people.map(p=>{const r=RO[p.id]||{},bits=[];
+  LDC(p.id).forEach(x=>bits.push(`<span style="--c:var(--warn)">⚠️ ${esc(ldTxt(x))}</span>`));
   if(r.inj)bits.push(`<span style="--c:var(--warn)">${esc(r.inj)}</span>`);
   if(r.preg)bits.push(`<span style="--c:var(--warn)">${esc(PREG[r.preg]||"הריון")}</span>`);if(r.cnote)bits.push(`<span style="--c:var(--muted)">${esc(r.cnote)}</span>`);
   if(r.flag&&r.flag.st==="open")bits.push(`<span style="--c:var(--bad)">מעקב: ${esc(r.flag.text||"דגל פתוח")}</span>`);
@@ -2467,7 +2473,7 @@ function personCard(p,i,exs,met){const r=RO[p.id]||{},wide=WIDE(),op=(wide||open
   return `<div class="rp-p${op?" open":""}${p.absent?" abs":""}">
   <div class="rp-h"><button type="button" class="av${avc}" data-ab="${i}" aria-label="${p.absent?"סימון שהגיע":"סימון שלא הגיע"}">${avt}</button>
     <button type="button" class="nm" data-pp="${esc(p.id)}"><b>${esc(p.name)}</b>
-      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${r.inj?`<div class="known">${esc(r.inj)}</div>`:""}${r.preg?`<div class="known">${esc(PREG[r.preg]||"הריון")}</div>`:""}${r.cnote?`<div class="known" style="color:var(--muted)">${esc(r.cnote)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">מעקב פתוח מדגל קודם${p.fu?" · נבדק":""}</div>`:""}
+      ${p.absent?`<div class="known">לא הגיע · לחיצה על העיגול מחזירה</div>`:`${ldBox(p.id)}${r.inj?`<div class="known">${esc(r.inj)}</div>`:""}${r.preg?`<div class="known">${esc(PREG[r.preg]||"הריון")}</div>`:""}${r.cnote?`<div class="known" style="color:var(--muted)">${esc(r.cnote)}</div>`:""}${flagOpen?`<div class="known" style="color:var(--bad)">מעקב פתוח מדגל קודם${p.fu?" · נבדק":""}</div>`:""}
       <div class="mini">${tags.length?"":`<span style="--c:var(--ok)">בסדר</span>`}${nv?`<span style="--c:var(--mes)">${nv} תרגילים מולאו</span>`:""}${(p.err||[]).length?`<span style="--c:var(--warn)">${p.err.length} תיקונים</span>`:""}${(p.note||"").trim()?`<span style="--c:var(--muted)">הערה</span>`:""}</div>`}</button>
     ${wide||p.absent?"":`<span class="chev">${op?"▲":"▼"}</span>`}</div>
   ${p.absent?"":`<div class="qt">${QT.map(([k,l,c])=>`<button type="button" data-tag="${k}" data-i="${i}" aria-pressed="${tags.includes(k)}" style="--c:${c}">${l}</button>`).join("")}</div>`}
@@ -2631,7 +2637,7 @@ function renderStudio(){const v=$("v-studio");
       ${r.note?`<p class="hint">על השיעור: ${esc(r.note)}</p>`:""}</div>`:""}</div>`}).join("")}</div>
   <div class="sh"><h2>מתאמני הסטודיו</h2><span>${Object.keys(RO).length}</span></div>
   <input type="text" id="stQ" placeholder="חיפוש לפי שם" value="${esc(stQ)}">
-  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${r.inj?`<div class="known">רגישות: ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
+  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${ldBox(id,1)}${r.inj?`<div class="known">רגישות: ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
   const s=$("stQ");s.oninput=()=>{stQ=s.value;const pos=s.selectionStart;dirty=false;renderStudio();dashSeg();const n=$("stQ");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
 
 async function openMember(id){stSel=id;stLogs=null;render();window.scrollTo(0,0);
