@@ -317,6 +317,16 @@ td:first-child,th:first-child{text-align:right}
 .pchip{align-self:flex-start;background:#00000055;border-radius:999px;padding:6px 14px;font-weight:800;font-size:18px}
 .pside{color:var(--hot);font-size:18px}.meter.one{grid-template-columns:1fr}.ghostb{background:var(--s1)!important;color:var(--ink)!important}
 #pWork .rring{margin:0 auto}#pWork .rring .in small{display:block;color:var(--muted);font-size:13px;text-align:center}
+.pmeta{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}.pmeta b{color:var(--ink);font-weight:800}.pmeta button{background:var(--s1);border-radius:999px;padding:6px 11px;color:var(--ink);font-size:13px}
+.pframe{position:relative;width:100%;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;margin-bottom:auto}.pframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.pplay{align-self:center;margin:auto 0;display:flex;align-items:center;gap:8px;background:#000000aa;color:#fff;border-radius:999px;padding:12px 18px;font-weight:800;font-size:15px}.pplay svg{width:14px;height:14px;fill:var(--hot);transform:scaleX(-1)}
+.ytl{font-size:12px;color:var(--muted);text-decoration:underline;align-self:flex-start}
+.stp2,.meter .stp2{display:flex;flex-direction:row;direction:ltr;align-items:center;gap:6px;padding:0;background:none;border-radius:0}.stp2 button{width:42px;height:42px;border-radius:12px;background:var(--s2,#1b2a40);color:var(--ink);font-size:22px;font-weight:800;flex:none}.stp2 input{flex:1;min-width:0}
+.meter .rp2 input{font-size:22px;font-weight:800;text-align:center;padding:8px}
+.pef{display:flex;gap:8px}.pef button{flex:1;padding:11px 6px;border-radius:14px;background:var(--s1);color:var(--ink);font-weight:700;font-size:14px;border:1px solid var(--line)}.pef button[aria-pressed=true]{background:var(--hot);color:var(--navy);border-color:var(--hot)}
+.pnx{display:flex;gap:12px;align-items:center;background:var(--s1);border-radius:18px;padding:10px;text-align:right;width:min(88vw,380px)}.pnx img{width:92px;height:62px;object-fit:cover;border-radius:12px;flex:none}.pnx small{color:var(--muted);display:block;font-size:12px}.pnx b{display:block;direction:ltr;text-align:right}
+.pfin{display:flex;flex-direction:column;gap:14px;padding-bottom:20px}.pfin h2{margin:0;font-size:26px}.pfin .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.pfin .kp div{background:var(--s1);border-radius:16px;padding:12px;text-align:center}.pfin .kp b{display:block;font-size:22px;font-weight:800}.pfin .kp small{color:var(--muted);font-size:12px}
+.pfin .prl{display:flex;flex-direction:column;gap:6px}.pfin .prl div{display:flex;justify-content:space-between;background:#2ecc7122;border-radius:12px;padding:9px 12px;font-size:14px}.pfin textarea{width:100%}
 .pnav{display:flex;justify-content:space-between}
 .pnav button{color:var(--muted);font-weight:600;font-size:14px;padding:6px 2px}
 .welcome{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;text-align:center}
@@ -953,7 +963,7 @@ const EN={
 /* guided player */
 "מתכוננים":"Get ready","מתחילים בעוד":"Starting in","מתחילים עכשיו":"Start now","התוצאה שלך":"Your result","סך החזרות בכל הסבבים":"Total reps across all rounds","כמה סבבים וחזרות":"How many rounds and reps","הזמן של הסבב הארוך":"Time of your longest round","הזמן שלך (או Cap + חזרות)":"Your time (or Cap + reps)",
 "תוצאה":"Result","שמירה והמשך":"Save and continue","נשאר":"left","סיימתי":"Done","לתרגיל הבא":"next exercise","הבא":"next","עבודה":"Work","עצירה":"Pause","המשך":"Resume","כל צד":"each side","התחל טיימר":"Start timer","צד ימין":"Right side","צד שמאל":"Left side",
-"נשאר בחלון":"Left in this window","הקודם":"Previous","סוף האימון":"End of workout","כל הכבוד! עכשיו ספר/י לטל איך היה":"Well done! Now tell Tal how it went","משקל (ק״ג)":"Weight (kg)","משקל":"Weight",
+"נשאר בחלון":"Left in this window","זמן":"Time","קול":"Sound","מנוחה":"Rest","קדימה":"Go","הבא בתור":"Up next","בפעם הקודמת":"Last time","חזרות שעשית":"Reps done","איך הרגיש?":"How did it feel?","בדיוק":"Just right","סיכום האימון":"Workout summary","סטים":"Sets","נפח":"Volume","שיאים":"PRs","שיא חדש":"New PR","איך היה האימון?":"How was the workout?","שליחה לטל":"Send to Tal","סגירה בלי לשלוח":"Close without sending","נשלח לטל ✓":"Sent to Tal ✓","לחיצה נוספת יוצאת · מה שעשית נשמר":"Tap again to exit · your progress is saved","סרטון":"Video","פתיחה ביוטיוב":"Open in YouTube","כל הכבוד, סיימת":"Well done, you finished","הקודם":"Previous","סוף האימון":"End of workout","כל הכבוד! עכשיו ספר/י לטל איך היה":"Well done! Now tell Tal how it went","משקל (ק״ג)":"Weight (kg)","משקל":"Weight",
 /* menu */
 "התפריט":"Menu","בתכנית שלך אין כרגע תפריט":"Your plan doesn't include a menu right now","התפריט שלך":"Your menu","מאת טל":"By Tal","החשבון שלך בהשהיה":"Your account is paused","אפשר לצפות בתפריט. לחידוש הליווי המלא, דברו עם טל.":"You can view the menu. To resume full coaching, talk to Tal.",
 "מפענח מתכונים":"Recipe decoder","כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב":"Write a recipe in words and get calories, protein and how much to eat at lunch and dinner","שימו לב":"Note",
@@ -1849,7 +1859,9 @@ $("v-workout").addEventListener("change",ev=>{const t=ev.target,w=curWorkout();i
    · Every M:SS x N: the round inside the window, the rest of the window is rest. A-B: one exercise per window.
    · For Time / Time Cap / 21-15-9: stopwatch, tap through, score = time.
    · Timed holds ("30 שנ׳", "0:45", "לכל צד") in normal rounds get a countdown. */
-let PL=null,timer=null,lock=null;const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
+let PL=null,timer=null,lock=null,elT=null;let SND=true;try{SND=localStorage.getItem("pgSnd")!=="0"}catch(e){}
+function say(t){if(!SND||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=window.pgLang==="en"?"en-US":"he-IL";u.rate=1.05;speechSynthesis.speak(u)}catch(e){}}
+const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
 const mss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+pad(s%60)};
 const secOf=(m,s)=>(+m)*60+(+s);
 function restOf(b){const F=b.format||"";let m=F.match(/Rest\s*(\d+):(\d{2})/i);if(m)return secOf(m[1],m[2]);m=F.match(/מנוחה\s*(\d+)\s*שנ/);if(m)return +m[1];m=F.match(/מנוחה\s*(\d+):(\d{2})/);if(m)return secOf(m[1],m[2]);return Math.max(0,+b.rest||0)}
@@ -1892,25 +1904,52 @@ function blockPlan(b,bi,idx){const F=b.format||"",fr=fmtRounds(F)||1,its=idx.map
 function openPlayer(w){const lg0=getLog(w.id,TODAY),segs=[];(w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0);if(idx.length)segs.push(...blockPlan(b,bi,idx))});
   if(!segs.length)return;const ok=g=>!!((lg0.sets[g.bi+"-"+g.ii]||[])[g.s]||{}).ok;let i=segs.findIndex(g=>g.it&&!ok(g));
   if(i<0)i=0;else{const bi=segs[i].bi,f=segs.findIndex(g=>g.bi===bi);if(segs.slice(f,i).some(g=>g.kind==="ready"||g.kind==="amrap"||g.kind==="ft")||segs[f].kind==="ready")i=f}
-  PL={w,segs,i};$("player").classList.add("open");show();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
-function closePlayer(){$("player").classList.remove("open");clearInterval(timer);try{lock&&lock.release()}catch(e){}PL=null;render()}
-$("pClose").onclick=closePlayer;
-let AC=null;function beep(f,d){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;g.gain.value=.08;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+(d||.12))}catch(e){}}
+  PL={w,segs,i,t0:Date.now(),vid:false};
+  const top=document.querySelector("#player .ptop");if(top&&!$("pMeta")){const d=document.createElement("div");d.className="pmeta";d.id="pMeta";d.innerHTML=`<span>זמן <b id="pEl">0:00</b></span><span id="pCt"></span><button type="button" id="pSnd"></button>`;top.appendChild(d)}
+  const sb=()=>{$("pSnd").textContent=SND?"🔊 קול":"🔇 קול"};sb();$("pSnd").onclick=()=>{SND=!SND;try{localStorage.setItem("pgSnd",SND?"1":"0")}catch(e){}if(!SND&&window.speechSynthesis)speechSynthesis.cancel();sb()};
+  clearInterval(elT);elT=setInterval(()=>{if(PL&&$("pEl"))$("pEl").textContent=mss((Date.now()-PL.t0)/1000)},1000);
+  $("player").classList.add("open");show();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
+function closePlayer(){$("player").classList.remove("open");clearInterval(timer);clearInterval(elT);try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}try{lock&&lock.release()}catch(e){}PL=null;render()}
+$("pClose").onclick=()=>{if(PL&&PL.i>0&&!PL.fin){if(!PL.cq||Date.now()-PL.cq>3000){PL.cq=Date.now();toast("לחיצה נוספת יוצאת · מה שעשית נשמר");return}}closePlayer()};
+(()=>{let x0=null,y0=null;const W=$("pWork");W.addEventListener("touchstart",e=>{if(e.target.closest("input,textarea,iframe,.pef"))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+  W.addEventListener("touchend",e=>{if(x0==null||!PL||PL.fin)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<70||Math.abs(dy)>50)return;const g=PL.segs[PL.i];if(g.kind==="amrap"||g.kind==="ft")return;
+    const fwd=document.documentElement.dir==="rtl"?dx>0:dx<0;if(fwd)next();else if(PL.i>0){clearInterval(timer);PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}},{passive:true});
+  W.addEventListener("click",e=>{const v=e.target.closest("[data-yt]");if(!v||!PL)return;PL.vid=true;const st=v.closest(".stage");v.remove();st.insertAdjacentHTML("afterbegin",vidFrame(v.dataset.yt))})})();
+let AC=null;function beep(f,d){if(!SND)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;g.gain.value=.08;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+(d||.12))}catch(e){}}
 function buzz(){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}beep(990,.25)}
-function markSet(g,kg){setLog(PL.w.id,TODAY,l=>{const k=g.bi+"-"+g.ii,a=(l.sets[k]||[]).slice();a[g.s]=Object.assign({},a[g.s]||{},{ok:true},kg!==undefined?{kg:kg===""?null:+kg}:{});l.sets[k]=a})}
-function next(){clearInterval(timer);if(!PL)return;if(PL.i>=PL.segs.length-1){closePlayer();toast("כל הכבוד! עכשיו ספר/י לטל איך היה");setTimeout(()=>{const n=$("woNote");if(n)n.scrollIntoView({behavior:"smooth",block:"center"})},400);return}PL.i++;show()}
+function markSet(g,kg,ex){setLog(PL.w.id,TODAY,l=>{const k=g.bi+"-"+g.ii,a=(l.sets[k]||[]).slice();a[g.s]=Object.assign({},a[g.s]||{},{ok:true},kg!==undefined?{kg:kg===""?null:+kg}:{},ex||{});l.sets[k]=a})}
+function next(){clearInterval(timer);if(!PL)return;if(PL.i>=PL.segs.length-1){showFinish();return}PL.i++;show()}
+function showFinish(){clearInterval(timer);PL.fin=true;say("כל הכבוד, סיימת");buzz();const {w,segs}=PL,lg=getLog(w.id,TODAY),el=(Date.now()-PL.t0)/1000;$("pBar").style.width="100%";$("pRest").hidden=true;$("pWork").hidden=false;
+  const plan=segs.filter(g=>g.it||g.kind==="amrap"||g.kind==="ft");let tot=0,done=0,vol=0;const keys=new Set();
+  segs.forEach(g=>{if(g.it&&!g.noMark){tot++;keys.add(g.bi+"-"+g.ii);const o=((lg.sets[g.bi+"-"+g.ii]||[])[g.s])||{};if(o.ok)done++}});
+  Object.entries(lg.sets||{}).forEach(([k,a])=>{const [bi,ii]=k.split("-").map(Number),it=((w.blocks[bi]||{}).items||[])[ii]||{},t=String(it.reps||"").match(/^\s*(\d+)(?:\s*\/\s*(\d+))?/),tr=t?(+t[1])*(t[2]?2:1):0;(a||[]).forEach(o=>{if(o&&o.ok&&o.kg){const r=parseFloat(String(o.r||"").replace(",","."));vol+=o.kg*(isFinite(r)&&r>0?r:tr)}})});
+  const best={};Object.keys(wlog).filter(k=>k.startsWith(w.id+"_")&&k.slice(w.id.length+1)<TODAY).forEach(k=>Object.entries((wlog[k]||{}).sets||{}).forEach(([kk,a])=>(a||[]).forEach(o=>{if(o&&o.kg)best[kk]=Math.max(best[kk]||0,+o.kg)})));
+  const prs=[];Object.entries(lg.sets||{}).forEach(([kk,a])=>{const mx=Math.max(0,...(a||[]).filter(o=>o&&o.kg).map(o=>+o.kg));if(mx&&best[kk]&&mx>best[kk]){const [bi,ii]=kk.split("-").map(Number),it=((w.blocks[bi]||{}).items||[])[ii];if(it)prs.push([it.n,best[kk],mx])}});
+  $("pWork").innerHTML=`<div class="pfin"><div class="stage" style="min-height:0;justify-content:flex-start"><small>סיכום האימון</small><h2>כל הכבוד 💪</h2><p>${esc(w.title||"")}</p></div>
+    <div class="kp"><div><b>${mss(el)}</b><small>זמן</small></div><div><b>${done}/${tot}</b><small>סטים</small></div><div><b>${vol?Math.round(vol).toLocaleString():"—"}</b><small>נפח (ק״ג)</small></div></div>
+    ${prs.length?`<div class="prl">${prs.map(([n,a,b])=>`<div><span style="direction:ltr">${esc(n)}</span><b>${a}→${b} ק״ג · שיא חדש</b></div>`).join("")}</div>`:""}
+    <b>איך היה האימון?</b><div class="pef" id="pFeel">${[1,2,3,4,5].map(i=>`<button type="button" data-fl="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
+    <textarea id="pNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
+    <button class="big" type="button" id="pSend">שליחה לטל</button><button class="ghost" type="button" id="pX" style="align-self:center">סגירה בלי לשלוח</button></div>`;
+  let fl=lg.feel||0;$("pFeel").onclick=e=>{const b=e.target.closest("[data-fl]");if(!b)return;fl=+b.dataset.fl;[...$("pFeel").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  $("pSend").onclick=()=>{const nt=$("pNote").value.trim();setLog(w.id,TODAY,l=>{l.done=true;if(fl)l.feel=fl;l.note=nt;l.dur=Math.round(el)});closePlayer();toast("נשלח לטל ✓")};$("pX").onclick=closePlayer}
+function nextCard(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft");if(!n)return `<div class="pnx"><div><small>הבא בתור</small><b>סוף האימון</b></div></div>`;
+  if(!n.it)return `<div class="pnx"><div><small>הבא בתור</small><b style="direction:rtl">${esc(n.b.name)}</b></div></div>`;
+  const th=ytTh(((n.it.v||[])[0]||{}).u),k=n.bi+"-"+n.ii,pr=lastLog(PL.w.id,TODAY),pv=pr&&pr.sets&&pr.sets[k]&&pr.sets[k][n.s]?pr.sets[k][n.s].kg:null;
+  return `<div class="pnx">${th?`<img src="${th}" alt="">`:""}<div><small>הבא בתור${n.bi!==PL.segs[PL.i].bi?" · "+esc(n.b.name):""}</small><b>${esc(n.it.n)}${n.side?" · "+n.side:""}</b><small>${esc(repTxt(n.it.reps||""))}${pv!=null?` · בפעם הקודמת ${pv} ק״ג`:""}</small></div></div>`}
 function nextLabel(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft");if(!n)return "סוף האימון";if(n.kind==="amrap"||n.kind==="ft")return "הבא: "+n.b.name;return `הבא: ${n.it.n}${n.side?" · "+n.side:""}${n.bi!==PL.segs[PL.i].bi?" · "+n.b.name:""}`}
 function clock(sec,onEnd,draw,up){const t0=Date.now();let last=-1,paused=0,pAt=0;const st={get left(){return sec-((pAt||Date.now())-t0-paused)/1000},pause(){if(pAt){paused+=Date.now()-pAt;pAt=0}else pAt=Date.now()},get paused(){return !!pAt},add(s){sec+=s}};
   const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0)beep(660)}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
 function ring(id,lbl,big){return `<div class="rring"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="${id}B" cx="100" cy="100" r="90" style="stroke-dasharray:${RRC}"/></svg><div class="in"><b id="${id}S">${big||""}</b>${lbl?`<small>${lbl}</small>`:""}</div></div>`}
 function drawRing(id,v,frac){const s=$(id+"S"),b=$(id+"B");if(s)s.textContent=v;if(b)b.style.strokeDashoffset=RRC*(1-Math.max(0,Math.min(1,frac)))}
-function stageHTML(g,extra){const th=ytTh(((g.it.v||[])[0]||{}).u);return `<div class="stage${th?" has-th":""}"${th?` style="--th:url(${th})"`:""}><small>${esc(g.b.name)}${g.tag?" · "+esc(g.tag):""}</small><h2>${esc(g.it.n)}</h2>${g.side?`<b class="pside">${g.side}</b>`:""}${g.it.d?`<p>${esc(g.it.d)}</p>`:""}
-  <div class="vids">${(g.it.v||[]).map(x=>`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`).join("")}</div>${extra||""}</div>`}
+const vidFrame=id=>`<div class="pframe"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="video"></iframe></div>`;
+function stageHTML(g,extra){const u=((g.it.v||[])[0]||{}).u,id=ytId(u),th=ytTh(u),inl=id&&PL&&PL.vid;return `<div class="stage${th&&!inl?" has-th":""}"${th&&!inl?` style="--th:url(${th})"`:""}>${inl?vidFrame(id):id?`<button type="button" class="pplay" data-yt="${id}">${PLAY}סרטון</button>`:""}<small>${esc(g.b.name)}${g.tag?" · "+esc(g.tag):""}</small><h2>${esc(g.it.n)}</h2>${g.side?`<b class="pside">${g.side}</b>`:""}${g.it.d?`<p>${esc(g.it.d)}</p>`:""}
+  ${u?`<a class="ytl" href="${esc(u)}" target="_blank" rel="noopener">פתיחה ביוטיוב</a>`:""}${extra||""}</div>`}
 const repTxt=r=>{r=String(r||"");return r+(/^[\d\s\-–]+$/.test(r)?" חזרות":"")};
 function navHTML(){return `<div class="pnav"><button type="button" id="pPrev" ${PL.i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`}
 function wireNav(){$("pPrev").onclick=()=>{clearInterval(timer);if(PL.i>0){PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}};$("pNext").onclick=()=>next()}
-function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
-  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").textContent=nextLabel();const full=g.sec;const c=clock(g.sec,next,(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
+function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";{const ex=segs.filter(x=>x.it),k=segs.slice(0,i+1).filter(x=>x.it).length;if($("pCt"))$("pCt").textContent=ex.length?`${Math.max(1,k)}/${ex.length}`:""}$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
+  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();if(g.sec>=8)say("מנוחה");const full=g.sec;const c=clock(g.sec,()=>{say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
     $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
   if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
     PL.am=0;PL.rl=[];clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
@@ -1927,18 +1966,25 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
     clock(g.cap||36000,()=>fin(true),(v)=>{$("pCS").textContent=mss(v)},true);$("pDone").onclick=()=>{beep(880);k++;if(k>=n)fin(false);else draw()};wireNav();return}
   /* exercise screens: rep / hold / work */
   const key=g.bi+"-"+g.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[g.s]||{},prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][g.s]?prev.sets[key][g.s].kg:null;
-  const kgBox=g.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"></div>`;
-  if(g.kind==="work"){W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+  const kgBox=g.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><div class="stp2"><button type="button" data-kgd="-1" aria-label="פחות">−</button><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"><button type="button" data-kgd="1" aria-label="יותר">+</button></div></div>`;
+  const wireKg=()=>W.querySelectorAll("[data-kgd]").forEach(b=>b.onclick=()=>{const i=$("pKg"),v=parseFloat(i.value)||0,st=v>=20?2.5:1;i.value=Math.max(0,Math.round((v+st*(+b.dataset.kgd))*10)/10)});
+  if(g.kind==="work"){say(g.side||"עבודה");W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
   if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const run=()=>{const kg=$("pKg")?$("pKg").value:undefined;$("pH").innerHTML=ring("pR",(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:""));$("pDone").hidden=true;
       clock(h.sec,()=>{if(h.sides&&!side){side=1;beep(990,.2);run();return}if(--rpt>0){side=0;beep(990,.2);run();return}markSet(g,kg);next()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
-    $("pDone").onclick=run;wireNav();return}
+    $("pDone").onclick=run;wireKg();wireNav();return}
   /* rep */
   const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
-  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+  const r0=(String(g.it.reps||"").match(/^\s*(\d+)/)||[])[1],numR=/^[\d\s\-–\/]+$/.test(String(g.it.reps||""))&&!/\//.test(String(g.it.reps||"")),ef0=s.e||0;
+  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>
+    ${numR?`<div class="meter one"><div class="rp2"><small>חזרות שעשית</small><input id="pRp" type="text" inputmode="numeric" value="${esc(s.r??r0??"")}" aria-label="חזרות"></div></div>`:""}
+    ${g.it.nokg&&!numR?"":`<div><small style="color:var(--muted)">איך הרגיש?</small><div class="pef" id="pEf">${[[6,"קל"],[8,"בדיוק"],[10,"קשה"]].map(([v,l])=>`<button type="button" data-ef="${v}" aria-pressed="${ef0===v}">${l}</button>`).join("")}</div></div>`}
+    ${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;wireKg();
+  let ef=ef0;if($("pEf"))$("pEf").onclick=e=>{const b=e.target.closest("[data-ef]");if(!b)return;ef=+b.dataset.ef;[...$("pEf").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
+  const extra=()=>{const o={};if($("pRp")&&$("pRp").value.trim())o.r=$("pRp").value.trim();if(ef)o.e=ef;return o};
   if(g.win){if(g.winStart||!PL.wt)PL.wt=Date.now();const wt=PL.wt,left=g.win-(Date.now()-wt)/1000;clock(left,()=>{let j=PL.i+1;while(j<PL.segs.length&&PL.segs[j].bi===g.bi&&PL.segs[j].win&&!PL.segs[j].winStart)j++;PL.i=j-1;next()},(v)=>{$("pCS").textContent=mss(Math.ceil(v))})}
-  $("pDone").onclick=()=>{markSet(g,$("pKg")?$("pKg").value:undefined);
+  $("pDone").onclick=()=>{markSet(g,$("pKg")?$("pKg").value:undefined,extra());
     if(g.win&&g.winEnd){const rem=Math.round(g.win-(Date.now()-PL.wt)/1000);PL.rl=(PL.rl||[]).concat(g.win-rem);clearInterval(timer);if(rem>0&&PL.i<PL.segs.length-1){PL.segs.splice(PL.i+1,0,{kind:"rest",bi:g.bi,b:g.b,sec:rem,tmp:true})}}
     next()};wireNav()}
 
