@@ -746,7 +746,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .sets-h{gap:8px}.sets-h>span{flex:1}.sadj{display:flex;gap:4px;flex:none}.sadj button{border:1px solid var(--line);background:var(--s1);border-radius:999px;padding:3px 10px;font-weight:800;font-size:12.5px;min-width:30px}.sadj button:disabled{opacity:.35}
 .sl-c{flex-wrap:wrap}.slf{gap:10px}.sl-h{display:flex;flex-direction:column}.sl-h small{color:var(--muted);font-size:12.5px}
 .cl-b button.cl-pv{min-width:0;font-size:12.5px;font-weight:700;color:var(--muted);padding:9px 10px}
-button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}.ldw{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;line-height:1.45;margin:4px 0 6px}
+button.cl-n{text-align:right;background:none;border:0;padding:0;color:inherit}.cl-tag{font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}.cl-tag.w{border-color:var(--warn);color:var(--warn)}.bf{margin-top:8px}.bf summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--hot);min-height:32px;display:flex;align-items:center}.bfr{display:flex;gap:8px;font-size:13px;line-height:1.5;padding:3px 0;border-top:1px solid color-mix(in srgb,currentColor 10%,transparent)}.bfr span{flex:0 0 78px;color:var(--muted)}.bfr b{font-weight:600}.bfw{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;margin:4px 0}.ldw{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;line-height:1.45;margin:4px 0 6px}
 .cl-card{display:flex;flex-direction:column;gap:7px;background:var(--s2);border:1px solid var(--line);border-radius:14px;padding:12px;margin:-2px 0 6px}.cl-card label{font-size:13px;font-weight:700}.cl-card label small{font-weight:500;color:var(--muted);margin-inline-start:6px}
 .cl-card input,.cl-card textarea{padding:9px 10px;font-size:14px}.cl-card .cta{flex:none;padding:10px 18px}
 .arseg{margin-bottom:10px}.arch-l{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}.arch-w{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}.arch-w b{font-size:14px}.arch-w .chips{flex-wrap:wrap}
@@ -1378,10 +1378,18 @@ document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||!t.datas
 /* ===== leads (owner) ===== */
 let LEADS=null,leadsAt=0;
 async function loadLeads(){leadsAt=Date.now();try{LEADS=window.pgMember?await pgMember.leads():[]}catch(e){LEADS=LEADS||[]}if(tab==="studio"&&!typing())render()}
+function briefHtml(d){const b=d.brief||{},J=a=>(a||[]).filter(Boolean).join(" · "),R=(k,v)=>v?`<div class="bfr"><span>${k}</span><b>${esc(String(v))}</b></div>`:"";
+  const sf=J(b.safety),pain=(b.pain||{}),pa=J(pain.areas);
+  return `<details class="bf"><summary>${sf?"⚠️ ":""}פתח בריף</summary>${sf?`<div class="bfw">⚠️ בטיחות: ${esc(sf)}${b.safetyNote?" — "+esc(b.safetyNote):""}</div>`:""}
+  ${R("מטרה",b.success)}${R("מפריע",J(b.pains))}${R("מונע ממנו",b.stops)}${R("מחויבות",b.commit?b.commit+"/10":"")}
+  ${R("ניסיון",b.exp)}${R("קל לו",J(b.easy))}${R("כאב",pa?pa+(pain.lvl!=null?" · "+pain.lvl+"/10":"")+(pain.worse?" · "+pain.worse:""):"")}
+  ${R("אימונים",[b.days?b.days+" בשבוע":"",J(b.times)].filter(Boolean).join(" · "))}${R("איפה",J(b.where)+(b.equip&&b.equip.length?" ("+J(b.equip)+")":""))}${R("אוהב",J(b.likes))}${R("פחות",J(b.dislikes))}
+  ${R("קשה באוכל",J(b.food))}${R("לא אוכל",[J(b.diet),b.dietNote].filter(Boolean).join(" · "))}${R("שינה",b.sleep)}${R("סטרס",b.stress?b.stress+"/10":"")}${R("עבודה",b.work)}
+  ${R("ליווי",b.mode)}${R("פגישה",b.meet)}${R("גיל / עיר",[b.age,b.city].filter(Boolean).join(" · "))}${R("הגיע דרך",b.src)}</details>`}
 function leadsCard(){if(!isOwner||preview)return "";if(LEADS===null||Date.now()-leadsAt>120000){if(Date.now()-leadsAt>5000)loadLeads();if(LEADS===null)return ""}
   const open=LEADS.filter(l=>(l.data||{}).st!=="done");if(!open.length)return "";
   return `<div class="sh"><h2>מתעניינים בליווי</h2><span>${open.length}</span></div><div class="flags">${open.map(l=>{const d=l.data||{};
-    return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}</div></div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
+    return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}${d.phone?" · "+esc(d.phone):""}</div>${d.brief?briefHtml(d):""}</div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
 $("v-studio").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
   b.disabled=true;try{await db.doc(l.id).update({st:"done",done:TODAY});l.data={...l.data,st:"done"};render()}catch(e){b.disabled=false;toast("לא נשמר")}});
 
