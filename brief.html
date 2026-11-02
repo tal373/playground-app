@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פלייגראונד · בריף ליווי אישי</title>
+<meta name="theme-color" content="#07111F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&family=Karantina:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07111F;--card:#0C1B33;--line:#1A3360;--muted:#A7B6D0;--soft:#C3CEE2;--blue:#2E63FF;--blue2:#1F4FE0;--sky:#8DB4FF;--warn:#F5B84B}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:#fff;font-family:'Heebo',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 18px}
+header img{height:34px;width:auto;display:block}
+.step-n{font-size:13px;color:var(--muted);font-weight:700}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:26px}
+.bar i{display:block;height:100%;width:0;background:var(--blue);border-radius:99px;transition:width .35s}
+.hero{padding:6px 0 4px}
+.disp{font-family:'Karantina','Heebo',sans-serif;font-weight:700;line-height:.9;font-size:clamp(54px,14vw,84px)}
+.disp span{color:var(--sky)}
+.lead{font-size:17px;line-height:1.7;color:var(--soft);margin-top:14px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta span{border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-size:14px;color:var(--soft)}
+.step{display:none}.step.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--sky)}
+.step h2{font-size:28px;font-weight:900;margin:6px 0 4px}
+.why{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 18px;margin-top:14px}
+.q>label,.q>.ql{display:block;font-size:17px;font-weight:800;line-height:1.45}
+.q .hint{font-size:14px;color:var(--muted);font-weight:400;margin-top:4px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{appearance:none;font:inherit;font-size:15px;font-weight:500;color:#fff;background:transparent;border:1.5px solid #34507F;border-radius:99px;min-height:44px;padding:0 16px;cursor:pointer;transition:.15s}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);font-weight:700}
+.scale{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px;margin-top:12px}
+.scale.z{grid-template-columns:repeat(11,minmax(0,1fr))}
+.scale .chip{padding:0;border-radius:12px;min-height:44px;font-weight:700}
+.ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:6px}
+input[type=text],input[type=tel],input[type=email],input[type=number],textarea{width:100%;margin-top:12px;background:var(--bg);border:1px solid #2A4475;border-radius:14px;color:#fff;font:inherit;font-size:16px;padding:13px 14px;min-height:50px}
+textarea{resize:vertical;min-height:84px;line-height:1.55}
+input::placeholder,textarea::placeholder{color:#7F91B3}
+input:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sub{display:none;margin-top:6px}.sub.on{display:block}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.55;color:var(--soft);cursor:pointer}
+.consent input{width:22px;height:22px;margin-top:2px;accent-color:var(--blue);flex:none}
+.err{color:#FF8A8A;font-size:14px;font-weight:700;margin-top:12px;min-height:20px}
+.nav{position:fixed;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(7,17,31,.96) 30%);padding:22px 16px calc(16px + env(safe-area-inset-bottom))}
+.nav div{max-width:640px;margin:0 auto;display:flex;gap:10px}
+.btn{appearance:none;font:inherit;border:0;border-radius:99px;min-height:56px;font-size:17px;font-weight:800;cursor:pointer;padding:0 22px}
+.btn-p{background:var(--blue);color:#fff;flex:1}.btn-p:disabled{opacity:.6}
+.btn-o{background:transparent;color:#fff;border:1.5px solid #34507F}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.done{text-align:center;padding:60px 6px}
+.done svg{margin:0 auto 18px;display:block}
+.done p{font-size:17px;color:var(--soft);line-height:1.7;margin-top:12px}
+:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="pg-logo.png" alt="Playground"><span class="step-n" id="sn"></span></header>
+<div class="bar" aria-hidden="true"><i id="bar"></i></div>
+<form id="f" novalidate>
+<input class="hp" type="text" name="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+<section class="step on" data-s="0">
+<div class="hero">
+<p class="eyebrow">ליווי אישי · אימונים ותזונה</p>
+<h1 class="disp" style="margin-top:10px">בוא נבנה לך<br><span>תכנית שעובדת.</span></h1>
+<p class="lead">כמה שאלות קצרות, כדי שבפגישה הראשונה כבר נגיע עם כיוון ברור לתכנית האימונים ולתפריט, ולא נתחיל מאפס.</p>
+<div class="meta"><span>4 דקות</span><span>רוב השאלות בלחיצה</span><span>נשאר רק אצלנו</span></div>
+</div>
+</section>
+
+<section class="step" data-s="1">
+<p class="eyebrow">1 · המטרה</p><h2>מה אתה רוצה לשנות</h2>
+<p class="why">כאן נבין מה באמת חשוב לך, כדי שהתכנית תכוון לשם.</p>
+<div class="q"><span class="ql">מה הכי מפריע לך היום?<div class="hint">עד 2</div></span>
+<div class="chips" data-k="pains" data-max="2"><button type="button" class="chip">כאב שחוזר</button><button type="button" class="chip">הגוף נוקשה ולא זורם</button><button type="button" class="chip">חוסר כוח ואנרגיה</button><button type="button" class="chip">משקל או בטן</button><button type="button" class="chip">ביטחון ומראה</button></div></div>
+<div class="q"><label for="stops">מה זה מונע ממך היום?<div class="hint">למשל: לשחק עם הילדים, לישון טוב, ללבוש מה שבא לי</div></label><textarea id="stops" name="stops" rows="2"></textarea></div>
+<div class="q"><label for="success">בעוד 3 חודשים, מה יגיד לך שהצלחת?<div class="hint">במילים שלך. את זה נהפוך למטרה שאפשר למדוד</div></label><textarea id="success" name="success" rows="2"></textarea></div>
+<div class="q"><span class="ql">כמה אתה מוכן להתחייב לזה עכשיו?</span>
+<div class="chips scale" data-k="commit" data-one="1"></div><div class="ends"><span>1 · עוד לא בטוח</span><span>10 · מוכן לגמרי</span></div></div>
+</section>
+
+<section class="step" data-s="2">
+<p class="eyebrow">2 · נקודת הפתיחה</p><h2>איפה הגוף שלך היום</h2>
+<p class="why">כדי שנתחיל ברמה הנכונה, לא קל מדי ולא מסוכן.</p>
+<div class="q"><span class="ql">ניסיון באימונים</span>
+<div class="chips" data-k="exp" data-one="1"><button type="button" class="chip">לא מתאמן</button><button type="button" class="chip">מתאמן לפעמים</button><button type="button" class="chip">קבוע, פחות משנה</button><button type="button" class="chip">קבוע, יותר משנה</button></div></div>
+<div class="q"><span class="ql">מה מהבאים קל לך היום?<div class="hint">אפשר לבחור כמה, או אף אחד</div></span>
+<div class="chips" data-k="easy"><button type="button" class="chip">לקום מהרצפה בלי ידיים</button><button type="button" class="chip">10 שכיבות סמיכה</button><button type="button" class="chip">3 קומות בלי להתנשף</button><button type="button" class="chip">לגעת בבהונות</button></div></div>
+<div class="q"><span class="ql">יש כאב או פציעה היום?</span>
+<div class="chips" data-k="painAreas" data-none="אין כאב"><button type="button" class="chip">אין כאב</button><button type="button" class="chip">צוואר</button><button type="button" class="chip">כתף</button><button type="button" class="chip">גב עליון</button><button type="button" class="chip">גב תחתון</button><button type="button" class="chip">ירך ואגן</button><button type="button" class="chip">ברך</button><button type="button" class="chip">קרסול וכף רגל</button><button type="button" class="chip">מרפק ושורש כף יד</button></div>
+<div class="sub" id="painSub"><div class="ql" style="margin-top:16px;font-weight:700;font-size:15px">עוצמה (0-10)</div><div class="chips scale z" data-k="painLvl" data-one="1" data-from="0"></div>
+<textarea name="painWorse" rows="2" placeholder="באילו תנועות או מצבים זה מחמיר? ממתי?"></textarea></div></div>
+<div class="q"><span class="ql">בדיקת בטיחות<div class="hint">מסמנים מה שנכון לגביך</div></span>
+<div class="chips" data-k="safety" data-none="אף אחד מאלה"><button type="button" class="chip">בעיית לב או לחץ דם</button><button type="button" class="chip">כאב בחזה במאמץ</button><button type="button" class="chip">סחרחורות או עילפון</button><button type="button" class="chip">ניתוח או פציעה בשנה האחרונה</button><button type="button" class="chip">תרופות קבועות</button><button type="button" class="chip">הריון או אחרי לידה</button><button type="button" class="chip">אף אחד מאלה</button></div>
+<div class="sub" id="safeSub"><textarea name="safetyNote" rows="2" placeholder="כמה מילים: מה, ממתי, ואם יש הנחיה מרופא"></textarea></div></div>
+</section>
+
+<section class="step" data-s="3">
+<p class="eyebrow">3 · המסגרת</p><h2>מה אפשר לתת</h2>
+<p class="why">לפי זה נבנה את מבנה השבוע ונבחר תרגילים.</p>
+<div class="q"><span class="ql">כמה אימונים בשבוע?</span>
+<div class="chips" data-k="days" data-one="1"><button type="button" class="chip">2</button><button type="button" class="chip">3</button><button type="button" class="chip">4</button></div></div>
+<div class="q"><span class="ql">באילו שעות נוח לך?</span>
+<div class="chips" data-k="times"><button type="button" class="chip">בוקר</button><button type="button" class="chip">צהריים</button><button type="button" class="chip">ערב</button></div></div>
+<div class="q"><span class="ql">איפה תתאמן?</span>
+<div class="chips" data-k="where"><button type="button" class="chip">בסטודיו</button><button type="button" class="chip">בחדר כושר</button><button type="button" class="chip">בבית</button></div>
+<div class="sub" id="equipSub"><div class="ql" style="margin-top:16px;font-weight:700;font-size:15px">מה יש בבית?</div>
+<div class="chips" data-k="equip"><button type="button" class="chip">משקולות</button><button type="button" class="chip">קטלבל</button><button type="button" class="chip">גומיות</button><button type="button" class="chip">מזרן בלבד</button></div></div></div>
+<div class="q"><span class="ql">מה אתה אוהב?</span>
+<div class="chips" data-k="likes"><button type="button" class="chip">כוח</button><button type="button" class="chip">אירובי</button><button type="button" class="chip">מוביליטי ויוגה</button><button type="button" class="chip">אימון בקבוצה</button><button type="button" class="chip">אימון לבד</button></div>
+<div class="ql" style="margin-top:16px;font-weight:700;font-size:15px">ומה פחות?</div>
+<div class="chips" data-k="dislikes"><button type="button" class="chip">ריצה</button><button type="button" class="chip">קפיצות</button><button type="button" class="chip">משקלים כבדים</button><button type="button" class="chip">אימון ארוך</button></div></div>
+</section>
+
+<section class="step" data-s="4">
+<p class="eyebrow">4 · תזונה ואורח חיים</p><h2>היום-יום שלך</h2>
+<p class="why">כדי שהתפריט יתאים לחיים שלך, ולא להפך.</p>
+<div class="q"><span class="ql">מה הכי קשה לך באוכל?</span>
+<div class="chips" data-k="food"><button type="button" class="chip">נשנושים בערב</button><button type="button" class="chip">ארוחות לא מסודרות</button><button type="button" class="chip">אוכל בחוץ</button><button type="button" class="chip">כמויות</button><button type="button" class="chip">סופי שבוע</button><button type="button" class="chip">אוכל מלחץ או משעמום</button></div></div>
+<div class="q"><span class="ql">מה לא אוכלים?</span>
+<div class="chips" data-k="diet"><button type="button" class="chip">צמחוני</button><button type="button" class="chip">טבעוני</button><button type="button" class="chip">ללא גלוטן</button><button type="button" class="chip">ללא לקטוז</button><button type="button" class="chip">כשר</button></div>
+<input type="text" name="dietNote" placeholder="אלרגיות או מאכלים שלא אוהב"></div>
+<div class="q"><span class="ql">כמה שעות אתה ישן בלילה?</span>
+<div class="chips" data-k="sleep" data-one="1"><button type="button" class="chip">פחות מ-6</button><button type="button" class="chip">6-7</button><button type="button" class="chip">7-8</button><button type="button" class="chip">8+</button></div></div>
+<div class="q"><span class="ql">רמת הסטרס שלך</span>
+<div class="chips scale" data-k="stress" data-one="1"></div><div class="ends"><span>1 · רגוע</span><span>10 · בלחץ</span></div></div>
+<div class="q"><span class="ql">העבודה שלך</span>
+<div class="chips" data-k="work" data-one="1"><button type="button" class="chip">בישיבה</button><button type="button" class="chip">בתנועה</button><button type="button" class="chip">משולב</button></div></div>
+</section>
+
+<section class="step" data-s="5">
+<p class="eyebrow">5 · פרטים</p><h2>כמעט סיימנו</h2>
+<p class="why">כדי שנחזור אליך ונקבע את הפגישה הראשונה.</p>
+<div class="q"><label for="name">שם מלא</label><input id="name" name="name" type="text" autocomplete="name">
+<div class="row2"><input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="טלפון" dir="ltr" style="text-align:right"><input name="email" type="email" autocomplete="email" placeholder="מייל" dir="ltr" style="text-align:right"></div>
+<div class="row2"><input name="age" type="number" inputmode="numeric" placeholder="גיל"><input name="city" type="text" placeholder="עיר"></div></div>
+<div class="q"><span class="ql">איזה ליווי מתאים לך?</span>
+<div class="chips" data-k="mode" data-one="1"><button type="button" class="chip">מקרוב, בסטודיו</button><button type="button" class="chip">מרחוק</button><button type="button" class="chip">משולב</button></div>
+<input type="text" name="meet" placeholder="מתי נוח לך לפגישה ראשונה? (ימים ושעות)"></div>
+<div class="q"><label for="src">איך שמעת עלינו? <span class="hint" style="display:inline">(לא חובה)</span></label><input id="src" name="src" type="text"></div>
+<div class="q"><label class="consent"><input type="checkbox" name="ok">מאשר/ת שהפרטים נשמרים בפלייגראונד ומשמשים רק לבניית התכנית והליווי שלי.</label></div>
+</section>
+
+<section class="step" data-s="6">
+<div class="done" role="status">
+<svg width="76" height="76" viewBox="0 0 24 24" fill="none" stroke="#2E63FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M7.5 12.5l3 3 6-6.5"></path></svg>
+<h1 class="disp" id="thx">תודה!</h1>
+<p>קיבלנו את הבריף. נעבור עליו ונחזור אליך לתאם פגישה ראשונה, ונגיע אליה עם כיוון לתכנית ולתפריט.</p>
+</div>
+</section>
+
+<div class="err" id="err" role="alert"></div>
+</form>
+</div>
+<div class="nav" id="nav"><div><button type="button" class="btn btn-o" id="back">חזרה</button><button type="button" class="btn btn-p" id="next">מתחילים</button></div></div>
+
+<script>
+const API="https://rrqngqxrcvhaeeudrhjz.supabase.co/functions/v1/brief-submit";
+const S=[...document.querySelectorAll(".step")],LAST=5;let cur=0;const A={};
+document.querySelectorAll(".scale").forEach(el=>{const from=+(el.dataset.from||1),to=from===0?10:10;for(let i=from;i<=to;i++){const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=i;el.appendChild(b)}});
+document.querySelectorAll(".chips").forEach(g=>{g.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed","false"));
+  g.addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const k=g.dataset.k,one=g.dataset.one,max=+(g.dataset.max||0),none=g.dataset.none,v=b.textContent.trim();
+    if(one){g.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b&&b.getAttribute("aria-pressed")!=="true"?"true":"false"))}
+    else{const on=b.getAttribute("aria-pressed")==="true";
+      if(!on&&none&&v===none)g.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+      if(!on&&none&&v!==none)g.querySelectorAll(".chip").forEach(x=>{if(x.textContent.trim()===none)x.setAttribute("aria-pressed","false")});
+      if(!on&&max&&g.querySelectorAll('[aria-pressed="true"]').length>=max){err("אפשר לבחור עד "+max);return}
+      b.setAttribute("aria-pressed",on?"false":"true")}
+    const sel=[...g.querySelectorAll('[aria-pressed="true"]')].map(x=>x.textContent.trim());A[k]=one?(sel[0]||""):sel;err("");subs()})});
+function subs(){const pa=A.painAreas||[],sf=A.safety||[],wh=A.where||[];
+  document.getElementById("painSub").classList.toggle("on",pa.length>0&&!pa.includes("אין כאב"));
+  document.getElementById("safeSub").classList.toggle("on",sf.length>0&&!sf.includes("אף אחד מאלה"));
+  document.getElementById("equipSub").classList.toggle("on",wh.includes("בבית"))}
+const f=document.getElementById("f"),val=n=>(f.elements[n]&&f.elements[n].value||"").trim();
+function err(t){document.getElementById("err").textContent=t||""}
+function check(s){
+  if(s===1){if(!(A.pains||[]).length)return "בחר מה הכי מפריע לך";if(!val("success"))return "כתוב מה יגיד לך שהצלחת";if(!A.commit)return "סמן כמה אתה מוכן להתחייב"}
+  if(s===2){if(!A.exp)return "בחר את הניסיון שלך";if(!(A.painAreas||[]).length)return "סמן אם יש כאב, או 'אין כאב'";if(!(A.safety||[]).length)return "סמן בבדיקת הבטיחות, או 'אף אחד מאלה'"}
+  if(s===3){if(!A.days)return "בחר כמה אימונים בשבוע";if(!(A.where||[]).length)return "בחר איפה תתאמן"}
+  if(s===5){if(!val("name"))return "כתוב שם מלא";const ph=val("phone").replace(/\D/g,"");if(ph.length<9)return "כתוב מספר טלפון תקין";if(!f.elements.ok.checked)return "צריך לאשר את שמירת הפרטים"}
+  return ""}
+function show(i){cur=i;S.forEach((x,j)=>x.classList.toggle("on",j===i));
+  document.getElementById("bar").style.width=(i/LAST*100)+"%";document.getElementById("sn").textContent=i>0&&i<=LAST?`שלב ${i} מתוך ${LAST}`:"";
+  const nx=document.getElementById("next"),bk=document.getElementById("back");nx.textContent=i===0?"מתחילים":i===LAST?"שליחה":"המשך";bk.style.display=i===0?"none":"";
+  document.getElementById("nav").style.display=i>LAST?"none":"";err("");window.scrollTo({top:0,behavior:"smooth"})}
+document.getElementById("back").onclick=()=>show(Math.max(0,cur-1));
+document.getElementById("next").onclick=async()=>{const e=check(cur);if(e){err(e);return}if(cur<LAST){show(cur+1);return}
+  const nx=document.getElementById("next");nx.disabled=true;nx.textContent="שולח…";
+  const a={...A,hp:val("hp"),stops:val("stops"),success:val("success"),painWorse:val("painWorse"),safetyNote:val("safetyNote"),dietNote:val("dietNote"),name:val("name"),phone:val("phone"),email:val("email"),age:val("age"),city:val("city"),meet:val("meet"),src:val("src")};
+  if((a.painAreas||[]).includes("אין כאב")){a.painAreas=[];a.painLvl=null}
+  if((a.safety||[]).includes("אף אחד מאלה"))a.safety=[];
+  try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({a})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw 0;
+    document.getElementById("thx").textContent="תודה, "+a.name.split(" ")[0]+"!";show(6)}
+  catch(_){nx.disabled=false;nx.textContent="שליחה";err("לא נשלח. בדוק חיבור ונסה שוב")}};
+show(0);
+</script>
+</body>
+</html>
