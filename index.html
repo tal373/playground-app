@@ -1377,7 +1377,7 @@ document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||!t.datas
 
 /* ===== leads (owner) ===== */
 let LEADS=null,leadsAt=0;
-async function loadLeads(){leadsAt=Date.now();try{LEADS=window.pgMember?await pgMember.leads():[]}catch(e){LEADS=LEADS||[]}if(tab==="studio"&&!typing())render()}
+async function loadLeads(){leadsAt=Date.now();try{LEADS=window.pgMember?await pgMember.leads():[]}catch(e){LEADS=LEADS||[]}if(tab==="coach"&&!typing())render()}
 function briefHtml(d){const b=d.brief||{},J=a=>(a||[]).filter(Boolean).join(" · "),R=(k,v)=>v?`<div class="bfr"><span>${k}</span><b>${esc(String(v))}</b></div>`:"";
   const sf=J(b.safety),pain=(b.pain||{}),pa=J(pain.areas);
   return `<details class="bf"><summary>${sf?"⚠️ ":""}פתח בריף</summary>${sf?`<div class="bfw">⚠️ בטיחות: ${esc(sf)}${b.safetyNote?" — "+esc(b.safetyNote):""}</div>`:""}
@@ -1390,7 +1390,7 @@ function leadsCard(){if(!isOwner||preview)return "";if(LEADS===null||Date.now()-
   const open=LEADS.filter(l=>(l.data||{}).st!=="done");if(!open.length)return "";
   return `<div class="sh"><h2>מתעניינים בליווי</h2><span>${open.length}</span></div><div class="flags">${open.map(l=>{const d=l.data||{};
     return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}${d.phone?" · "+esc(d.phone):""}</div>${d.brief?briefHtml(d):""}</div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
-$("v-studio").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
+$("v-coach").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
   b.disabled=true;try{await db.doc(l.id).update({st:"done",done:TODAY});l.data={...l.data,st:"done"};render()}catch(e){b.disabled=false;toast("לא נשמר")}});
 
 /* ===== active Arbox clients: who is in the app (owner) ===== */
@@ -2116,6 +2116,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   ${coachLoading&&!coachAt?`<div class="card"><div class="empty">טוען את המתאמנים…</div></div>`:""}
   <div class="kpis"><div class="kpi"><b>${act.length}</b><small>מתאמנים פעילים</small></div><div class="kpi"><b>${todayN}</b><small>דיווחו היום</small></div>
     <div class="kpi"><b style="color:${att?"var(--bad)":"var(--ok)"}">${att}</b><small>דורשים תשומת לב</small></div><div class="kpi"><b>${pend.length}</b><small>מחכים לשיוך</small></div></div>
+  ${leadsCard()}
   ${pend.length?`<div class="sh"><h2>מחכים לשיוך</h2><span>נכנסו לאפליקציה</span></div>${pend.map(id=>`<div class="card"><b>${esc(nameOf(id))}</b><span class="hint">נכנס/ה ${fmt((C[id].t||{}).joined)}</span>${mailBox(id)}
     <div class="assign"><select id="as-${id}" aria-label="תכנית">${tpls.map(t=>`<option value="${t.id}">${esc(t.name)} · ${esc(t.goal||"")}</option>`).join("")}</select><button type="button" data-assign="${id}">שיוך</button></div></div>`).join("")}`:""}
   <button class="card recbtn" type="button" id="cRec"><b>מפענח מתכונים</b><small>כותבים מתכון, מקבלים קלוריות וערכים, ומשייכים למתאמנים${Object.keys(LIB).length?` · ${Object.keys(LIB).length} בספרייה`:""}</small></button>
@@ -2677,7 +2678,6 @@ function renderStudio(){const v=$("v-studio");
   <div class="hello"><span class="avatar">ס</span><div><small>מה קורה בסטודיו</small><b>סטודיו</b></div><button class="ghost" type="button" id="stRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
   <div class="kpis"><div class="kpi"><b>${r7.length}</b><small>דיווחי שיעור השבוע</small></div><div class="kpi"><b>${new Set(ppl.map(p=>p.id)).size}</b><small>מתאמנים שדווחו</small></div>
     <div class="kpi"><b style="color:var(--bad)">${ppl.filter(p=>(p.tags||[]).includes("red")).length}</b><small>דגלים אדומים</small></div><div class="kpi"><b style="color:var(--warn)">${ppl.filter(p=>(p.tags||[]).includes("pain")).length}</b><small>כאב / פציעה</small></div></div>
-  ${leadsCard()}
   ${(()=>{const of=Object.entries(RO).filter(([,r])=>r.flag&&r.flag.st!=="done").sort((a,b)=>(b[1].flag.date||"").localeCompare(a[1].flag.date||""));return of.length?`<div class="sh"><h2>דגלים פתוחים</h2><span>${of.length}</span></div><div class="flags">${of.map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.flag.st==="open"?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b> <span class="hint">${r.flag.st==="checked"?"נבדק בשיעור הבא":"ממתין"}</span><div class="hint">${esc(fmt(r.flag.date))} · ${esc(r.flag.coach||"")} · ${esc(r.flag.text||"")}</div></div></button>`).join("")}</div>`:""})()}
   <div class="sh"><h2>דורש תשומת לב</h2><span>7 ימים</span></div>
   <div class="flags">${att.length?att.slice(0,15).map(p=>`<button class="flag" type="button" data-mem="${esc(p.id)}" style="--c:${(p.tags||[]).includes("red")?"var(--bad)":"var(--warn)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(p.name)}</b> <span class="mini" style="display:inline-flex">${tagPills(p.tags)}</span>
