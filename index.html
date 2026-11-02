@@ -852,6 +852,7 @@ html[dir=ltr] #bfRs{direction:rtl}
     <form id="aForm" novalidate>
       <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
       <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
+      <input id="aCode" type="text" inputmode="numeric" dir="ltr" autocomplete="one-time-code" maxlength="6" placeholder="קוד הצטרפות מההודעה של טל" hidden>
       <label class="remember" id="aRemL"><input type="checkbox" id="aRem" checked> זכור אותי</label>
       <button class="big" type="submit" id="aGo">כניסה</button>
     </form>
@@ -892,7 +893,7 @@ const EN={
 "המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
 "הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
 "שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים":"Wrong email or password","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
-"צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
+"קוד הצטרפות מההודעה של טל":"Join code from Tal's message","קיבלת קוד מטל?":"Got a code from Tal?","בהודעה מטל יש קוד הצטרפות של 6 ספרות. מקלידים אותו כאן, והתכנית או הנתונים שלך מהסטודיו יופיעו.":"Tal's message has a 6-digit join code. Type it here and your program or studio data will appear.","חיבור":"Connect","הקוד הוא 6 ספרות":"The code is 6 digits","מחובר ✓":"Connected ✓","יותר מדי ניסיונות. כתבו לטל":"Too many attempts. Message Tal","הקוד לא מתאים למייל הזה. בדקו שנרשמתם עם המייל שנתתם לטל":"This code doesn't match this email. Make sure you signed up with the email you gave Tal","צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
 "נשלח מייל. פותחים את הקישור שבו מהטלפון הזה":"Email sent. Open the link in it on this phone","נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים":"We sent you a confirmation email. After confirming, come back here and sign in",
 /* saving */
 "לא מחובר":"Not connected","החשבון בהשהיה כרגע":"Your account is paused right now","מצב תצוגה — לא נשמר":"Preview mode — not saved","אין הרשאת שמירה":"No permission to save","לא נשמר":"Not saved","שומר":"Saving","נשמר":"Saved","מעודכן":"Up to date","מוחק":"Deleting","משייך":"Assigning","שגיאה":"Error","שגיאה בטעינה":"Loading error","החיבור נותק":"Connection lost","טוען":"Loading",
@@ -1133,7 +1134,8 @@ window.pgAI={async translate(o){try{const {data,error}=await SB.functions.invoke
   async report(o){try{const {data,error}=await SB.functions.invoke("report-parse",{body:o});if(error||!data||!Array.isArray(data.people))return null;return data}catch(e){return null}},
   async recipe(text){try{const {data,error}=await SB.functions.invoke("recipe",{body:{text}});if(error||!data||!Array.isArray(data.items))return null;return data}catch(e){return null}},
   async improve(o){try{const {data,error}=await SB.functions.invoke("recipe",{body:{mode:"improve",...o}});if(error||!data||!Array.isArray(data.items)||!data.items.length)return null;return data}catch(e){return null}}};
-window.pgMember={async link(){try{const {data}=await SB.functions.invoke("member-link");return data||null}catch(e){return null}},
+window.pgMember={async link(k){try{const {data}=await SB.functions.invoke("member-link",k?{body:{k}}:undefined);return data||null}catch(e){return null}},
+  async claim(k){try{const {data}=await SB.rpc("claim_invite",{p_k:k});try{await SB.auth.updateUser({data:{k}})}catch(e){}const lk=await this.link(k);return {ok:!!(data&&data.ok),prog:!!(data&&data.prog),lk}}catch(e){return {ok:false}}},
   async me(){try{const {data,error}=await SB.rpc("my_member");return error?null:(data||null)}catch(e){return null}},
   async preview(){try{const {data,error}=await SB.rpc("class_preview");return error?[]:(data||[])}catch(e){return []}},
   email(){return (me&&me.email)||""},
@@ -1162,7 +1164,7 @@ function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
 function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
   $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.";
-  $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aRemL").hidden=m==="reset"||m==="forgot";
+  $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aCode").hidden=m!=="up";$a("aRemL").hidden=m==="reset"||m==="forgot";
   $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
   $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
   $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
@@ -1173,7 +1175,7 @@ $a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.t
   if(mode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){$a("aErr").textContent="צריך מייל תקין";return}
   if(mode!=="forgot"&&pw.length<6){$a("aErr").textContent="סיסמה של לפחות 6 תווים";return}
   $a("aGo").disabled=true;let r;
-  try{if(mode==="up")r=await SB.auth.signUp({email:em,password:pw});
+  try{if(mode==="up")r=await SB.auth.signUp({email:em,password:pw,options:{data:{k:$a("aCode").value.replace(/\D/g,"")}}});
     else if(mode==="in")r=await SB.auth.signInWithPassword({email:em,password:pw});
     else if(mode==="reset")r=await SB.auth.updateUser({password:pw});
     else{r=await SB.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});if(!r.error){$a("aErr").textContent="נשלח מייל. פותחים את הקישור שבו מהטלפון הזה";$a("aGo").disabled=false;return}}
@@ -1294,7 +1296,8 @@ function studioBody(full){
   const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
   return `
   ${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
-  ${!full||MEM&&(memPv||MEMS==="in")?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
+  ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קיבלת קוד מטל?</b><p class="hint" style="margin:6px 0 10px">בהודעה מטל יש קוד הצטרפות של 6 ספרות. מקלידים אותו כאן, והתכנית או הנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
+  ${!full||MEM&&(memPv||MEMS==="in")||MEMS==="code"?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
   ${cp.length?cp.map(c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
@@ -1317,7 +1320,10 @@ function studioBody(full){
     ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">אני רוצה לשמוע</button>`}</div>`}).join("")}`:""}`}
 function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
   if(!memPv&&(!profSeen||MEMst<2)){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
-  v.innerHTML=studioBody(true)}
+  v.innerHTML=studioBody(true);const kg=$("kGo");if(kg)kg.onclick=async()=>{const k=$("kIn").value.replace(/\D/g,"");if(k.length!==6){$("kErr").textContent="הקוד הוא 6 ספרות";return}
+    kg.disabled=true;$("kErr").textContent="";const r=await pgMember.claim(k);kg.disabled=false;
+    if(r.prog||(r.lk&&r.lk.state&&!["code","none"].includes(r.lk.state))){toast("מחובר ✓");setTimeout(()=>location.reload(),600)}
+    else $("kErr").textContent=r.lk&&r.lk.locked?"יותר מדי ניסיונות. כתבו לטל":"הקוד לא מתאים למייל הזה. בדקו שנרשמתם עם המייל שנתתם לטל"}}
 function renderSmy(){const v=$("v-smy");if(preview){if(!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>${isPaused()?"הליווי מוקפא":"לא מנוי בסטודיו"}</h1><p>${pvStLoading?"טוען…":isPaused()?"המתאמן לא מנוי פעיל בסטודיו, אז כרגע אין לו מה לראות באפליקציה.":"המתאמן לא מסומן ״כן״ ברשימת הלקוחות, או שאין לו מנוי פעיל בארבוקס."}</p></div>`;return}
     v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false);return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
   if(isPaused()&&!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>הליווי מוקפא כרגע</h1><p>כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.</p></div>`;return}
