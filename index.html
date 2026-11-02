@@ -1387,8 +1387,8 @@ function briefHtml(d){const b=d.brief||{},J=a=>(a||[]).filter(Boolean).join(" ·
   ${R("קשה באוכל",J(b.food))}${R("לא אוכל",[J(b.diet),b.dietNote].filter(Boolean).join(" · "))}${R("שינה",b.sleep)}${R("סטרס",b.stress?b.stress+"/10":"")}${R("עבודה",b.work)}
   ${R("ליווי",b.mode)}${R("פגישה",b.meet)}${R("גיל / עיר",[b.age,b.city].filter(Boolean).join(" · "))}${R("הגיע דרך",b.src)}</details>`}
 function leadsCard(){if(!isOwner||preview)return "";if(LEADS===null||Date.now()-leadsAt>120000){if(Date.now()-leadsAt>5000)loadLeads();if(LEADS===null)return ""}
-  const open=LEADS.filter(l=>(l.data||{}).st!=="done");if(!open.length)return "";
-  return `<div class="sh"><h2>מתעניינים בליווי</h2><span>${open.length}</span></div><div class="flags">${open.map(l=>{const d=l.data||{};
+  const open=LEADS.filter(l=>(l.data||{}).st!=="done");
+  return `<div class="sh"><h2>מתעניינים בליווי</h2><a href="https://docs.google.com/spreadsheets/d/1smCylj0YcZsnb-n_m1e6iyK_of3wiaypNdJe2OBSD74/edit" target="_blank" rel="noopener" style="color:var(--hot);font-weight:700;text-decoration:none">${open.length?open.length+" חדשים · ":""}כל המתעניינים ↗</a></div><div class="flags">${open.length?"":`<div class="flag" style="--c:var(--ok)">אין מתעניינים חדשים כרגע</div>`}${open.map(l=>{const d=l.data||{};
     return `<div class="flag" style="--c:var(--hot)"><div style="flex:1"><b>${esc(d.name||d.email||"מתאמן")}</b> <span class="hint">${esc(d.label||"")}</span><div class="hint">${esc(d.at?fmt(d.at.slice(0,10)):"")}${d.email?" · "+esc(d.email):""}${d.phone?" · "+esc(d.phone):""}</div>${d.brief?briefHtml(d):""}</div><button type="button" class="chipb" data-lead="${esc(l.id)}">טופל</button></div>`}).join("")}</div>`}
 $("v-coach").addEventListener("click",async ev=>{const b=ev.target.closest("[data-lead]");if(!b)return;const l=(LEADS||[]).find(x=>x.id===b.dataset.lead);if(!l)return;
   b.disabled=true;try{await db.doc(l.id).update({st:"done",done:TODAY});l.data={...l.data,st:"done"};render()}catch(e){b.disabled=false;toast("לא נשמר")}});
