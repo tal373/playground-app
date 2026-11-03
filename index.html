@@ -799,6 +799,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 2px 8px}.b2-sec span{font-size:20px;font-weight:800}.b2-sec small{color:var(--muted);font-size:12px}.b2-tm{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.b2-tm button{flex:1;min-width:88px;background:#ffffff0d;border:1px solid var(--line);border-radius:14px;color:var(--ink);padding:8px 10px;font:inherit;display:grid;gap:2px}.b2-tm button[aria-pressed=true]{background:var(--ink);color:#07111f}.b2-tm small{font-size:12px;opacity:.75}.b2-wk small{display:block}.b2-kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}.b2-kg label{display:grid;gap:3px}.b2-kg span{font-size:12px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.b2-tal{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:9px 10px;font:inherit;font-size:14px;margin:6px 0 10px;resize:vertical}.b2-send{width:100%}.nb[data-tab="class"]{display:none!important}
 .b2-mods{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:4px}.b2-mods li{display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:10px;padding:6px 10px;background:#ffffff0d;border-radius:10px;font-size:14px;line-height:1.45}.b2-mods b{direction:ltr;text-align:right;unicode-bidi:isolate}.b2-rep{margin-inline-start:auto;background:none;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:inherit;font-size:12px}.b2-pn{align-items:center}
 .b2-more{margin-top:8px}.b2-ix{color:var(--muted);font-size:12px}.b2-in+.b2-in{border-top:1px dashed var(--line);padding-top:8px}
+.b2-link{background:none;border:0;color:var(--mes);font:inherit;font-size:13px;padding:6px 0;cursor:pointer}.b2-wt{display:flex;justify-content:space-between;align-items:center}.b2-pend{margin-top:8px;border:1px solid var(--warn);border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.5}.b2-pend b{color:var(--warn)}.b2-pb{display:flex;gap:8px;margin-top:6px}.b2-pb button{flex:1;background:#ffffff14;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px;font:inherit;font-size:13px}.b2-pb button:first-child{background:var(--ink);color:#07111f}.b2-ef{display:grid;gap:6px;margin-top:8px}.b2-ef input,.b2-ef textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:7px 9px;font:inherit;font-size:13px}.b2-back{background:none;border:0;color:var(--mes);font:inherit;padding:10px 0}.b2-day{display:grid;gap:3px;width:100%;text-align:right;margin:8px 0;padding:12px 14px;border:1px solid var(--line);color:var(--ink);font:inherit}.b2-day small{color:var(--muted);font-size:12px}.b2-day b{font-size:16px}.b2-day span{color:var(--muted);font-size:13px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -2822,9 +2823,35 @@ $("v-brief").addEventListener("click",ev=>{const s=ev.target.closest("[data-ptse
   if(ev.target.closest("[data-ptback]")){ptSel=null;render();window.scrollTo(0,0);return}if(ev.target.closest("#ptSend"))ptSend()});
 function renderBrief(){if(!ptLoaded)loadPT();if(ptSel&&PT[ptSel]){renderPT();return}ptSel=null;renderBrief0();const h=ptListHTML();if(h)$("v-brief").insertAdjacentHTML("afterbegin",h)}
 let b2T={},B2TAL={},B2O={};
+let b2W=false,WK={},wkLoaded=false,B2E={};
+function b2St(x){const pd=x.s.pend,own=isOwner&&!preview;let h="";
+  if(pd&&pd.st==="open")h+=own?`<div class="b2-pend"><b>הצעה לעדכון מצב${pd.by?" · "+esc(pd.by):""}</b>${pd.inj?`<div>מצב: ${esc(pd.inj)}</div>`:""}${pd.cnote?`<div>התאמות: ${esc(pd.cnote)}</div>`:""}<div class="b2-pb"><button type="button" data-b2ok="${esc(x.sid)}">אשר</button><button type="button" data-b2no="${esc(x.sid)}">דחה</button></div></div>`:`<div class="b2-pend"><b>עדכון מצב ממתין לאישור טל</b>${pd.inj?`<div>מצב: ${esc(pd.inj)}</div>`:""}</div>`;
+  if(B2E[x.sid])h+=`<div class="b2-ef"><input type="text" data-e="inj" placeholder="מצב קבוע (פציעה / הריון / רגישות)" value="${esc(x.s.inj||"")}"><textarea rows="2" data-e="cnote" placeholder="התאמות קבועות">${esc(x.s.cnote||"")}</textarea><div class="b2-pb"><button type="button" data-b2es="${esc(x.sid)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">${own?"שמור":"שלח לאישור טל"}</button><button type="button" data-b2ex="${esc(x.sid)}">ביטול</button></div></div>`;
+  else h+=`<button type="button" class="b2-link" data-b2e="${esc(x.sid)}">עדכון מצב קבוע</button>`;
+  return h}
+function b2Week(b,head,wk){const ws=weekStart(b.date),we=addDays(ws,6),days=Object.entries(BRF).filter(([,x])=>x&&x.date>=ws&&x.date<=we).sort((a,c)=>(a[1].date+slug(a[1].cls||"")).localeCompare(c[1].date+slug(c[1].cls||"")));
+  return `<div class="bf">${head}<button type="button" class="b2-back" data-b2w="0">→ חזרה לשיעור</button>
+  <section class="bf-hero"><div><div class="bf-tag">שבוע ${esc(fmt(ws))} – ${esc(fmt(we))}</div><h1>${esc(wk.k||"השבוע")}${wk.rpe?`<span class="bf-en">RPE ${esc(wk.rpe)}</span>`:""}</h1></div></section>
+  ${wk.aim?`<div class="b2-wk"><small>מה רוצים להשיג</small><p>${esc(wk.aim)}</p></div>`:""}${wk.why?`<div class="b2-wk"><small>למה</small><p>${esc(wk.why)}</p></div>`:""}
+  <div class="b2-sec"><span>האימונים של השבוע</span></div>
+  ${days.map(([id,x])=>`<button type="button" class="card b2-day" data-bsel2="${esc(id)}"><small>${esc(fmt(x.date))} · ${esc(typeOf(x.cls||""))}</small><b>${esc(x.h1||"")}</b>${x.goal?`<span>${esc(x.goal)}</span>`:""}</button>`).join("")||`<div class="card b2-c"><div class="b2-nk">אין עדיין אימונים לשבוע הזה</div></div>`}
+  </div>`}
+document.addEventListener("click",async ev=>{const g=s=>ev.target.closest&&ev.target.closest(s);let el;
+  if(el=g("[data-b2w]")){b2W=el.dataset.b2w==="1";render();window.scrollTo(0,0);return}
+  if(el=g("[data-bsel2]")){bfSel=el.dataset.bsel2;b2W=false;render();window.scrollTo(0,0);return}
+  if(el=g("[data-b2e]")){B2E[el.dataset.b2e]=1;render();return}
+  if(el=g("[data-b2ex]")){delete B2E[el.dataset.b2ex];render();return}
+  const sv=async(sid,up,msg)=>{try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;toast(msg);render()}catch(e){toast("לא נשמר")}};
+  if(el=g("[data-b2es]")){if(typeof coachPv!=="undefined"&&coachPv){toast("מצב שיקוף — לא נשמר");return}const sid=el.dataset.b2es,box=el.closest(".b2-ef"),inj=box.querySelector("[data-e=inj]").value.trim(),cn=box.querySelector("[data-e=cnote]").value.trim(),cur=RO[sid]||{name:el.dataset.bnm,aid:+el.dataset.ba,src:"app",added:TODAY};delete B2E[sid];
+    if(isOwner&&!preview){const up={...cur,inj,cnote:cn};if(up.pend&&up.pend.st==="open")up.pend={...up.pend,st:"ok",ok:TODAY};await sv(sid,up,"נשמר ✓")}
+    else await sv(sid,{...cur,pend:{inj,cnote:cn,by:coachName||"",at:new Date().toISOString(),st:"open"}},"נשלח לאישור טל ✓");return}
+  if(el=g("[data-b2ok]")){const sid=el.dataset.b2ok,cur=RO[sid];if(!cur||!cur.pend)return;await sv(sid,{...cur,inj:cur.pend.inj||"",cnote:cur.pend.cnote||"",pend:{...cur.pend,st:"ok",ok:TODAY}},"אושר ✓");return}
+  if(el=g("[data-b2no]")){const sid=el.dataset.b2no,cur=RO[sid];if(!cur||!cur.pend)return;await sv(sid,{...cur,pend:{...cur.pend,st:"no"}},"נדחה");return}});
+
 const EN=v=>Array.isArray(v)?v:v?[v]:[],NE=e=>!!(e&&(e.lvl||e.where||e.ex||e.gave||e.note)),ETX=e=>[e.lvl?"כאב "+e.lvl+"/10":"",e.where,e.ex?"ב-"+e.ex:"",e.gave?"קיבל: "+e.gave:"",e.note].filter(Boolean).join(" · ");
 
-function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLoaded&&!window._b2t){window._b2t=1;loadStudio()}
+function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collection("wk").get().then(s=>{s.docs.forEach(d=>WK[d.id]=d.data());wkLoaded=true;if(tab==="brief")render()}).catch(()=>{wkLoaded=true})}
+  const tl=b.tl||[],wk=WK[weekStart(b.date)]||b.week||{},mods=b.mods||{};if(b2W)return b2Week(b,head,wk);if(!stLoaded&&!window._b2t){window._b2t=1;loadStudio()}
   const ros=Object.values(RR).filter(r=>r.date===b.date&&slug(r.cls||"")===slug(b.cls||"")).sort((a,c)=>(a.time||"").localeCompare(c.time||""));
   const L=t=>Array.isArray(t)?t:String(t||"").split(/\s+·\s+/).filter(Boolean);
   const bk=bfSel||"";let r=ros.find(x=>x.time===b2T[bk]);
@@ -2841,7 +2868,7 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
   return `<div class="bf">${head}
   <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div></section>
   ${ros.length>1?`<div class="b2-tm">${ros.map(x=>`<button type="button" data-b2t="${esc(x.time||"")}" aria-pressed="${x===r}"><b>${esc(x.time||"")}</b><small>${esc(firstN(x.coach||""))}</small></button>`).join("")}</div>`:""}
-  <div class="b2-wk">${wk.k?`<small>השבוע</small><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${wk.why?`<p>${esc(wk.why)}</p>`:""}`:""}${b.goal?`<small style="margin-top:10px">מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}`:""}</div>
+  <div class="b2-wk">${wk.k?`<div class="b2-wt"><small>השבוע</small><button type="button" class="b2-link" data-b2w="1">כל השבוע ←</button></div><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${(wk.aim||wk.why)?`<p>${esc(wk.aim||wk.why)}</p>`:""}`:""}${b.goal?`<small style="margin-top:10px">מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}`:""}</div>
   ${sec("מתאמנים",r?`${esc(r.time||"")} · ${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}`:"")}
   <div class="card b2-c">${ppl.length?ppl.map(x=>{const ok=x.sid+"|"+key,n=Math.max(x.ents.length,B2O[ok]||0);
     const form=(c,i)=>{const V=f=>esc(c&&c[f]!=null?c[f]:"");return `<div class="b2-in" data-bn="${esc(x.sid)}" data-bk="${esc(key)}" data-bi="${i}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">${n>1?`<small class="b2-ix">הערה ${i+1}</small>`:""}
@@ -2850,7 +2877,7 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
         <textarea rows="2" data-f="note" placeholder="מה קרה">${V("note")}</textarea>
         <small class="b2-st">${c&&c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div>`};
     return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}${n?"":`<button type="button" class="b2-rep" data-b2o="${esc(ok)}">משהו לא כשורה</button>`}</div>
-      ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${prevTxt(x.prev)}
+      ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${prevTxt(x.prev)}${b2St(x)}
       ${Array.from({length:n},(_,i)=>form(x.ents[i],i)).join("")}${n?`<button type="button" class="b2-rep b2-more" data-b2o="${esc(ok)}">+ עוד הערה</button>`:""}</div>`}).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
