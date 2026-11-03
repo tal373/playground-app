@@ -2860,7 +2860,7 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   const key=r?`${r.date}-${String(r.time||"").replace(":","")}`:"",rk=r?`${r.date}_${String(r.time||"").replace(":","")}-${slug(b.cls||"")}`:"";
   const ppl=r?(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},bn=s.bn||{};
       const prev=Object.entries(bn).filter(([k,x])=>k<key&&k>=addDays(r.date,-21)&&EN(x).some(NE)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
-      return {p,sid,s,m:L(mods[p.aid]||s.cnote||""),cond:s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",ents:EN(bn[key]),prev}}):[];
+      return {p,sid,s,m:L(mods[p.aid]||s.cnote||""),cond:s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",ents:EN(bn[key]),prev,ld:(LD[sid]||[]).filter(z=>z.date===r.date&&(!z.cls||!r.cls||z.cls===r.cls))}}):[];
   const mainEx=[];(b.blocks||[]).forEach(x=>{if(/^main/i.test(x.id||""))(x.x||[]).forEach(e=>{const n=exClean(strip(e.n));if(n&&!mainEx.includes(n))mainEx.push(n)})});
   const prevTxt=q=>q?`<div class="b2-prev">בשיעור ${esc(fmt(q[0].slice(0,10)))}: ${esc(EN(q[1]).filter(NE).map(ETX).join(" | "))}</div>`:"";
   const att=ppl.filter(x=>x.cond||x.m.length||x.prev);
@@ -2878,7 +2878,7 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
         <textarea rows="2" data-f="note" placeholder="מה קרה">${V("note")}</textarea>
         <small class="b2-st">${c&&c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div>`};
     return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}${n?"":`<button type="button" class="b2-rep" data-b2o="${esc(ok)}">משהו לא כשורה</button>`}</div>
-      ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${prevTxt(x.prev)}${b2St(x)}
+      ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${x.ld.map(z=>`<div class="b2-prev">⚠️ ${esc(ldTxt(z))}</div>`).join("")}${prevTxt(x.prev)}${b2St(x)}
       ${Array.from({length:n},(_,i)=>form(x.ents[i],i)).join("")}${n?`<button type="button" class="b2-rep b2-more" data-b2o="${esc(ok)}">+ עוד הערה</button>`:""}</div>`}).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
