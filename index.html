@@ -1837,21 +1837,22 @@ document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||t.datase
 function renderWorkout(){const list=woList();
   if(!list.length){$("v-workout").innerHTML=`<div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>האימונים שלך</small><h2>טל עוד לא העלה אימון</h2><p>כשיעלה אימון הוא יופיע כאן, עם סרטון לכל תרגיל.</p></div>`;return}
   const w=curWorkout(),lg=getLog(w.id,TODAY),prev=lastLog(w.id,TODAY);
-  const totalSets=(w.blocks||[]).reduce((a,b,bi)=>a+activeIdx(b,bi,lg).reduce((s,i)=>s+(b.items[i].sets||0),0),0);
+  const isSt=/^\d{4}-\d\d-\d\d-(powerlab|method|flex)$/.test(w.id||""),isM=b=>!isSt||/main set|מיין/i.test(b.name||"");
+  const totalSets=(w.blocks||[]).reduce((a,b,bi)=>a+(isM(b)?activeIdx(b,bi,lg).reduce((s,i)=>s+(b.items[i].sets||0),0):0),0);
   const doneSets=Object.values(lg.sets).reduce((a,arr)=>a+(arr||[]).filter(s=>s&&s.ok).length,0);
   const fx=fixedList(),nx=nextFixed();
   $("v-workout").innerHTML=`
   ${fx.length>1?`<div class="wopick">${fx.map(x=>`<button type="button" data-wo="${x.id}" aria-pressed="${x.id===w.id}">${esc(x.title)}${nx&&x.id===nx.id?"<small>התור הבא</small>":""}</button>`).join("")}</div>`:""}
   <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
     ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
-    ${totalSets?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
-  ${(w.blocks||[]).map((b,bi)=>`<div class="blk"><div class="blk-h"><span class="n">${bi+1}</span><div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${(()=>{const r=restOf(b);return r&&!/Rest|מנוחה/i.test(b.format||"")?` · מנוחה ${r>=60?Math.floor(r/60)+":"+pad(r%60):r+" שנ׳"}`:""})()}${(lg.score||{})[bi]?` · <b class="wk-ok">תוצאה: ${esc(lg.score[bi])}</b>`:""}</small></div></div>
+    ${totalSets&&!isSt?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
+  ${(w.blocks||[]).map((b,bi)=>!isM(b)?"":`<div class="blk"><div class="blk-h">${isSt?"":`<span class="n">${bi+1}</span>`}<div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${(()=>{const r=restOf(b);return r&&!/Rest|מנוחה/i.test(b.format||"")?` · מנוחה ${r>=60?Math.floor(r/60)+":"+pad(r%60):r+" שנ׳"}`:""})()}${(lg.score||{})[bi]?` · <b class="wk-ok">תוצאה: ${esc(lg.score[bi])}</b>`:""}</small></div></div>
     ${(b.items||[]).map((it,ii)=>{const key=bi+"-"+ii,arr=lg.sets[key]||[],pk=b.pick!=null,chosen=!!(lg.pick||{})[key],nCh=pk?(b.items||[]).filter((_,j)=>(lg.pick||{})[bi+"-"+j]).length:0,hideSets=pk&&b.pick>0&&nCh>=b.pick&&!chosen,pv=prev&&prev.sets&&prev.sets[key]?prev.sets[key].filter(s=>s&&s.kg).map(s=>s.kg):[];
       return `<div class="ex-row${hideSets?" unpicked":""}"><div>${pk?`<button class="pickb" type="button" data-pick="${key}" aria-pressed="${chosen}">${chosen?"✓ בחרתי":"בחירה"}</button>`:""}<b>${esc(it.n)}</b>${it.d?`<small>${esc(it.d)}</small>`:""}${it.sets?`<small>${it.sets} סטים × ${esc(it.reps||"")}</small>`:""}</div>${vids(it)}</div>
       ${pv.length?`<div class="prev">בפעם הקודמת: ${pv.join(" / ")} ק״ג</div>`:""}
       ${it.sets&&!hideSets?`<div class="sets">${Array.from({length:it.sets},(_,si)=>{const s=arr[si]||{};return `<div class="setrow${it.nokg?" nokg":""}"><span>סט ${si+1}</span>${it.nokg?"":`<input type="number" inputmode="decimal" step="0.5" placeholder="ק״ג" value="${s.kg??""}" data-kg="${key}" data-s="${si}" aria-label="משקל סט ${si+1}">`}<input type="text" inputmode="numeric" placeholder="${esc(it.reps||"חזרות")}" value="${esc(s.r??"")}" data-rp="${key}" data-s="${si}" aria-label="חזרות סט ${si+1}"><button class="ok" type="button" data-ok="${key}" data-s="${si}" aria-pressed="${!!s.ok}" aria-label="סט ${si+1} בוצע">${CHK}</button></div>`}).join("")}</div>`:""}
       ${prof.painScale&&!hideSets?painBox(key,lg):""}`}).join("")}</div>`).join("")}
-  <div class="card"><b>איך היה האימון?</b>
+  <div class="card"><b>${isSt?"הערה לטל על השיעור":"איך היה האימון?"}</b>
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
     <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
     <div class="btns" style="margin-top:0"><button class="cta" type="button" id="woDone">${lg.done?"עדכון הדיווח":"סיימתי את האימון"}</button></div></div>
