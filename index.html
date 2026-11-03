@@ -2777,7 +2777,7 @@ $("v-coaches").addEventListener("click",async ev=>{const t=ev.target;
 let coachPv=null,coachNameOwn="";
 function enterCoachView(name){ptLoaded=false;ptSel=null;fill(PT,{});fill(PTR,{});coachPv=name;coachNameOwn=coachName;coachName=name;
   ["coach","claude","today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);["class","brief","prog"].forEach(t=>NB(t).hidden=false);
-  const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${name} (מאמן)`;b.hidden=false;window.scrollTo(0,0);go("class")}
+  const b=$("pvbar");b.querySelector("b").textContent=`שיקוף חי · ${name} (מאמן)`;b.hidden=false;window.scrollTo(0,0);go("brief")}
 function exitCoachView(){ptLoaded=false;ptSel=null;fill(PT,{});fill(PTR,{});coachPv=null;coachName=coachNameOwn;$("pvbar").hidden=true;NB("coach").hidden=false;
   if(!isCoach)["class","brief","prog"].forEach(t=>NB(t).hidden=true);go("coaches")}
 
