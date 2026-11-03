@@ -796,6 +796,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-x{list-style:none;margin:8px 0 0;padding:0}.b2-x li{padding:10px 0;border-top:1px solid var(--line)}.b2-n{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;line-height:1.6}.b2-v{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.b2-v a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px;direction:ltr}
 .b2-c{margin:8px 0;padding:12px 14px}.b2-ch{display:flex;gap:10px;align-items:baseline;margin-bottom:6px}.b2-ch span{color:var(--muted);font-size:13px}.b2-pp{padding:8px 0;border-top:1px solid var(--line)}.b2-cond{display:inline-block;margin-inline-start:8px;color:var(--warn);font-size:13px}.b2-pp ul{margin:4px 0 0;padding-inline-start:18px;line-height:1.5}.b2-ok{color:var(--muted);font-size:13px;padding-top:8px;border-top:1px solid var(--line)}
 .b2-pn{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px}.b2-nk{color:var(--muted);font-size:13px;margin-top:2px}.b2-prev{margin-top:6px;font-size:13px;color:var(--warn)}.b2-in{display:grid;gap:6px;margin-top:8px}.b2-in label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.b2-pr{display:grid;grid-template-columns:84px 1fr 1fr;gap:6px}.b2-pr2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.b2-in input::placeholder{color:var(--dim)}.b2-in input,.b2-in textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:7px 9px;font:inherit;font-size:13px;resize:vertical;min-width:0}.b2-st{color:var(--ok);font-size:12px}.b2-st:empty{display:none}.b2-pp{padding:12px 0}
+.b2-sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 2px 8px}.b2-sec span{font-size:20px;font-weight:800}.b2-sec small{color:var(--muted);font-size:12px}.b2-tm{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.b2-tm button{flex:1;min-width:88px;background:#ffffff0d;border:1px solid var(--line);border-radius:14px;color:var(--ink);padding:8px 10px;font:inherit;display:grid;gap:2px}.b2-tm button[aria-pressed=true]{background:var(--ink);color:#07111f}.b2-tm small{font-size:12px;opacity:.75}.b2-wk small{display:block}.b2-kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}.b2-kg label{display:grid;gap:3px}.b2-kg span{font-size:12px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.b2-tal{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:9px 10px;font:inherit;font-size:14px;margin:6px 0 10px;resize:vertical}.b2-send{width:100%}.nb[data-tab="class"]{display:none!important}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -2818,27 +2819,28 @@ async function ptSend(){const k=ptSel,p=PT[k];if(!p)return;if(coachPv){toast("מ
 $("v-brief").addEventListener("click",ev=>{const s=ev.target.closest("[data-ptsel]");if(s){ptSel=s.dataset.ptsel;render();window.scrollTo(0,0);return}
   if(ev.target.closest("[data-ptback]")){ptSel=null;render();window.scrollTo(0,0);return}if(ev.target.closest("#ptSend"))ptSend()});
 function renderBrief(){if(!ptLoaded)loadPT();if(ptSel&&PT[ptSel]){renderPT();return}ptSel=null;renderBrief0();const h=ptListHTML();if(h)$("v-brief").insertAdjacentHTML("afterbegin",h)}
+let b2T={},B2TAL={};
 function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLoaded&&!window._b2t){window._b2t=1;loadStudio()}
   const ros=Object.values(RR).filter(r=>r.date===b.date&&slug(r.cls||"")===slug(b.cls||"")).sort((a,c)=>(a.time||"").localeCompare(c.time||""));
   const L=t=>Array.isArray(t)?t:String(t||"").split(/\s+·\s+/).filter(Boolean);
-  const cards=ros.map(r=>{const key=`${r.date}-${String(r.time||"").replace(":","")}`;
-    return `<div class="card b2-c"><div class="b2-ch"><b>${esc(r.time||"")}</b><span>${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}</span></div>${(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},m=L(mods[p.aid]||s.cnote||""),cond=s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",bn=s.bn||{},cur=bn[key]||{};
-      const prev=Object.entries(bn).filter(([k,x])=>k!==key&&k<key&&k>=addDays(r.date,-21)&&(x.lvl||x.where||x.note)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
-      const V=f=>esc(cur[f]==null?"":cur[f]);
-      return `<div class="b2-pp"><div class="b2-pn"><b>${esc(p.name||"")}</b>${cond?`<span class="b2-cond">${esc(cond)}</span>`:""}</div>
-        ${m.length?`<ul>${m.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<div class="b2-nk">אין מה לדעת מראש</div>`}
-        ${prev?`<div class="b2-prev">בשיעור ${esc(fmt(prev[0].slice(0,10)))}: ${esc([prev[1].lvl?"כאב "+prev[1].lvl+"/10":"",prev[1].where,prev[1].ex,prev[1].gave?"קיבל: "+prev[1].gave:"",prev[1].note].filter(Boolean).join(" · "))}</div>`:""}
-        <div class="b2-in" data-bn="${esc(sid)}" data-bk="${esc(key)}" data-ba="${esc(p.aid)}" data-bnm="${esc(p.name||"")}">
-          <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="כאב (0-10)" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
-          <div class="b2-pr2"><input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}"><input type="text" data-f="note" placeholder="הערה" value="${V("note")}"></div>
-          <small class="b2-st">${cur.at?"נשמר ✓"+(cur.by?" · "+esc(cur.by):""):""}</small></div></div>`}).join("")}</div>`}).join("");
+  const bk=bfSel||"";let r=ros.find(x=>x.time===b2T[bk]);
+  if(!r){const now=new Date(),hm=pad(now.getHours())+":"+pad(now.getMinutes());r=(b.date===TODAY&&ros.find(x=>(x.time||"")>=addMin(hm,-75)))||ros[0]}
+  const key=r?`${r.date}-${String(r.time||"").replace(":","")}`:"",rk=r?`${r.date}_${String(r.time||"").replace(":","")}-${slug(b.cls||"")}`:"";
+  const ppl=r?(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},bn=s.bn||{};
+      const prev=Object.entries(bn).filter(([k,x])=>k<key&&k>=addDays(r.date,-21)&&(x.lvl||x.where||x.note)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
+      return {p,sid,s,m:L(mods[p.aid]||s.cnote||""),cond:s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",cur:bn[key]||{},prev}}):[];
+  const mainEx=[];(b.blocks||[]).forEach(x=>{if(/^main/i.test(x.id||""))(x.x||[]).forEach(e=>{const n=exClean(strip(e.n));if(n&&!mainEx.includes(n))mainEx.push(n)})});
+  const prevTxt=q=>q?`<div class="b2-prev">בשיעור ${esc(fmt(q[0].slice(0,10)))}: ${esc([q[1].lvl?"כאב "+q[1].lvl+"/10":"",q[1].where,q[1].ex,q[1].gave?"קיבל: "+q[1].gave:"",q[1].note].filter(Boolean).join(" · "))}</div>`:"";
+  const att=ppl.filter(x=>x.cond||x.m.length||x.prev);
+  const sent=MYR[rk];
+  const sec=(t,s)=>`<div class="b2-sec"><span>${t}</span>${s?`<small>${s}</small>`:""}</div>`;
   return `<div class="bf">${head}
   <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div></section>
-  ${wk.k?`<div class="b2-wk"><small>השבוע</small><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${wk.why?`<p>${esc(wk.why)}</p>`:""}</div>`:""}
-  ${b.goal?`<div class="b2-wk"><small>מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}${b.line?`<p><b>המשפט של היום:</b> ${esc(b.line)}</p>`:""}</div>`:""}
-  <div class="sh"><h2>מתאמנים</h2><span>${ros.length?"מצב והתאמות להיום":""}</span></div>
-  ${cards||`<div class="card b2-c"><div class="b2-ok" style="border:0;padding:0">${stLoaded?"אין רשימת מתאמנים לשיעור הזה":"טוען…"}</div></div>`}
-  <div class="sh"><h2>שעון שיעור</h2><span>לוחצים ▶ כשמתחילים</span></div>
+  ${ros.length>1?`<div class="b2-tm">${ros.map(x=>`<button type="button" data-b2t="${esc(x.time||"")}" aria-pressed="${x===r}"><b>${esc(x.time||"")}</b><small>${esc(firstN(x.coach||""))}</small></button>`).join("")}</div>`:""}
+  ${sec("לפני השיעור",r?`${esc(r.time||"")} · ${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}`:"")}
+  <div class="b2-wk">${wk.k?`<small>השבוע</small><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${wk.why?`<p>${esc(wk.why)}</p>`:""}`:""}${b.goal?`<small style="margin-top:10px">מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}`:""}</div>
+  <div class="card b2-c"><div class="b2-ch"><b>שימו לב</b></div>${att.length?att.map(x=>`<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}</div>${x.m.length?`<ul>${x.m.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}${prevTxt(x.prev)}</div>`).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":r?"אין הערות מיוחדות לשיעור הזה":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
+  ${sec("בזמן השיעור","")}
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
     <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
@@ -2846,13 +2848,40 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
   ${(b.blocks||[]).map(x=>`<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${BPH[x.id]||"var(--hot)"}"><div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${esc(x.h||"")}</h2><small>${esc(x.f||"")}</small></div></div>
     <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div class="b2-r"><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
     <ul class="b2-x">${(x.x||[]).map(e=>`<li><div class="b2-n">${e.n||""}</div>${(e.v||[]).length?`<div class="b2-v">${e.v.map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</div>`:""}</li>`).join("")}</ul></section>`).join("")}
+  ${r?`${sec("אחרי השיעור","נשמר לבד בכל שדה")}
+  <div class="card b2-c">${ppl.map(x=>{const c=x.cur,V=f=>esc(c[f]==null?"":c[f]),kg=c.kg||{},last=x.s.last||{},lx=x.s.lx||{};
+    return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}</div>
+      <div class="b2-in" data-bn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
+        ${mainEx.length?`<div class="b2-kg">${mainEx.map(n=>{const pv=(lx[n]&&lx[n].kg)||last[n]||"";return `<label><span>${esc(exName(n))}</span><input type="text" inputmode="decimal" data-f="kg" data-x="${esc(n)}" placeholder="${pv?"קודם "+esc(pv):"ק״ג"}" value="${esc(kg[n]||"")}"></label>`}).join("")}</div>`:""}
+        <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="רמת כאב" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
+        <div class="b2-pr2"><input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}"><input type="text" data-f="note" placeholder="הערה" value="${V("note")}"></div>
+        <small class="b2-st">${c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div></div>`}).join("")}</div>
+  <div class="card b2-c"><div class="b2-ch"><b>הערה לטל על השיעור</b></div><textarea class="b2-tal" id="b2Tal" data-rk="${esc(rk)}" rows="3" placeholder="איך היה השיעור, מה עבד, מה לא">${esc(B2TAL[rk]!=null?B2TAL[rk]:(sent&&sent.tal)||"")}</textarea>
+    <button class="cta b2-send" type="button" id="b2Send" data-rk="${esc(rk)}" data-bk="${esc(key)}" data-rt="${esc(r.time||"")}">${sent?"נשלח ✓ · לשלוח שוב":"שלח לטל"}</button></div>`:""}
   </div>`}
-document.addEventListener("change",async ev=>{const f=ev.target.closest&&ev.target.closest("[data-f]"),box=f&&f.closest(".b2-in");if(!box||!db)return;
-  const sid=box.dataset.bn,key=box.dataset.bk,st=box.querySelector(".b2-st"),e={};box.querySelectorAll("[data-f]").forEach(x=>{const v=x.value.trim();if(v)e[x.dataset.f]=x.dataset.f==="lvl"?Math.max(0,Math.min(10,+v||0)):v});
+const addMin=(hm,d)=>{const [h,m]=hm.split(":").map(Number),t=Math.max(0,h*60+m+d);return pad(Math.floor(t/60))+":"+pad(t%60)};
+document.addEventListener("click",ev=>{const t=ev.target.closest&&ev.target.closest("[data-b2t]");if(!t)return;b2T[bfSel||""]=t.dataset.b2t;render()});
+document.addEventListener("input",ev=>{if(ev.target&&ev.target.id==="b2Tal")B2TAL[ev.target.dataset.rk]=ev.target.value});
+document.addEventListener("change",async ev=>{const f=ev.target.closest&&ev.target.closest("[data-f]"),box=f&&f.closest(".b2-in");if(!box||!db)return;if(typeof coachPv!=="undefined"&&coachPv){toast("מצב שיקוף — לא נשמר");return}
+  const sid=box.dataset.bn,key=box.dataset.bk,st=box.querySelector(".b2-st"),e={};box.querySelectorAll("[data-f]").forEach(x=>{const v=x.value.trim();if(!v)return;
+    if(x.dataset.f==="kg"){(e.kg=e.kg||{})[x.dataset.x]=v}else e[x.dataset.f]=x.dataset.f==="lvl"?Math.max(0,Math.min(10,+v||0)):v});
   const cur=RO[sid]||{name:box.dataset.bnm,aid:+box.dataset.ba,src:"app",added:TODAY},bn={...(cur.bn||{})};
   if(Object.keys(e).length){e.at=new Date().toISOString();e.by=coachName||(window.pgMember&&pgMember.email&&pgMember.email())||"";bn[key]=e}else delete bn[key];
   const keep=Object.keys(bn).sort().slice(-30),bn2={};keep.forEach(k=>bn2[k]=bn[k]);const up={...cur,bn:bn2};
   st.textContent="שומר…";try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;st.textContent=e.at?"נשמר ✓":"נמחק"}catch(x){st.textContent="לא נשמר — נסה שוב"}});
+document.addEventListener("click",async ev=>{const btn=ev.target.closest&&ev.target.closest("#b2Send");if(!btn||!db)return;if(typeof coachPv!=="undefined"&&coachPv){toast("מצב שיקוף — לא נשמר");return}
+  const b=BRF[bfSel];if(!b)return;const rk=btn.dataset.rk,key=btn.dataset.bk,time=btn.dataset.rt,cls=typeOf(b.cls||""),path=`c/${uid}/reports/${rk}`;
+  const r=Object.values(RR).find(x=>x.date===b.date&&x.time===time&&slug(x.cls||"")===slug(b.cls||""));if(!r)return;
+  btn.disabled=true;btn.textContent="שולח…";
+  try{const people=(r.people||[]).map(p=>{const sid="a"+p.aid,c=((RO[sid]||{}).bn||{})[key]||{},pn=(c.lvl||c.where||c.ex)?{area:c.where||"",lvl:c.lvl||null,ex:c.ex||"",mod:c.gave||""}:null;
+      return {id:sid,name:p.name,tags:pn?["pain"]:[],pain:pn?[pn.area,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" "):"",pn,kg:c.kg||{},lx:{},err:[],fu:false,score:"",note:[c.gave&&!pn?"קיבל: "+c.gave:"",c.note||""].filter(Boolean).join(" · ")}});
+    const tal=String($("b2Tal")?$("b2Tal").value:"").trim(),rep={date:b.date,time,cls,w:null,coach:coachName||r.coach||"",people,absent:[],note:"",tal,at:new Date().toISOString(),src:"brief"};
+    await db.doc(path).set(rep);
+    await Promise.all(people.map(async q=>{if(!q.pn&&!Object.keys(q.kg).length&&!q.note)return;const cur=RO[q.id]||{name:q.name,added:TODAY,src:"app"};
+      const up={...cur,seen:b.date,last:{...(cur.last||{}),...q.kg},lx:{...(cur.lx||{})}};Object.entries(q.kg).forEach(([x,v])=>{up.lx[x]={...(up.lx[x]||{}),kg:v,d:b.date}});
+      if(q.pn)up.lastPain={d:b.date,area:q.pn.area,lvl:q.pn.lvl,ex:q.pn.ex,mod:q.pn.mod};RO[q.id]=up;await db.doc(`s/${q.id}`).set(up)}));
+    MYR[rk]=rep;delete B2TAL[rk];toast("נשלח לטל ✓");render()}
+  catch(e){toast("לא נשלח, נסו שוב");btn.disabled=false;btn.textContent="שלח לטל"}});
 function renderBrief0(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
   const ids=winIds(BRF);
