@@ -792,8 +792,8 @@ html[dir=ltr] :is(.fact span,.ml-v):not([dir=rtl] *){text-align:right}
 html[dir=ltr] :is(.ex-row a svg,.stage .vids svg,.ex-row a.th i svg,#guided svg):not([dir=rtl] *){transform:none!important}
 html[dir=ltr] #bfRs{direction:rtl}
 .b2-wk{border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:10px 0}.b2-wk small{color:var(--muted);font-size:12px;display:block}.b2-wk b{font-size:16px}.b2-wk p{margin:4px 0 0;color:var(--ink);line-height:1.5}
-.b2-g{display:grid;gap:6px;margin:10px 0;grid-template-columns:1fr 1fr}.b2-g div:first-child,.b2-g div:last-child{grid-column:1/-1}.b2-g div{background:#ffffff0d;border-radius:12px;padding:8px 12px}.b2-g small{color:var(--muted);font-size:12px;display:block}.b2-g p{margin:2px 0 0;line-height:1.5}
-.b2-x{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}.b2-x li{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.b2-x li>span{flex:1}.b2-x a{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:12px;white-space:nowrap}
+.b2-g{margin:10px 0;border:1px solid var(--line);border-radius:14px;padding:4px 12px}.b2-r{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.b2-r:first-child{border-top:0}.b2-r small{color:var(--muted);font-size:12px;padding-top:2px}.b2-r p{margin:0;font-size:14px;line-height:1.5}
+.b2-x{list-style:none;margin:8px 0 0;padding:0}.b2-x li{padding:10px 0;border-top:1px solid var(--line)}.b2-n{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;line-height:1.6}.b2-v{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.b2-v a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px;direction:ltr}
 .b2-c{margin:8px 0;padding:12px 14px}.b2-ch{display:flex;gap:10px;align-items:baseline;margin-bottom:6px}.b2-ch span{color:var(--muted);font-size:13px}.b2-pp{padding:8px 0;border-top:1px solid var(--line)}.b2-cond{display:inline-block;margin-inline-start:8px;color:var(--warn);font-size:13px}.b2-pp ul{margin:4px 0 0;padding-inline-start:18px;line-height:1.5}.b2-ok{color:var(--muted);font-size:13px;padding-top:8px;border-top:1px solid var(--line)}
 </style></head><body>
 <div class="app">
@@ -2835,8 +2835,8 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
     <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
     <div class="bf-leg">${tl.map(([id,l,s,e])=>`<button type="button" style="--c:${BPH[id]||"var(--hot)"}" data-bgo="${esc(id)}" data-s="${s}" data-e="${e}"><i></i>${esc(l)}<em>${s}–${e}</em></button>`).join("")}</div></section>
   ${(b.blocks||[]).map(x=>`<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${BPH[x.id]||"var(--hot)"}"><div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${esc(x.h||"")}</h2><small>${esc(x.f||"")}</small></div></div>
-    <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
-    <ul class="b2-x">${(x.x||[]).map(e=>`<li><span>${e.n||""}</span>${(e.v||[]).map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</li>`).join("")}</ul></section>`).join("")}
+    <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div class="b2-r"><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
+    <ul class="b2-x">${(x.x||[]).map(e=>`<li><div class="b2-n">${e.n||""}</div>${(e.v||[]).length?`<div class="b2-v">${e.v.map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</div>`:""}</li>`).join("")}</ul></section>`).join("")}
   </div>`}
 function renderBrief0(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
