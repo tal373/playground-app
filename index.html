@@ -926,7 +926,7 @@ const EN={
 "סבבים":"Rounds","חימום":"Warm-up","החזקה":"Hold","חזרות":"Reps","סט":"Set","סבב":"Round","לא סיימתי":"Didn't finish","מאמץ":"Effort","אין תרגילי כוח לרישום באימון הזה":"No strength exercises to log in this class",
 "מאמץ: 6 = עוד 4 חזרות בטנק · 8 = עוד 2 · 10 = לא הייתה עוד חזרה. בסבב החימום רושמים את המשקל הקל שהתחממת איתו.":"Effort: 6 = 4 more reps in the tank · 8 = 2 more · 10 = not one more rep. In the warm-up set, log the light weight you warmed up with.",
 "עדכון":"Update","רישום האימון שלי":"Log my class","בוחרים שיעור ורושמים משקל וחזרות לכל סט, חימום ומאמץ. המאמן רואה את זה בשיעור הבא.":"Pick a class and log weight and reps for each set, the warm-up and your effort. Your coach sees it at the next class.",
-"אחרי שיעור שנרשמת אליו בארבוקס, הוא יופיע כאן ותוכל לרשום משקלים וסטים.":"After a class you booked in Arbox, it shows up here and you can log weights and sets.","עוד לא רשמת כלום":"You haven't logged anything yet","לא נשמר, נסו שוב":"Not saved, try again",
+"שיעור שנרשמת אליו בארבוקס יופיע כאן, ותוכל לרשום בו משקלים וסטים בתרגילים העיקריים.":"After a class you booked in Arbox, it shows up here and you can log weights and sets.","עוד לא רשמת כלום":"You haven't logged anything yet","לא נשמר, נסו שוב":"Not saved, try again",
 "ק״ג / BW":"kg / BW","ק״ג":"kg","ג׳":"g","קק״ל":"kcal","שנ׳":"sec",
 /* rewards */
 "יום ראשון":"Day one","הדיווח הראשון שלך":"Your first check-in","3 ימים ברצף":"3 days in a row","שלושה ימים בלי לפספס":"Three days without missing","שבוע שלם":"A full week","7 ימים ברצף":"7 days in a row",
@@ -1282,11 +1282,11 @@ function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioM
 /* ===== studio member (free tier) ===== */
 let MEM=null,MEMst=0,CPV=[],LEADM={},MEMS="none",memPv=null,memSave=null;
 async function enterMemberView(aid){if(!isOwner||!window.pgMember)return;toast("טוען שיקוף…");const v=await pgMember.view(aid);if(!v){toast("לא הצלחנו לטעון");return}
-  memSave={MEM,MEMst,CPV,LEADM,MEMS,tab};MEM=v;MEMS=v.inc===true?"in":v.inc===false?"out":"pending";MEMst=2;CPV=await pgMember.preview();LEADM={};
+  memSave={MEM,MEMst,CPV,LEADM,MEMS,tab,SRC2,SLK};MEM=v;SRC2=v.recent||[];SLK=null;MEMS=v.inc===true?"in":v.inc===false?"out":"pending";MEMst=2;CPV=await pgMember.preview();LEADM={};
   if(v.uid){try{const s2=await db.collection(`t/${v.uid}/leads`).get();s2.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}}
   memPv={aid,name:v.name||""};const b=$("pvbar");b.querySelector("b").textContent=`שיקוף · ${memPv.name} (מתאמן סטודיו)${MEMS==="in"?"":MEMS==="out"?" · מסומן לא":" · עוד לא אושר"}`;b.hidden=false;
   tab="today";["workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients"].forEach(t=>$("v-"+t).hidden=true);$("v-today").hidden=false;render();window.scrollTo(0,0)}
-function exitMemberView(){const m=memSave||{};memPv=null;MEM=m.MEM||null;MEMst=m.MEMst||0;CPV=m.CPV||[];LEADM=m.LEADM||{};MEMS=m.MEMS||"none";$("pvbar").hidden=true;$("nav").hidden=false;go("clients")}
+function exitMemberView(){const m=memSave||{};memPv=null;SRC2=m.SRC2||[];SLK=null;MEM=m.MEM||null;MEMst=m.MEMst||0;CPV=m.CPV||[];LEADM=m.LEADM||{};MEMS=m.MEMS||"none";$("pvbar").hidden=true;$("nav").hidden=false;go("clients")}
 const UPS=[["menu","תפריט ותזונה אישית","תפריט שבנוי בשבילך, מעקב יומי פשוט, מתכונים והתאמות מטל לאורך הדרך.","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"],
   ["home","תכנית אימונים אישית לבית","אימונים לימים בלי סטודיו, עם סרטון לכל תרגיל, טיימר ומעקב התקדמות.","M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"],
   ["physio","פיזיו, טיפול ושיקום","טיפול ידני ותכנית שיקום אישית לכאב, פציעה או חזרה לאימונים.","M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"]];
@@ -1344,7 +1344,7 @@ $("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[dat
 /* ===== trainee self-log of studio classes (weights, sets, effort) ===== */
 let SRC2=[],SLK=null,SLD={};
 const slCls=k=>SRC2.find(c=>c.key===k);
-function slMeta(c){const out=[];exBlocks(c).forEach(b=>{if(!(b.str||b.core))return;b.items.forEach(x=>{const m=b.meta[x];if(m&&m.sets>0)out.push([x,{...m,core:b.core,base:m.sets},b.name])})});return out}
+function slMeta(c){const out=[];exBlocks(c).forEach(b=>{if(!b.str)return;b.items.forEach(x=>{const m=b.meta[x];if(m&&m.sets>0)out.push([x,{...m,core:b.core,base:m.sets},b.name])})});return out}
 function slVars(c,x){const v=varsOf0(x);if(v.length)return v;const nx=exName(x).toLowerCase();
   const hit=(c.brief||[]).find(e=>{const nm=exName(exClean(strip(e.n))).toLowerCase();return nm===nx||nm.includes(nx.slice(0,16))||nx.includes(nm.slice(0,16))});
   if(hit&&Array.isArray(hit.g)&&hit.g.length)return hit.g.map(g=>Array.isArray(g)?g[0]:g);return libVars(x)}
@@ -1367,9 +1367,9 @@ function slForm(){const c=slCls(SLK);if(!c)return "";const ex=slMeta(c),ro=!!(me
     ${ro?`<p class="hint">מצב שיקוף · לא נשמר</p>`:`<div class="rp-f"><button class="ghost" type="button" data-sclose="1">סגירה</button><button class="cta" type="button" data-ssave="1">${c.mine?"עדכון":"שמירה"}</button></div>`}</div>`}
 function slSection(){if(!(MEM&&(MEMS==="in"||memPv)))return "";
   return `<div class="sh"><h2>רישום האימון שלי</h2></div>
-  ${SRC2.length?`<div class="chips sl-c">${SRC2.map(c=>`<button type="button" data-scls="${esc(c.key)}" aria-pressed="${SLK===c.key}">${esc(c.date===TODAY?"היום":fmt(c.date))} · ${esc(c.time||"")} ${esc(c.cls||"")}${c.mine?" ✓":""}</button>`).join("")}</div>
+  ${SRC2.length?`<div class="chips sl-c">${SRC2.map(c=>`<button type="button" data-scls="${esc(c.key)}" aria-pressed="${SLK===c.key}">${esc(c.date===TODAY?"היום":c.date===addDays(TODAY,1)?"מחר":fmt(c.date))} · ${esc(c.time||"")} ${esc(c.cls||"")}${c.mine?" ✓":""}</button>`).join("")}</div>
     ${SLK?slForm():`<p class="hint lead">בוחרים שיעור ורושמים משקל וחזרות לכל סט, חימום ומאמץ. המאמן רואה את זה בשיעור הבא.</p>`}`
-  :`<div class="card"><div class="empty">אחרי שיעור שנרשמת אליו בארבוקס, הוא יופיע כאן ותוכל לרשום משקלים וסטים.</div></div>`}`}
+  :`<div class="card"><div class="empty">שיעור שנרשמת אליו בארבוקס יופיע כאן, ותוכל לרשום בו משקלים וסטים בתרגילים העיקריים.</div></div>`}`}
 async function slSave(btn){const c=slCls(SLK);if(!c)return;const meta=Object.fromEntries(slMeta(c).map(([x,m])=>[x,m]));const lx={};
   Object.entries(SLD).forEach(([x,L])=>{const m0=meta[x];if(!m0||!L)return;const m={...m0,sets:L.nS||m0.sets};const o={...L};
     if(!(m.mode==="hold"||m.mode==="int"))setsSync(o,m);const has=(o.sets||[]).some(setDone)||o.ver||o.rpe||(o.fail&&Object.keys(o.fail).length);if(has)lx[x]=o});
