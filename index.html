@@ -795,6 +795,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-g{margin:10px 0;border:1px solid var(--line);border-radius:14px;padding:4px 12px}.b2-r{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.b2-r:first-child{border-top:0}.b2-r small{color:var(--muted);font-size:12px;padding-top:2px}.b2-r p{margin:0;font-size:14px;line-height:1.5}
 .b2-x{list-style:none;margin:8px 0 0;padding:0}.b2-x li{padding:10px 0;border-top:1px solid var(--line)}.b2-n{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;line-height:1.6}.b2-v{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.b2-v a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px;direction:ltr}
 .b2-c{margin:8px 0;padding:12px 14px}.b2-ch{display:flex;gap:10px;align-items:baseline;margin-bottom:6px}.b2-ch span{color:var(--muted);font-size:13px}.b2-pp{padding:8px 0;border-top:1px solid var(--line)}.b2-cond{display:inline-block;margin-inline-start:8px;color:var(--warn);font-size:13px}.b2-pp ul{margin:4px 0 0;padding-inline-start:18px;line-height:1.5}.b2-ok{color:var(--muted);font-size:13px;padding-top:8px;border-top:1px solid var(--line)}
+.b2-pn{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px}.b2-nk{color:var(--muted);font-size:13px;margin-top:2px}.b2-prev{margin-top:6px;font-size:13px;color:var(--warn)}.b2-in{display:grid;gap:6px;margin-top:8px}.b2-in label{display:grid;gap:4px;font-size:12px;color:var(--muted)}.b2-pr{display:grid;grid-template-columns:84px 1fr 1fr;gap:6px}.b2-pr2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.b2-in input::placeholder{color:var(--dim)}.b2-in input,.b2-in textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:7px 9px;font:inherit;font-size:13px;resize:vertical;min-width:0}.b2-st{color:var(--ok);font-size:12px}.b2-st:empty{display:none}.b2-pp{padding:12px 0}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -2820,9 +2821,17 @@ function renderBrief(){if(!ptLoaded)loadPT();if(ptSel&&PT[ptSel]){renderPT();ret
 function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLoaded&&!window._b2t){window._b2t=1;loadStudio()}
   const ros=Object.values(RR).filter(r=>r.date===b.date&&slug(r.cls||"")===slug(b.cls||"")).sort((a,c)=>(a.time||"").localeCompare(c.time||""));
   const L=t=>Array.isArray(t)?t:String(t||"").split(/\s+·\s+/).filter(Boolean);
-  const cards=ros.map(r=>{const ppl=(r.people||[]).map(p=>{const s=RO["a"+p.aid]||{},m=L(mods[p.aid]||s.cnote||"");return {n:p.name||"",cond:s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",m}});
-    const hot=ppl.filter(p=>p.cond||p.m.length),rest=ppl.filter(p=>!p.cond&&!p.m.length);
-    return `<div class="card b2-c"><div class="b2-ch"><b>${esc(r.time||"")}</b><span>${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}</span></div>${hot.map(p=>`<div class="b2-pp"><b>${esc(p.n)}</b>${p.cond?`<span class="b2-cond">${esc(p.cond)}</span>`:""}${p.m.length?`<ul>${p.m.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}</div>`).join("")}${rest.length?`<div class="b2-ok">${hot.length?"שאר המתאמנים":"אין הערות"}: ${rest.map(p=>esc(p.n)).join(" · ")}</div>`:""}</div>`}).join("");
+  const cards=ros.map(r=>{const key=`${r.date}-${String(r.time||"").replace(":","")}`;
+    return `<div class="card b2-c"><div class="b2-ch"><b>${esc(r.time||"")}</b><span>${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}</span></div>${(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},m=L(mods[p.aid]||s.cnote||""),cond=s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",bn=s.bn||{},cur=bn[key]||{};
+      const prev=Object.entries(bn).filter(([k,x])=>k!==key&&k<key&&k>=addDays(r.date,-21)&&(x.lvl||x.where||x.note)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
+      const V=f=>esc(cur[f]==null?"":cur[f]);
+      return `<div class="b2-pp"><div class="b2-pn"><b>${esc(p.name||"")}</b>${cond?`<span class="b2-cond">${esc(cond)}</span>`:""}</div>
+        ${m.length?`<ul>${m.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<div class="b2-nk">אין מה לדעת מראש</div>`}
+        ${prev?`<div class="b2-prev">בשיעור ${esc(fmt(prev[0].slice(0,10)))}: ${esc([prev[1].lvl?"כאב "+prev[1].lvl+"/10":"",prev[1].where,prev[1].ex,prev[1].gave?"קיבל: "+prev[1].gave:"",prev[1].note].filter(Boolean).join(" · "))}</div>`:""}
+        <div class="b2-in" data-bn="${esc(sid)}" data-bk="${esc(key)}" data-ba="${esc(p.aid)}" data-bnm="${esc(p.name||"")}">
+          <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="כאב (0-10)" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
+          <div class="b2-pr2"><input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}"><input type="text" data-f="note" placeholder="הערה" value="${V("note")}"></div>
+          <small class="b2-st">${cur.at?"נשמר ✓"+(cur.by?" · "+esc(cur.by):""):""}</small></div></div>`}).join("")}</div>`}).join("");
   return `<div class="bf">${head}
   <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div></section>
   ${wk.k?`<div class="b2-wk"><small>השבוע</small><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${wk.why?`<p>${esc(wk.why)}</p>`:""}</div>`:""}
@@ -2838,6 +2847,12 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
     <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div class="b2-r"><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
     <ul class="b2-x">${(x.x||[]).map(e=>`<li><div class="b2-n">${e.n||""}</div>${(e.v||[]).length?`<div class="b2-v">${e.v.map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</div>`:""}</li>`).join("")}</ul></section>`).join("")}
   </div>`}
+document.addEventListener("change",async ev=>{const f=ev.target.closest&&ev.target.closest("[data-f]"),box=f&&f.closest(".b2-in");if(!box||!db)return;
+  const sid=box.dataset.bn,key=box.dataset.bk,st=box.querySelector(".b2-st"),e={};box.querySelectorAll("[data-f]").forEach(x=>{const v=x.value.trim();if(v)e[x.dataset.f]=x.dataset.f==="lvl"?Math.max(0,Math.min(10,+v||0)):v});
+  const cur=RO[sid]||{name:box.dataset.bnm,aid:+box.dataset.ba,src:"app",added:TODAY},bn={...(cur.bn||{})};
+  if(Object.keys(e).length){e.at=new Date().toISOString();e.by=coachName||(window.pgMember&&pgMember.email&&pgMember.email())||"";bn[key]=e}else delete bn[key];
+  const keep=Object.keys(bn).sort().slice(-30),bn2={};keep.forEach(k=>bn2[k]=bn[k]);const up={...cur,bn:bn2};
+  st.textContent="שומר…";try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;st.textContent=e.at?"נשמר ✓":"נמחק"}catch(x){st.textContent="לא נשמר — נסה שוב"}});
 function renderBrief0(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
   const ids=winIds(BRF);
