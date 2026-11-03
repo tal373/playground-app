@@ -827,7 +827,7 @@ html[dir=ltr] #bfRs{direction:rtl}
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
   <button class="nb" type="button" data-tab="smy" hidden><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/></svg>סטודיו</button>
   <button class="nb" type="button" data-tab="prog" hidden><svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>תכנית</button>
-  <button class="nb" type="button" data-tab="brief" hidden><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>בריף</button>
+  <button class="nb" type="button" data-tab="brief" hidden><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>שיעור</button>
   <button class="nb" type="button" data-tab="class" hidden><svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM6 6h3M15 6h3v15H6V6M9 12h6M9 16h4"/></svg>שיעור</button>
     <button class="nb" type="button" data-tab="claude" hidden><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>Claude</button>
   <button class="nb" type="button" data-tab="coach" hidden><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v4h-7zM14 10h7v11h-7zM3 13h7v8H3z"/></svg>דשבורד</button>
@@ -2838,10 +2838,16 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
   return `<div class="bf">${head}
   <section class="bf-hero"><div><div class="bf-tag">${esc(b.eyebrow||"")}</div><h1>${esc(b.h1||"")}<span class="bf-en">${esc(b.h1en||"")}</span></h1></div></section>
   ${ros.length>1?`<div class="b2-tm">${ros.map(x=>`<button type="button" data-b2t="${esc(x.time||"")}" aria-pressed="${x===r}"><b>${esc(x.time||"")}</b><small>${esc(firstN(x.coach||""))}</small></button>`).join("")}</div>`:""}
-  ${sec("לפני השיעור",r?`${esc(r.time||"")} · ${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}`:"")}
   <div class="b2-wk">${wk.k?`<small>השבוע</small><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${wk.why?`<p>${esc(wk.why)}</p>`:""}`:""}${b.goal?`<small style="margin-top:10px">מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}`:""}</div>
-  <div class="card b2-c"><div class="b2-ch"><b>שימו לב</b></div>${att.length?att.map(x=>`<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}</div>${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${prevTxt(x.prev)}</div>`).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":r?"אין הערות מיוחדות לשיעור הזה":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
-  ${sec("בזמן השיעור","")}
+  ${sec("מתאמנים",r?`${esc(r.time||"")} · ${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}`:"")}
+  <div class="card b2-c">${ppl.length?ppl.map(x=>{const c=x.cur,V=f=>esc(c[f]==null?"":c[f]),has=!!(c.lvl||c.where||c.ex||c.gave||c.note),op=has||B2O[x.sid+"|"+key];
+    return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}${op?"":`<button type="button" class="b2-rep" data-b2o="${esc(x.sid+"|"+key)}">משהו לא כשורה</button>`}</div>
+      ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${prevTxt(x.prev)}
+      ${op?`<div class="b2-in" data-bn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
+        <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="רמת כאב" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
+        <input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}">
+        <textarea rows="2" data-f="note" placeholder="מה קרה">${V("note")}</textarea>
+        <small class="b2-st">${c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div>`:""}</div>`}).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
     <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
@@ -2849,14 +2855,7 @@ function brief2(b,head){const tl=b.tl||[],wk=b.week||{},mods=b.mods||{};if(!stLo
   ${(b.blocks||[]).map(x=>`<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${BPH[x.id]||"var(--hot)"}"><div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${esc(x.h||"")}</h2><small>${esc(x.f||"")}</small></div></div>
     <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div class="b2-r"><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
     <ul class="b2-x">${(x.x||[]).map(e=>`<li><div class="b2-n">${e.n||""}</div>${(e.v||[]).length?`<div class="b2-v">${e.v.map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</div>`:""}</li>`).join("")}</ul></section>`).join("")}
-  ${r?`${sec("אחרי השיעור","מדווחים רק אם משהו לא התנהל כשורה")}
-  <div class="card b2-c">${ppl.map(x=>{const c=x.cur,V=f=>esc(c[f]==null?"":c[f]),has=!!(c.lvl||c.where||c.ex||c.gave||c.note),op=has||B2O[x.sid+"|"+key];
-    return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}${op?"":`<button type="button" class="b2-rep" data-b2o="${esc(x.sid+"|"+key)}">משהו לא כשורה</button>`}</div>
-      ${op?`<div class="b2-in" data-bn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
-        <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="רמת כאב" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
-        <input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}">
-        <textarea rows="2" data-f="note" placeholder="מה קרה">${V("note")}</textarea>
-        <small class="b2-st">${c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div>`:""}</div>`}).join("")}</div>
+  ${r?`<div class="b2-sec"><span>סיום</span></div>
   <div class="card b2-c"><div class="b2-ch"><b>הערה לטל על השיעור</b></div><textarea class="b2-tal" id="b2Tal" data-rk="${esc(rk)}" rows="3" placeholder="איך היה השיעור, מה עבד, מה לא">${esc(B2TAL[rk]!=null?B2TAL[rk]:(sent&&sent.tal)||"")}</textarea>
     <button class="cta b2-send" type="button" id="b2Send" data-rk="${esc(rk)}" data-bk="${esc(key)}" data-rt="${esc(r.time||"")}">${sent?"נשלח ✓ · לשלוח שוב":"שלח לטל"}</button></div>`:""}
   </div>`}
@@ -2887,7 +2886,7 @@ function renderBrief0(){const v=$("v-brief");
   if(!bfLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadBriefs();return}
   const ids=winIds(BRF);
   if(!ids.length&&ARCH){v.innerHTML=`<div class="bf">${archSeg()}${archPick(BRF,null,"bsel")}</div>`;return}
-  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>בריף מאמנים</small><b>אין בריף עדיין</b></div></div><div class="card"><div class="empty">הבריף של השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>${archSeg()}`;return}
+  if(!ids.length){v.innerHTML=`<div class="hello"><span class="avatar">ב</span><div><small>שיעור</small><b>אין שיעור מוכן עדיין</b></div></div><div class="card"><div class="empty">השיעור הבא יופיע כאן ברגע שהוא מוכן.</div></div>${archSeg()}`;return}
   if(ARCH&&(!bfSel||!ids.includes(bfSel)))bfSel=ids[ids.length-1];if(!bfSel||!ids.includes(bfSel))bfSel=ids.find(id=>BRF[id].date===TODAY)||ids.find(id=>BRF[id].date>TODAY)||ids[ids.length-1];
   const b=BRF[bfSel],dn=BDONE[bfSel]||new Set(),blocks=b.blocks||[],tot=blocks.reduce((a,x)=>a+(x.x||[]).length,0),tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;
   if(b.v===2){v.innerHTML=brief2(b,`${archSeg()}${ARCH?archPick(BRF,bfSel,"bsel"):dayPick(BRF,bfSel,"bsel")}`);bfDraw();return}
