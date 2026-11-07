@@ -801,7 +801,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-more{margin-top:8px}.b2-ix{color:var(--muted);font-size:12px}.b2-in+.b2-in{border-top:1px dashed var(--line);padding-top:8px}
 .b2-link{background:none;border:0;color:var(--mes);font:inherit;font-size:13px;padding:6px 0;cursor:pointer}.b2-wt{display:flex;justify-content:space-between;align-items:center}.b2-pend{margin-top:8px;border:1px solid var(--warn);border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.5}.b2-pend b{color:var(--warn)}.b2-pb{display:flex;gap:8px;margin-top:6px}.b2-pb button{flex:1;background:#ffffff14;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px;font:inherit;font-size:13px}.b2-pb button:first-child{background:var(--ink);color:#07111f}.b2-ef{display:grid;gap:6px;margin-top:8px}.b2-ef input,.b2-ef textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:7px 9px;font:inherit;font-size:13px}.b2-back{background:none;border:0;color:var(--mes);font:inherit;padding:10px 0}.b2-day{display:grid;gap:3px;width:100%;text-align:right;margin:8px 0;padding:12px 14px;border:1px solid var(--line);color:var(--ink);font:inherit}.b2-day small{color:var(--muted);font-size:12px}.b2-day b{font-size:16px}.b2-day span{color:var(--muted);font-size:13px}
 .lt{display:flex;flex-wrap:wrap;gap:2px 10px;justify-content:space-between;font-size:13px;color:var(--muted);margin:2px 0 8px}.lt b{color:var(--ok);font-weight:700}
-small.ltp{display:block;color:var(--ok);font-size:12px;margin-top:2px}
+.mc-i small.ltp{display:block;color:var(--ok);font-size:12px;margin-top:2px;white-space:normal;overflow:visible}
 .spk{width:72px;height:22px;display:block;margin-top:4px;margin-inline-start:auto}.spk polyline{fill:none;stroke:var(--ok);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .sumc .sum-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.sumc .sum-h small{color:var(--muted);font-size:13px}
 .sum-r{display:flex;align-items:center;gap:8px}.sum-n{font-size:28px;font-weight:800;line-height:1}
@@ -912,7 +912,7 @@ const EN={
 /* auth */
 "כניסה לאפליקציה":"Sign in","אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
 "המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
-"הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
+"הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":"Sign up with the email on your studio membership and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
 "שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים":"Wrong email or password","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
 "קוד הצטרפות מההודעה של טל":"Join code from Tal's message","קיבלת קוד מטל?":"Got a code from Tal?","בהודעה מטל יש קוד הצטרפות של 6 ספרות. מקלידים אותו כאן, והתכנית או הנתונים שלך מהסטודיו יופיעו.":"Tal's message has a 6-digit join code. Type it here and your program or studio data will appear.","חיבור":"Connect","הקוד הוא 6 ספרות":"The code is 6 digits","מחובר ✓":"Connected ✓","יותר מדי ניסיונות. כתבו לטל":"Too many attempts. Message Tal","הקוד לא מתאים למייל הזה. בדקו שנרשמתם עם המייל שנתתם לטל":"This code doesn't match this email. Make sure you signed up with the email you gave Tal","צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
 "נשלח מייל. פותחים את הקישור שבו מהטלפון הזה":"Email sent. Open the link in it on this phone","נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים":"We sent you a confirmation email. After confirming, come back here and sign in",
@@ -1184,7 +1184,7 @@ let mode="in";
 function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
 function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
-  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.";
+  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.";
   $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aCode").hidden=m!=="up";$a("aRemL").hidden=m==="reset"||m==="forgot";
   $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
   $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
@@ -1315,7 +1315,7 @@ function tgtOf(x,o){if(!o)return null;const k=numKg(o.kg);if(k==null||k<=0)retur
   if(/דילו|deload/i.test(wk))return {kg:rd(k*0.9),t:"שבוע קל · משקל נמוך יותר"};
   if(r&&r<=8)return {kg:rd(k+st),t:"עולים"};if(r===9)return {kg:k,t:"אותו משקל, עוד חזרה"};if(r>=10)return {kg:k,t:"נשארים במשקל"};
   return {kg:k,t:`אם הרגיש קל: ${rd(k+st)}`}}
-const lastTxt=o=>[o.kg?`${o.kg} ק״ג${o.reps?" × "+o.reps:""}`:o.reps?`${o.reps} חזרות`:"",o.ver||"",o.rpe?`מאמץ ${o.rpe}`:"",o.d?fmt(o.d):""].filter(Boolean).join(" · ");
+const lastTxt=o=>[o.kg?`${o.kg} ק״ג${o.reps?" × "+o.reps:""}`:o.reps?`${o.reps} חזרות`:"",o.ver&&String(o.ver).length<=18?o.ver:"",o.rpe?`מאמץ ${o.rpe}`:"",o.d?fmt(o.d):""].filter(Boolean).join(" · ");
 const stWeek=k=>addDays(k,-fromKey(k).getDay());
 function attStats(){const att=((MEM&&MEM.att)||[]).filter(d=>d<=TODAY),ws=stWeek(TODAY),mo=TODAY.slice(0,7);
   const wk=att.filter(d=>d>=ws).length,mn=att.filter(d=>d.slice(0,7)===mo).length;let st=0,w=ws;if(!att.some(d=>d>=w))w=addDays(w,-7);
@@ -1365,7 +1365,7 @@ function studioBody(full){
     ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
     ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
     ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
-      const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">בפעם הקודמת · ${esc(lastTxt(lo))}${tg?` · היום: ${tg.kg} ק״ג`:""}</small>`:"";
+      const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">${tg?`היום: ${tg.kg} ק״ג · `:""}בפעם הקודמת: ${esc(lo.kg?lo.kg+" ק״ג"+(lo.reps?" × "+lo.reps:""):(lo.reps||"")+" חזרות")}</small>`:"";
       return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div>`:""}
   </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
   ${full&&liveCls()?"":slSection()}
