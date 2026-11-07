@@ -800,6 +800,16 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-mods{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:4px}.b2-mods li{display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:10px;padding:6px 10px;background:#ffffff0d;border-radius:10px;font-size:14px;line-height:1.45}.b2-mods b{direction:ltr;text-align:right;unicode-bidi:isolate}.b2-rep{margin-inline-start:auto;background:none;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:inherit;font-size:12px}.b2-pn{align-items:center}
 .b2-more{margin-top:8px}.b2-ix{color:var(--muted);font-size:12px}.b2-in+.b2-in{border-top:1px dashed var(--line);padding-top:8px}
 .b2-link{background:none;border:0;color:var(--mes);font:inherit;font-size:13px;padding:6px 0;cursor:pointer}.b2-wt{display:flex;justify-content:space-between;align-items:center}.b2-pend{margin-top:8px;border:1px solid var(--warn);border-radius:12px;padding:8px 10px;font-size:13px;line-height:1.5}.b2-pend b{color:var(--warn)}.b2-pb{display:flex;gap:8px;margin-top:6px}.b2-pb button{flex:1;background:#ffffff14;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px;font:inherit;font-size:13px}.b2-pb button:first-child{background:var(--ink);color:#07111f}.b2-ef{display:grid;gap:6px;margin-top:8px}.b2-ef input,.b2-ef textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:7px 9px;font:inherit;font-size:13px}.b2-back{background:none;border:0;color:var(--mes);font:inherit;padding:10px 0}.b2-day{display:grid;gap:3px;width:100%;text-align:right;margin:8px 0;padding:12px 14px;border:1px solid var(--line);color:var(--ink);font:inherit}.b2-day small{color:var(--muted);font-size:12px}.b2-day b{font-size:16px}.b2-day span{color:var(--muted);font-size:13px}
+.lt{display:flex;flex-wrap:wrap;gap:2px 10px;justify-content:space-between;font-size:13px;color:var(--muted);margin:2px 0 8px}.lt b{color:var(--ok);font-weight:700}
+small.ltp{display:block;color:var(--ok);font-size:12px;margin-top:2px}
+.spk{width:72px;height:22px;display:block;margin-top:4px;margin-inline-start:auto}.spk polyline{fill:none;stroke:var(--ok);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sumc .sum-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}.sumc .sum-h small{color:var(--muted);font-size:13px}
+.sum-r{display:flex;align-items:center;gap:8px}.sum-n{font-size:28px;font-weight:800;line-height:1}
+.wkd{display:flex;gap:6px;margin-inline-start:auto}.wkd i{width:12px;height:12px;border-radius:50%;background:var(--s3)}.wkd i.on{background:var(--ok)}
+.sum-up{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:14px}.sum-up b{font-weight:700}
+.sumc [data-share]{margin-top:12px;width:100%}
+.fbk{display:flex;flex-direction:column;gap:8px;margin:12px 0 10px}.fbk input,.fbk textarea{width:100%;box-sizing:border-box}
+.mship{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin:0 0 4px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -861,7 +871,7 @@ html[dir=ltr] #bfRs{direction:rtl}
     <form id="aForm" novalidate>
       <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
       <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
-      <input id="aCode" type="text" inputmode="numeric" dir="ltr" autocomplete="one-time-code" maxlength="6" placeholder="קוד הצטרפות מההודעה של טל" hidden>
+      <input id="aCode" type="text" inputmode="numeric" dir="ltr" autocomplete="one-time-code" maxlength="6" placeholder="קוד הצטרפות (מההודעה בקבוצה)" hidden>
       <label class="remember" id="aRemL"><input type="checkbox" id="aRem" checked> זכור אותי</label>
       <button class="big" type="submit" id="aGo">כניסה</button>
     </form>
@@ -893,6 +903,8 @@ btns();
 
 const EN={
 /* shell */
+"קוד הצטרפות":"Join code","את הקוד של 6 ספרות שלחנו בקבוצת הסטודיו. מקלידים אותו כאן, והנתונים שלך מהסטודיו יופיעו.":"The 6-digit code is in the studio group message. Type it here and your studio data will appear.","קוד הצטרפות (מההודעה בקבוצה)":"Join code (from the group message)","הקוד לא נכון, או שהמייל לא רשום אצלנו בארבוקס. בדקו את הקוד ושנרשמתם עם המייל של המנוי":"Wrong code, or this email isn't the one on your studio membership. Check the code and that you signed up with your membership email",
+"בפעם הקודמת":"Last time","עולים":"Go up","אותו משקל, עוד חזרה":"Same weight, one more rep","נשארים במשקל":"Stay at this weight","שבוע קל · משקל נמוך יותר":"Easy week · lighter weight","השבוע":"This week","שיעורים":"classes","שבועות ברצף":"weeks in a row","החודש עד היום":"Month to date","עמדת ביעד השבועי ✓":"Weekly goal reached ✓","שיתוף":"Share","איך היה השיעור?":"How was the class?","בלי כאב":"No pain","כאב קל":"Mild pain","בינוני":"Moderate","חזק":"Strong","איפה כאב? (למשל ברך ימין)":"Where did it hurt? (e.g. right knee)","באיזה תרגיל?":"In which exercise?","הערה לטל ולמאמן (לא חובה)":"Note for Tal and the coach (optional)","כשתרשמו משקלים, כאן יופיע מה עלה החודש.":"Once you log weights, what went up this month will show here.","בתוקף עד":"Valid until","עוד שיעור אחד השבוע לפי המנוי":"One more class this week on your plan","סיכום":"Summary","מה עלה":"What went up","הועתק ✓":"Copied ✓","ינואר":"January","פברואר":"February","מרץ":"March","אפריל":"April","מאי":"May","יוני":"June","יולי":"July","אוגוסט":"August","ספטמבר":"September","אוקטובר":"October","נובמבר":"November","דצמבר":"December",
 "ליווי אישי":"Personal coaching","טל ליפשטט":"Tal Lipshtat","מתחבר":"Connecting","מחובר":"Connected","מתעדכן בזמן אמת":"Live","לא נשמר כלום":"nothing is saved","חזרה ללוח":"Back to dashboard",
 "ליווי אישי של טל ליפשטט":"Personal coaching by Tal Lipshtat","אימון, תזונה ושיקום":"Training, nutrition and rehab",
 "היום":"Today","אימון":"Workout","תפריט":"Menu","מדדים":"Progress","סטודיו":"Studio","תכנית":"Program","בריף":"Brief","שיעור":"Class","דשבורד":"Dashboard",
@@ -1293,8 +1305,47 @@ const UPS=[["menu","תפריט ותזונה אישית","תפריט שבנוי �
 const LOCK='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const ytId=u=>{const m=String(u||"").match(/(?:v=|shorts\/|youtu\.be\/)([\w-]{6,})/);return m?m[1]:""}; const ytTh=u=>{const i=ytId(u);return i?`https://i.ytimg.com/vi/${i}/hqdefault.jpg`:""}; const ytOk=u=>/^https:\/\/(www\.)?(youtube\.com\/(watch\?v=|shorts\/)|youtu\.be\/)[\w-]{6,}/.test(String(u||""));
 const numKg=v=>{const m=String(v||"").replace(",",".").match(/\d+(\.\d+)?/);return m?+m[0]:null};
+
+const MON=["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"];
+const shortEx=x=>exName(x).replace(/\s*\([^)]*\)/g,"").replace(/\s+-\s+.*$/,"").trim()||exName(x);
+const kgStep=(x,ver)=>{const v=String(ver||"");if(/\bBB\b|barbell|מוט/i.test(v))return 2.5;if(v)return 2;return /\bBB\b/.test(x)&&!/\b(DB|KB)\b/.test(x)?2.5:2};
+function lastOf(x){const lx=(MEM&&MEM.lx)||{},has=o=>o&&(o.kg||o.reps);if(has(lx[x]))return lx[x];const n=shortEx(x).toLowerCase();let best=null;
+  Object.entries(lx).forEach(([k,o])=>{if(has(o)&&shortEx(k).toLowerCase()===n&&(!best||(o.d||"")>(best.d||"")))best=o});return best}
+function tgtOf(x,o){if(!o)return null;const k=numKg(o.kg);if(k==null||k<=0)return null;const st=kgStep(x,o.ver),wk=(MEM&&MEM.wk&&MEM.wk.k)||"",r=+o.rpe||0,rd=v=>Math.round(Math.round(v/st)*st*10)/10;
+  if(/דילו|deload/i.test(wk))return {kg:rd(k*0.9),t:"שבוע קל · משקל נמוך יותר"};
+  if(r&&r<=8)return {kg:rd(k+st),t:"עולים"};if(r===9)return {kg:k,t:"אותו משקל, עוד חזרה"};if(r>=10)return {kg:k,t:"נשארים במשקל"};
+  return {kg:k,t:`אם הרגיש קל: ${rd(k+st)}`}}
+const lastTxt=o=>[o.kg?`${o.kg} ק״ג${o.reps?" × "+o.reps:""}`:o.reps?`${o.reps} חזרות`:"",o.ver||"",o.rpe?`מאמץ ${o.rpe}`:"",o.d?fmt(o.d):""].filter(Boolean).join(" · ");
+const stWeek=k=>addDays(k,-fromKey(k).getDay());
+function attStats(){const att=((MEM&&MEM.att)||[]).filter(d=>d<=TODAY),ws=stWeek(TODAY),mo=TODAY.slice(0,7);
+  const wk=att.filter(d=>d>=ws).length,mn=att.filter(d=>d.slice(0,7)===mo).length;let st=0,w=ws;if(!att.some(d=>d>=w))w=addDays(w,-7);
+  while(st<60&&att.some(d=>d>=w&&d<addDays(w,7))){st++;w=addDays(w,-7)}return {att,wk,mn,st,q:(MEM&&MEM.quota)||null}}
+function histBy(log){const h={};(log||[]).slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null&&k>0)(h[shortEx(x)]=h[shortEx(x)]||[]).push({d:l.date,k})}));return h}
+function liftUps(h,from,to){const out=[];Object.entries(h).forEach(([x,a])=>{const pre=a.filter(p=>p.d<from),inn=a.filter(p=>p.d>=from&&p.d<=(to||TODAY));if(!pre.length||!inn.length)return;
+  const b0=pre[pre.length-1].k,b1=Math.max(...inn.map(p=>p.k));if(b1>b0)out.push({x,a:b0,b:b1})});return out.sort((p,q)=>(q.b-q.a)-(p.b-p.a)).slice(0,4)}
+const sparkL=a=>{if(!a||a.length<2)return "";const v=a.map(p=>p.k),mn=Math.min(...v),mx=Math.max(...v),W=72,H=22,sp=mx-mn||1;
+  const pts=v.map((y,i)=>`${(i/(v.length-1)*W).toFixed(1)},${(H-3-(y-mn)/sp*(H-6)).toFixed(1)}`).join(" ");return `<svg class="spk" viewBox="0 0 ${W} ${H}" aria-hidden="true" dir="ltr"><polyline points="${pts}"/></svg>`};
+const upsHtml=u=>u.length?`<div class="sum-up">${u.map(z=>`<span><b class="en">${esc(z.x)}</b> · מ-${z.a} ל-${z.b} ק״ג</span>`).join("")}</div>`:"";
+function shareTxt(){const s=attStats(),h=histBy((MEM&&MEM.log)||[]),u=liftUps(h,TODAY.slice(0,7)+"-01");
+  return [`${MON[+TODAY.slice(5,7)-1]} ב-Playground Studio`,`${s.mn} שיעורים · ${s.st} שבועות ברצף`,...u.map(z=>`${z.x}: מ-${z.a} ל-${z.b} ק״ג`)].join("\n")}
+function sumCards(){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=stWeek(TODAY),mo=TODAY.slice(0,7),wk=MEM.wk||{},left=s.q?Math.max(0,s.q-s.wk):0;
+  const dots=s.q?Array.from({length:Math.max(s.q,s.wk)},(_,i)=>`<i class="${i<s.wk?"on":""}"></i>`).join(""):"";
+  let o=`<div class="card sumc"><div class="sum-h"><b>השבוע</b>${wk.k?`<small>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</small>`:""}</div>
+    <div class="sum-r"><span class="sum-n">${s.wk}${s.q?"/"+s.q:""}</span><span>שיעורים</span>${dots?`<span class="wkd">${dots}</span>`:""}</div>
+    ${s.q&&s.wk>=s.q?`<p class="hint" style="margin:8px 0 0;color:var(--ok)">עמדת ביעד השבועי ✓</p>`:left===1?`<p class="hint" style="margin:8px 0 0">עוד שיעור אחד השבוע לפי המנוי</p>`:left>1?`<p class="hint" style="margin:8px 0 0">עוד ${left} שיעורים השבוע לפי המנוי</p>`:""}
+    ${upsHtml(liftUps(h,ws))}</div>`;
+  const dd=+TODAY.slice(8,10);if(dd<=7){const pm=addDays(mo+"-01",-1).slice(0,7),pa=s.att.filter(d=>d.slice(0,7)===pm).length,pu=liftUps(h,pm+"-01",pm+"-31");
+    if(pa||pu.length)o+=`<div class="card sumc"><div class="sum-h"><b>סיכום ${MON[+pm.slice(5)-1]}</b></div><div class="kpis"><div class="kpi"><b>${pa}</b><small>שיעורים</small></div><div class="kpi"><b>${pu.length}</b><small>תרגילים עלו</small></div></div>${upsHtml(pu)}</div>`}
+  const um=liftUps(h,mo+"-01");
+  o+=`<div class="card sumc"><div class="sum-h"><b>${MON[+mo.slice(5)-1]}</b><small>החודש עד היום</small></div>
+    <div class="kpis"><div class="kpi"><b>${s.mn}</b><small>שיעורים</small></div><div class="kpi"><b>${s.st}</b><small>שבועות ברצף</small></div></div>
+    ${um.length?upsHtml(um):`<p class="hint" style="margin:8px 0 0">כשתרשמו משקלים, כאן יופיע מה עלה החודש.</p>`}
+    ${s.mn?`<button type="button" class="ghost" data-share="1">שיתוף</button>`:""}</div>`;
+  if(MEM.plan)o+=`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`;
+  return o}
+const liveCls=()=>SRC2.find(c=>c.date===TODAY&&nowMin()>=toMin(c.time)-20&&nowMin()<=toMin(c.time)+120);
 async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
-  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[]}
+  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
 function studioBody(full){
@@ -1305,22 +1356,25 @@ function studioBody(full){
   const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
   return `
   ${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
-  ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קיבלת קוד מטל?</b><p class="hint" style="margin:6px 0 10px">בהודעה מטל יש קוד הצטרפות של 6 ספרות. מקלידים אותו כאן, והתכנית או הנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
+  ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קוד הצטרפות</b><p class="hint" style="margin:6px 0 10px">את הקוד של 6 ספרות שלחנו בקבוצת הסטודיו. מקלידים אותו כאן, והנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
   ${!full||MEM&&(memPv||MEMS==="in")||MEMS==="code"?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
+  ${full&&liveCls()?slSection():""}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
   ${cp.length?cp.map(c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="small"?"Small Group":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
     ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
     ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
     ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
-      return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small></span></div>`}).join("")}</div>`:""}
+      const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">בפעם הקודמת · ${esc(lastTxt(lo))}${tg?` · היום: ${tg.kg} ק״ג`:""}</small>`:"";
+      return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div>`:""}
   </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
-  ${slSection()}
+  ${full&&liveCls()?"":slSection()}
   <div class="sh"><h2>הנתונים שלי</h2>${log.length?`<span>${log.length} שיעורים</span>`:""}</div>
+  ${sumCards()}
   ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
     <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0;
       return `<div class="ml-r"><div><b class="en">${esc(exName(x).replace(/\s*\([^)]*\)/g,"").replace(/\s+-\s+.*$/,"").trim()||exName(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
-        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}</div></div>`}).join("")}</div>`
+        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${sparkL(h)}</div></div>`}).join("")}</div>`
     :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון שלי״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
   ${full?`  <div class="sh"><h2>ליווי אישי</h2></div>
   <p class="hint lead">חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.</p>
@@ -1332,7 +1386,7 @@ function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","
   v.innerHTML=studioBody(true);const kg=$("kGo");if(kg)kg.onclick=async()=>{const k=$("kIn").value.replace(/\D/g,"");if(k.length!==6){$("kErr").textContent="הקוד הוא 6 ספרות";return}
     kg.disabled=true;$("kErr").textContent="";const r=await pgMember.claim(k);kg.disabled=false;
     if(r.prog||(r.lk&&r.lk.state&&!["code","none"].includes(r.lk.state))){toast("מחובר ✓");setTimeout(()=>location.reload(),600)}
-    else $("kErr").textContent=r.lk&&r.lk.locked?"יותר מדי ניסיונות. כתבו לטל":"הקוד לא מתאים למייל הזה. בדקו שנרשמתם עם המייל שנתתם לטל"}}
+    else $("kErr").textContent=r.lk&&r.lk.locked?"יותר מדי ניסיונות. כתבו לטל":"הקוד לא נכון, או שהמייל לא רשום אצלנו בארבוקס. בדקו את הקוד ושנרשמתם עם המייל של המנוי"}}
 function renderSmy(){const v=$("v-smy");if(preview){if(!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>${isPaused()?"הליווי מוקפא":"לא מנוי בסטודיו"}</h1><p>${pvStLoading?"טוען…":isPaused()?"המתאמן לא מנוי פעיל בסטודיו, אז כרגע אין לו מה לראות באפליקציה.":"המתאמן לא מסומן ״כן״ ברשימת הלקוחות, או שאין לו מנוי פעיל בארבוקס."}</p></div>`;return}
     v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false);return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
   if(isPaused()&&!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>הליווי מוקפא כרגע</h1><p>כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.</p></div>`;return}
@@ -1348,21 +1402,30 @@ function slMeta(c){const out=[];exBlocks(c).forEach(b=>{if(!b.str)return;b.items
 function slVars(c,x){const v=varsOf0(x);if(v.length)return v;const nx=exName(x).toLowerCase();
   const hit=(c.brief||[]).find(e=>{const nm=exName(exClean(strip(e.n))).toLowerCase();return nm===nx||nm.includes(nx.slice(0,16))||nx.includes(nm.slice(0,16))});
   if(hit&&Array.isArray(hit.g)&&hit.g.length)return hit.g.map(g=>Array.isArray(g)?g[0]:g);return libVars(x)}
-function slOpen(k){SLK=k;const c=slCls(k);SLD=JSON.parse(JSON.stringify((c&&c.mine&&c.mine.lx)||{}))}
+let SLFB={};
+function fbBlock(c){const f=SLFB,P=[[0,"בלי כאב"],[2,"כאב קל"],[5,"בינוני"],[8,"חזק"]],ex=slMeta(c).map(e=>e[0]);
+  return `<div class="fbk"><span class="lbl blk">איך היה השיעור?</span>
+    <div class="chips sm">${P.map(([v,t])=>`<button type="button" data-fbp="${v}" aria-pressed="${f.pain===v}">${t}</button>`).join("")}</div>
+    ${f.pain>0?`<input type="text" data-fbk="where" value="${esc(f.where||"")}" placeholder="איפה כאב? (למשל ברך ימין)">
+      ${ex.length?`<span class="hint">באיזה תרגיל?</span><div class="chips sm">${ex.map(x=>`<button type="button" data-fbx="${esc(shortEx(x))}" aria-pressed="${f.ex===shortEx(x)}">${esc(shortEx(x))}</button>`).join("")}</div>`:""}`:""}
+    <textarea data-fbk="note" rows="2" placeholder="הערה לטל ולמאמן (לא חובה)">${esc(f.note||"")}</textarea></div>`}
+function slOpen(k){SLK=k;const c=slCls(k);SLD=JSON.parse(JSON.stringify((c&&c.mine&&c.mine.lx)||{}));SLFB=JSON.parse(JSON.stringify((c&&c.mine&&c.mine.fb)||{}))}
 function slForm(){const c=slCls(SLK);if(!c)return "";const ex=slMeta(c),ro=!!(memPv||preview);let blk="";
   return `<div class="card slf"><div class="sl-h"><b>${esc(c.cls||"")} · ${esc(c.date===TODAY?"היום":fmt(c.date))} ${esc(c.time||"")}</b>${c.title?`<small class="en">${esc(c.title)}</small>`:""}</div>
     ${ex.length?ex.map(([x,m0,bn])=>{const L=SLD[x]||{},m={...m0,sets:L.nS||m0.sets},vs=slVars(c,x),head=bn!==blk?(blk=bn,`<span class="lbl blk">${esc(bn.split("·").pop().trim())}</span>`):"";
-      const tm=m.mode==="hold"||m.mode==="int",a=tm?null:setsOf(L,m),f=L.fail||{};
+      const tm=m.mode==="hold"||m.mode==="int",a=tm?null:setsOf(L,m),f=L.fail||{},lo=lastOf(x),tg=tm?null:tgtOf(x,lo);
       return head+`<div class="lift-r"><label>${esc(exName(x))}</label>
+        ${lo?`<div class="lt"><span>בפעם הקודמת · ${esc(lastTxt(lo))}</span>${tg?`<b>היום: ${tg.kg} ק״ג · ${esc(tg.t)}</b>`:""}</div>`:""}
         ${vs.length?`<div class="chips sm ver">${vs.map(v=>`<button type="button" data-sver="${esc(v)}" data-sx="${esc(x)}" aria-pressed="${L.ver===v}">${esc(v)}</button>`).join("")}</div>`:""}
         <div class="sets"><div class="sets-h"><span>${m.sets} סבבים${m.warm&&!tm?" + חימום":""}${tm?(m.mode==="hold"?" · החזקה":` · ${m.work} שנ׳ עבודה`):m.reps?` · ${esc(m.reps)} חזרות`:""}</span>
           <span class="sadj"><button type="button" data-sadd2="-1" data-sx="${esc(x)}"${m.sets<=1?" disabled":""}>−</button><button type="button" data-sadd2="1" data-sx="${esc(x)}">+ סט</button></span></div>
         ${tm?`<div class="tb-r">${Array.from({length:m.sets},(_,k)=>`<button type="button" data-sfail="${k}" data-sx="${esc(x)}" class="${f[k]!=null?"no":""}">סבב ${k+1} ${f[k]!=null?"· לא סיימתי":"✓"}</button>`).join("")}</div>`
           :a.map((o,k)=>`<div class="set-r${setDone(o)?" done":""}"><span class="set-l">${setLbl(m,k)}</span>
-            <input type="text" inputmode="decimal" data-sfk="kg" data-ssi="${k}" data-sx="${esc(x)}" value="${esc(o.kg||"")}" placeholder="ק״ג / BW">
+            <input type="text" inputmode="decimal" data-sfk="kg" data-ssi="${k}" data-sx="${esc(x)}" value="${esc(o.kg||"")}" placeholder="${tg&&(!m.warm||k)?esc(String(tg.kg)):"ק״ג / BW"}">
             <input type="text" inputmode="numeric" class="rp" data-sfk="reps" data-ssi="${k}" data-sx="${esc(x)}" value="${esc(o.reps||"")}" placeholder="${esc(m.reps||"חזרות")}"></div>`).join("")}</div>
         <div class="rpe"><span>מאמץ</span><div class="chips sm">${[6,7,8,9,10].map(n=>`<button type="button" data-srpe="${n}" data-sx="${esc(x)}" aria-pressed="${L.rpe===n}">${n}</button>`).join("")}</div></div></div>`}).join("")
       :`<div class="empty">אין תרגילי כוח לרישום באימון הזה</div>`}
+    ${fbBlock(c)}
     <p class="hint" style="margin:0">מאמץ: 6 = עוד 4 חזרות בטנק · 8 = עוד 2 · 10 = לא הייתה עוד חזרה. בסבב החימום רושמים את המשקל הקל שהתחממת איתו.</p>
     ${ro?`<p class="hint">מצב שיקוף · לא נשמר</p>`:`<div class="rp-f"><button class="ghost" type="button" data-sclose="1">סגירה</button><button class="cta" type="button" data-ssave="1">${c.mine?"עדכון":"שמירה"}</button></div>`}</div>`}
 function slSection(){if(!(MEM&&(MEMS==="in"||memPv)))return "";
@@ -1373,12 +1436,17 @@ function slSection(){if(!(MEM&&(MEMS==="in"||memPv)))return "";
 async function slSave(btn){const c=slCls(SLK);if(!c)return;const meta=Object.fromEntries(slMeta(c).map(([x,m])=>[x,m]));const lx={};
   Object.entries(SLD).forEach(([x,L])=>{const m0=meta[x];if(!m0||!L)return;const m={...m0,sets:L.nS||m0.sets};const o={...L};
     if(!(m.mode==="hold"||m.mode==="int"))setsSync(o,m);const has=(o.sets||[]).some(setDone)||o.ver||o.rpe||(o.fail&&Object.keys(o.fail).length);if(has)lx[x]=o});
-  if(!Object.keys(lx).length){toast("עוד לא רשמת כלום");return}
-  btn.disabled=true;try{const d={date:c.date,time:c.time,cls:c.cls,key:c.key,lx,at:new Date().toISOString()};await db.doc(`t/${uid}/slog/${c.key}`).set(d);c.mine=d;
+  const fb=SLFB&&(SLFB.pain!=null||String(SLFB.note||"").trim())?{pain:SLFB.pain||0,where:String(SLFB.where||"").trim(),ex:SLFB.pain>0?(SLFB.ex||""):"",note:String(SLFB.note||"").trim()}:null;
+  if(!Object.keys(lx).length&&!fb){toast("עוד לא רשמת כלום");return}
+  btn.disabled=true;try{const d={date:c.date,time:c.time,cls:c.cls,key:c.key,lx,at:new Date().toISOString()};if(fb)d.fb=fb;await db.doc(`t/${uid}/slog/${c.key}`).set(d);c.mine=d;
     toast("נשמר ✓");SLK=null;const a=await pgMember.me();if(a)MEM=a;render()}catch(e){toast("לא נשמר, נסו שוב")}finally{btn.disabled=false}}
 document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy"))return;
   const cl=t.closest("[data-scls]");if(cl){if(SLK===cl.dataset.scls)SLK=null;else slOpen(cl.dataset.scls);render();return}
-  if(!t.closest(".slf"))return;const x=(t.closest("[data-sx]")||{dataset:{}}).dataset.sx;const L=x?(SLD[x]=SLD[x]||{}):null;
+  const sh=t.closest("[data-share]");if(sh){const tx=shareTxt();if(navigator.share)navigator.share({text:tx}).catch(()=>{});else{try{navigator.clipboard.writeText(tx);toast("הועתק ✓")}catch(e){}}return}
+  if(!t.closest(".slf"))return;
+  const fp=t.closest("[data-fbp]");if(fp){const v=+fp.dataset.fbp;SLFB.pain=SLFB.pain===v?null:v;if(!(SLFB.pain>0)){SLFB.where="";SLFB.ex=""}render();return}
+  const fx=t.closest("[data-fbx]");if(fx){SLFB.ex=SLFB.ex===fx.dataset.fbx?"":fx.dataset.fbx;render();return}
+  const x=(t.closest("[data-sx]")||{dataset:{}}).dataset.sx;const L=x?(SLD[x]=SLD[x]||{}):null;
   const c=slCls(SLK),m0=x&&c?(slMeta(c).find(e=>e[0]===x)||[])[1]:null;
   const v=t.closest("[data-sver]");if(v){L.ver=L.ver===v.dataset.sver?"":v.dataset.sver;render();return}
   const r=t.closest("[data-srpe]");if(r){const n=+r.dataset.srpe;L.rpe=L.rpe===n?null:n;render();return}
@@ -1387,7 +1455,7 @@ document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.close
     if(Array.isArray(L.sets))L.sets=L.sets.slice(0,setTot({...m0,sets:n}));render();return}
   if(t.closest("[data-sclose]")){SLK=null;render();return}
   const sv=t.closest("[data-ssave]");if(sv){slSave(sv);return}});
-document.addEventListener("input",ev=>{const t=ev.target;if(!t.dataset||!t.dataset.sfk||!t.closest(".slf"))return;const x=t.dataset.sx,c=slCls(SLK),e=c&&slMeta(c).find(z=>z[0]===x);if(!e)return;
+document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.fbk&&t.closest(".slf")){SLFB[t.dataset.fbk]=t.value;return}if(!t.dataset||!t.dataset.sfk||!t.closest(".slf"))return;const x=t.dataset.sx,c=slCls(SLK),e=c&&slMeta(c).find(z=>z[0]===x);if(!e)return;
   const L=SLD[x]=SLD[x]||{},m={...e[1],sets:L.nS||e[1].sets},a=setsOf(L,m);a[+t.dataset.ssi][t.dataset.sfk]=t.value;L.sets=a;const row=t.closest(".set-r");if(row)row.classList.toggle("done",setDone(a[+t.dataset.ssi]))});
 
 /* ===== leads (owner) ===== */
