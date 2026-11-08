@@ -1630,7 +1630,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
     return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
-  ${hs.length?`<div class="sh"><h2>הרגלים</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
+  ${hs.length?`<div class="sh"><h2>${esc(prof.habitsTitle||"הרגלים")}</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
   <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}
 function habitHTML(x,day){const v=day.h[x.id];
   if(x.type==="toggle")return `<button class="tog" type="button" data-h="${x.id}" aria-pressed="${!!v}"><span class="bx">${CHK}</span><span>${esc(x.t)}${x.d?`<small>${esc(x.d)}</small>`:""}</span></button>`;
@@ -2181,6 +2181,7 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
     if(h.type==="toggle"&&h.flag){const n=vals.filter(Boolean).length;if(n>=(h.flag||3))flags.push(["var(--warn)",`${h.t}: ${n} מתוך 7 ימים`])}
     if(h.type==="toggle"&&h.weekly){const n=[...Array(7)].map((_,i)=>addDays(wk,i)).filter(k=>k<=TODAY&&D(k)&&D(k).h[h.id]).length;if(n>h.weekly)flags.push(["var(--warn)",`${h.t}: ${n} השבוע (היעד ${h.weekly})`])}
     if(h.type==="counter"&&h.max){const n=vals.filter(v=>v>h.max).length;if(n)flags.push(["var(--warn)",`${h.t} מעל ${h.max} ב-${n} ימים`])}
+    if(h.type==="choice"&&h.warnFrom!=null){const xs=vals.filter(v=>v!=null&&v!==""&&+v>=h.warnFrom).map(Number);if(xs.length)flags.push(["var(--bad)",`${h.t.replace(/\s*\(0–10\)/,"")}: ${Math.max(...xs)}/10 ${xs.length===1?"ביום אחד":"ב-"+xs.length+" ימים"} השבוע`])}
     if(h.type==="choice"&&h.warnIf){const n=vals.filter(v=>v===h.warnIf).length;if(n)flags.push(["var(--warn)",`${h.t}: ״${(h.opts.find(o=>o[0]===h.warnIf)||[])[1]}״ ב-${n} ימים`])}
     if(h.type==="cups"&&h.target){const xs=vals.filter(v=>v>0);if(xs.length>=3){const avg=xs.reduce((a,b)=>a+b,0)/xs.length;if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${h.liters?Lit(Math.round(avg))+" ל׳":Math.round(avg)} (היעד ${h.liters?Lit(h.target)+" ל׳":h.target})`])}}});
   hs.filter(h=>h.type==="num"&&h.target).forEach(h=>{const xs=last7.map(k=>D(k)?+D(k).h[h.id]||0:0).filter(v=>v>0);if(xs.length>=3){const avg=Math.round(xs.reduce((a,b)=>a+b,0)/xs.length);if(avg<h.target)flags.push(["var(--mes)",`${h.t}: ממוצע ${avg.toLocaleString("en-US")} (היעד ${Number(h.target).toLocaleString("en-US")})`])}});
