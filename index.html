@@ -2142,9 +2142,10 @@ $("v-measure").addEventListener("click",ev=>{const b=ev.target.closest(".five bu
   wkAns[q]=+b.dataset.v;[...b.parentNode.children].forEach(x=>x.setAttribute("aria-pressed",x===b))});
 
 /* ===== COACH ===== */
-const C={},ACK={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[],INV=[];
+const C={},ACK={};let coachSel=null,coachLoading=false,coachAt=null,tpls=[],names={},meta={},confirmDel=null,adminMails=[],INV=[],LINKED=new Set(),coachMails=[];
 async function loadCoach(){if(!db||coachLoading)return;coachLoading=true;setSave("טוען…");
-  try{const [ps,ts,tl,mt,iv]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]})),db.collection("inv").get().catch(()=>({docs:[]}))]);
+  try{const [ps,ts,tl,mt,iv,mm]=await Promise.all([db.collection("p").get(),db.collection("t").get(),db.collection("tpl").get(),db.collection("meta").get().catch(()=>({docs:[]})),db.collection("inv").get().catch(()=>({docs:[]})),db.collection("m").get().catch(()=>({docs:[]}))]);
+    LINKED=new Set(mm.docs.map(d=>d.id));try{coachMails=(await db.coachList()||[]).map(x=>lowN(x.email||""))}catch(e){}
     INV=iv.docs.map(d=>({email:lowN(d.id),...d.data()})).filter(x=>x.tpl&&!x.uid);
     meta=Object.fromEntries(mt.docs.map(d=>[d.id,d.data()]));
     try{const a=await db.doc("cfg/acks").get();Object.keys(ACK).forEach(k=>delete ACK[k]);if(a.exists)Object.assign(ACK,a.data()||{})}catch(e){}
@@ -2194,7 +2195,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   if(coachSel==="__rec"){renderCoachRecipes();return}
   if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
   const ids=Object.keys(C).filter(id=>!adminMails.includes(((C[id].t||{}).email||"").toLowerCase())||C[id].prof),A=Object.fromEntries(ids.map(id=>[id,analyze(id)]));
-  const act=ids.filter(id=>C[id].prof),pend=ids.filter(id=>!C[id].prof),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
+  const act=ids.filter(id=>C[id].prof),studioOnly=id=>LINKED.has(id)||coachMails.includes(lowN(((C[id].t||{}).email)||"")),pend=ids.filter(id=>!C[id].prof&&!studioOnly(id)),todayN=act.filter(id=>A[id].lastAct===TODAY).length,att=act.filter(id=>A[id].flags.length).length;
   const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id,f[1]])));
   $("v-coach").innerHTML=`
   <div class="hello"><span class="avatar" style="border-color:var(--hot)">ט</span><div><small>לוח המאמן${coachAt?` · עודכן ${pad(coachAt.getHours())}:${pad(coachAt.getMinutes())}`:""}</small><b>כל המתאמנים</b></div><button class="ghost" type="button" id="cRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
