@@ -1597,7 +1597,9 @@ const logId=(wid,date)=>`${wid}_${date}`;
 const fixedList=()=>woList().filter(x=>x.fixed);
 /* fixed workouts alternate: the next one is the one done least recently (never done first) */
 function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const last=id=>Object.keys(wlog).filter(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done).map(k=>k.slice(id.length+1)).sort().pop()||"";return f.slice().sort((a,b)=>last(a.id).localeCompare(last(b.id)))[0]}
-function todayWorkout(){const l=woList();return nextFixed()||l[0]||null}
+const datedList=()=>woList().filter(x=>!x.fixed&&x.date).sort((a,b)=>a.date.localeCompare(b.date));
+const woDone=id=>Object.keys(wlog).some(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done);
+function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l[0]||null}
 function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
@@ -1623,7 +1625,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
     <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
-  ${(fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const xl=wlog[logId(x.id,sel)],nx=fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
+  ${(datedList().length>1?datedList():fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const dl=datedList().length>1,xl=dl?{done:woDone(x.id)}:wlog[logId(x.id,sel)],nx=!dl&&fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${dl?(x.date===TODAY?"היום · "+fmt(x.date):fmt(x.date)):x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
   ${false?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
