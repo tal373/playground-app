@@ -914,7 +914,7 @@ const EN={
 "כניסה לאפליקציה":"Sign in","אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
 "המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
 "הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":"Sign up with the email on your studio membership and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
-"שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים":"Wrong email or password","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
+"שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה":"Wrong email or password. First time here? Sign up first: tap Sign up below","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
 "קוד הצטרפות מההודעה של טל":"Join code from Tal's message","קיבלת קוד מטל?":"Got a code from Tal?","בהודעה מטל יש קוד הצטרפות של 6 ספרות. מקלידים אותו כאן, והתכנית או הנתונים שלך מהסטודיו יופיעו.":"Tal's message has a 6-digit join code. Type it here and your program or studio data will appear.","חיבור":"Connect","הקוד הוא 6 ספרות":"The code is 6 digits","מחובר ✓":"Connected ✓","יותר מדי ניסיונות. כתבו לטל":"Too many attempts. Message Tal","הקוד לא מתאים למייל הזה. בדקו שנרשמתם עם המייל שנתתם לטל":"This code doesn't match this email. Make sure you signed up with the email you gave Tal","צריך לאשר את המייל דרך הקישור שנשלח":"Please confirm your email through the link we sent","צריך מייל תקין":"Please enter a valid email","סיסמה של לפחות 6 תווים":"The password needs at least 6 characters",
 "נשלח מייל. פותחים את הקישור שבו מהטלפון הזה":"Email sent. Open the link in it on this phone","נשלח אליך מייל לאישור. אחרי האישור חוזרים לכאן ונכנסים":"We sent you a confirmation email. After confirming, come back here and sign in",
 /* saving */
@@ -1192,7 +1192,7 @@ function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
 $a("aSwitch").onclick=()=>setMode(mode==="in"?"up":"in");
 $a("aForgot").onclick=()=>setMode("forgot");
-const HE={"Invalid login credentials":"מייל או סיסמה לא נכונים","User already registered":"המייל הזה כבר רשום. נסו כניסה","Email not confirmed":"צריך לאשר את המייל דרך הקישור שנשלח"};
+const HE={"Invalid login credentials":"מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה","User already registered":"המייל הזה כבר רשום. נסו כניסה","Email not confirmed":"צריך לאשר את המייל דרך הקישור שנשלח"};
 $a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.trim().toLowerCase(),pw=$a("aPass").value;$a("aErr").textContent="";
   if(mode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){$a("aErr").textContent="צריך מייל תקין";return}
   if(mode!=="forgot"&&pw.length<6){$a("aErr").textContent="סיסמה של לפחות 6 תווים";return}
