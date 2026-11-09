@@ -719,6 +719,22 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .ups{gap:10px}.ups-h{display:flex;align-items:center;gap:10px}.ups-h b{flex:1}
 .ups-i{width:36px;height:36px;border-radius:12px;background:var(--s2);display:grid;place-items:center;flex:none}.ups-i svg,.ups-l svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ups-l svg{stroke:var(--muted);width:18px;height:18px}.ups .cta{flex:none}.ups-ok{color:var(--ok);font-weight:700;font-size:14px}
+.ups-b{margin:0;padding:0 18px 0 0;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--ink)}.ups-b li::marker{color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:right;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 24%,var(--s1)),var(--s1) 75%);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);border-radius:22px;padding:14px;min-height:118px;color:var(--ink)}
+.tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center;flex-wrap:wrap;column-gap:10px}.tile.wide small{flex-basis:100%;margin-inline-start:46px;margin-top:-6px}
+.tile b{font-size:16px}.tile small{color:var(--muted);font-size:12.5px;line-height:1.35}
+.tile-i{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 22%,transparent);flex:none}
+.tile-i svg{width:20px;height:20px;fill:none;stroke:var(--c);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sec-top{display:flex;align-items:center;gap:10px;border-bottom:2px solid color-mix(in srgb,var(--c) 45%,transparent);padding-bottom:10px}.sec-top h2{margin:0;font-size:22px}
+.sec-bk{width:38px;height:38px;border-radius:12px;background:var(--s2);border:1px solid var(--line);display:grid;place-items:center;flex:none}.sec-bk svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mcx summary{cursor:pointer;list-style:none;font-size:13.5px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;padding:4px 0}.mcx summary::-webkit-details-marker{display:none}
+.mcx summary::after{content:"";width:7px;height:7px;border-inline-end:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-inline-start:2px;transition:transform .2s}.mcx[open] summary::after{transform:rotate(-135deg)}.mcx[open] .mc-ex{margin-top:8px}
+button.ml-r{width:100%;background:none;border:0;border-bottom:1px solid var(--line);text-align:right;color:inherit;font:inherit;cursor:pointer}.mlx>button.ml-r:last-child{border-bottom:0}
+.ml-ch{display:flex;flex-direction:column;gap:8px;padding:6px 0 14px;border-bottom:1px solid var(--line)}.ml-v small{display:block}
+.lxseg{display:flex;gap:6px;align-self:flex-start}.lxseg button{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600;font-size:13px}.lxseg button[aria-pressed="true"]{background:var(--wk);color:var(--navy);border-color:transparent}
+.hmo{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.hmo button{flex:none}
+.hrow .ml-v{gap:2px}
 .bz-l{display:flex;flex-direction:column}.bz-r{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.bz-r small{display:block;color:var(--muted);font-size:12px}
 .bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
 .bz-s{gap:6px;opacity:.85}.bz-soon{align-self:flex-start;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
@@ -933,6 +949,16 @@ const EN={
 "כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן.":"Once your membership is linked, your weights and progress from classes will show up here.",
 "חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.":"Some of Tal's programs. Tapping “I want to hear more” sends Tal a message and he'll get back to you.",
 "טל קיבל את הפנייה ויחזור אליך":"Tal got your request and will get back to you","אני רוצה לשמוע":"I want to hear more","הליווי מוקפא":"Coaching is paused","לא מנוי בסטודיו":"Not a studio member",
+"האימון הבא":"Next class","רישום האימון":"Log my class","ההתקדמות שלי":"My progress","האימונים שלי":"My classes","ליווי אישי":"Personal coaching",
+"המשקלים שלי":"My weights","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
+"כמה אחוזים עלית מהפעם הראשונה שרשמת":"How much you've gone up since you first logged it","המשקל בכל פעם שרשמת את התרגיל":"Your weight each time you logged this exercise",
+"הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.":"The chart shows up once you've logged this exercise at least twice.",
+"השיעורים שלך יופיעו כאן, מסודרים לפי חודש.":"Your classes will show up here, sorted by month.","עם משקלים רשומים":"With weights logged","שיעור בסטודיו":"Studio class","שיא אישי":"Personal best","לא נרשמו משקלים":"No weights logged",
+"המסלולים האישיים של טל. ״שלח בקשה״ שולח לטל פנייה, והוא חוזר אליך עם כל הפרטים.":"Tal's personal programs. “Send request” sends Tal a request, and he'll get back to you with all the details.",
+"תפריט לפי המטרה וההרגלים שלך":"A menu built around your goal and habits","סימון ארוחות פשוט באפליקציה":"Simple meal logging in the app","טל מעדכן את התפריט לפי ההתקדמות":"Tal adjusts the menu as you progress",
+"אימונים לימים בלי סטודיו":"Workouts for days without the studio","סרטון לכל תרגיל וטיימר":"A video for every exercise, and a timer","התכנית מתעדכנת לפי מה שרושמים":"The plan updates based on what you log",
+"טיפול ידני":"Manual therapy","תכנית שיקום אישית":"A personal rehab plan","חזרה מדורגת לאימונים":"A gradual return to training",
+"תפריט, תכנית אישית, פיזיו וטיפול":"Menu, personal plan, physio and treatment","השיעור פתוח לרישום":"Class open for logging","משקלים וסטים":"Weights and sets","יעלה בערב":"Posted in the evening","לפי חודש":"By month","חזרה למסך הבית":"Back to home",
 "השיעורים שלך בפלייגראונד":"Your classes at Playground","הסטודיו שלי":"My studio","ס":"S","הליווי מוקפא כרגע":"Coaching is paused right now",
 "כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.":"When you come back to coaching, your plan, menu and all your tracking will be waiting here exactly as you left them.",
 "נשלח לטל":"Sent to Tal","לא נשלח, נסו שוב":"Not sent, try again","מצב שיקוף":"Mirror mode","לא נשלח":"not sent","טוען שיקוף":"Loading mirror","לא הצלחנו לטעון":"Couldn't load",
@@ -1349,39 +1375,79 @@ async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||
   if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
-function studioBody(full){
-  const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
-  const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
-  const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10);
-  const prs=log.filter(l=>l.pr).length,dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
-  const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21));
-  return `
-  ${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
-  ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קוד הצטרפות</b><p class="hint" style="margin:6px 0 10px">את הקוד של 6 ספרות שלחנו בקבוצת הסטודיו. מקלידים אותו כאן, והנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
-  ${!full||MEM&&(memPv||MEMS==="in")||MEMS==="code"?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}
-  ${full&&liveCls()?slSection():""}
-  <div class="sh"><h2>האימון בסטודיו</h2></div>
-  ${cp.length?cp.map(c=>`<div class="card mcls">
+let MSEC=null,LXU="kg",LXO=null,HMO=null;
+const SECS=[["class","האימון הבא","--mes","M4 6h16M4 12h16M4 18h10"],["log","רישום האימון","--ok","M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"],
+  ["prog","ההתקדמות שלי","--wk","M3 20h18M6 16l4-5 3 3 5-7"],["hist","האימונים שלי","--warn","M4 5h16v16H4zM4 9h16M9 3v4M15 3v4"]];
+const UPB={menu:["תפריט לפי המטרה וההרגלים שלך","סימון ארוחות פשוט באפליקציה","טל מעדכן את התפריט לפי ההתקדמות"],home:["אימונים לימים בלי סטודיו","סרטון לכל תרגיל וטיימר","התכנית מתעדכנת לפי מה שרושמים"],physio:["טיפול ידני","תכנית שיקום אישית","חזרה מדורגת לאימונים"]};
+const secIc=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
+function secClass(){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21)),dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
+  return cp.length?cp.map(c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="small"?"Small Group":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
     ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
     ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
-    ${(c.main||[]).length?`<span class="lbl">התרגילים המרכזיים</span><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
+    ${(c.main||[]).length?`<details class="mcx"><summary>התרגילים המרכזיים · ${c.main.length}</summary><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
       const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">${tg?`היום: ${tg.kg} ק״ג · `:""}בפעם הקודמת: ${esc(lo.kg?lo.kg+" ק״ג"+(lo.reps?" × "+lo.reps:""):(lo.reps||"")+" חזרות")}</small>`:"";
-      return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div>`:""}
+      return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div></details>`:""}
   </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
-  ${full&&liveCls()?"":slSection()}
-  <div class="sh"><h2>הנתונים שלי</h2>${log.length?`<span>${log.length} שיעורים</span>`:""}</div>
-  ${sumCards()}
+function secProg(){const lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
+  const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null&&k>0)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
+  const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10),prs=log.filter(l=>l.pr).length;
+  return `${sumCards()}
+  <div class="sh"><h2>המשקלים שלי</h2>${lifts.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
   ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
-    <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0;
-      return `<div class="ml-r"><div><b class="en">${esc(exName(x).replace(/\s*\([^)]*\)/g,"").replace(/\s+-\s+.*$/,"").trim()||exName(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
-        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${sparkL(h)}</div></div>`}).join("")}</div>`
-    :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון שלי״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
-  ${full?`  <div class="sh"><h2>ליווי אישי</h2></div>
-  <p class="hint lead">חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.</p>
+    <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
+      return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(shortEx(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
+        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג · ${pc>0?"+":""}${pc}% מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${op?"":sparkL(h)}</div></button>
+        ${op?`<div class="ml-ch">${h.length>1?`<div class="lxseg" role="group"><button type="button" data-lxu="kg" aria-pressed="${LXU==="kg"}">ק״ג</button><button type="button" data-lxu="pct" aria-pressed="${LXU==="pct"}">אחוזים</button></div>
+          ${LXU==="pct"?lineChart(h.map(p=>({k:p.d,v:Math.round((p.k-f.k)/f.k*100)})),0):lineChart(h.map(p=>({k:p.d,v:p.k})),f.k)}
+          <p class="hint" style="margin:0">${LXU==="pct"?"כמה אחוזים עלית מהפעם הראשונה שרשמת":"המשקל בכל פעם שרשמת את התרגיל"} · ${h.length} פעמים</p>`
+          :`<p class="hint" style="margin:0">הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.</p>`}</div>`:""}`}).join("")}</div>`
+    :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}`}
+function secHist(){const log=(MEM&&MEM.log)||[],att=((MEM&&MEM.att)||[]).filter(d=>d<=TODAY),byD={};log.forEach(l=>{(byD[l.date]=byD[l.date]||[]).push(l)});
+  const ds=[...new Set([...att,...Object.keys(byD)])].sort().reverse(),mos=[...new Set(ds.map(d=>d.slice(0,7)))];
+  if(!ds.length)return `<div class="card"><div class="empty">השיעורים שלך יופיעו כאן, מסודרים לפי חודש.</div></div>`;
+  const mo=HMO&&mos.includes(HMO)?HMO:mos[0],inM=ds.filter(d=>d.slice(0,7)===mo),wl=inM.filter(d=>byD[d]).length,mL=m=>`${MON[+m.slice(5)-1]}${m.slice(0,4)!==TODAY.slice(0,4)?" "+m.slice(0,4):""}`;
+  return `${mos.length>1?`<div class="chips hmo">${mos.map(m=>`<button type="button" data-hmo="${m}" aria-pressed="${m===mo}">${mL(m)}</button>`).join("")}</div>`:""}
+  <div class="kpis"><div class="kpi"><b>${inM.length}</b><small>שיעורים ב${mL(mo)}</small></div><div class="kpi"><b>${wl}</b><small>עם משקלים רשומים</small></div></div>
+  <div class="card mlx">${inM.map(d=>{const L=byD[d]||[],ex=L.flatMap(l=>Object.entries(l.lx||{}).filter(([,o])=>o&&(o.kg||o.reps))),cls=L.map(l=>l.cls).filter(Boolean)[0]||"";
+    return `<div class="ml-r hrow"><div><b>${esc(fmt(d))}</b><small>${cls?`<span class="en">${esc(cls)}</span>`:"שיעור בסטודיו"}${L.some(l=>l.pr)?" · שיא אישי":""}</small></div>
+      <div class="ml-v">${ex.length?ex.slice(0,3).map(([x,o])=>`<small><bdi class="en">${esc(shortEx(x))}</bdi> · ${o.kg?esc(o.kg)+" ק״ג":esc(o.reps||"")+" חזרות"}</small>`).join("")+(ex.length>3?`<small>ועוד ${ex.length-3}</small>`:""):`<small>לא נרשמו משקלים</small>`}</div></div>`}).join("")}</div>`}
+function secUps(){return `<p class="hint lead">המסלולים האישיים של טל. ״שלח בקשה״ שולח לטל פנייה, והוא חוזר אליך עם כל הפרטים.</p>
   ${UPS.map(([k,t,d,ic])=>{const sent=LEADM[k];return `<div class="card ups"><div class="ups-h"><span class="ups-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic}"/></svg></span><b>${esc(t)}</b><span class="ups-l">${LOCK}</span></div>
-    <p class="hint" style="margin:0">${esc(d)}</p>
-    ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">אני רוצה לשמוע</button>`}</div>`}).join("")}`:""}`}
+    <p class="hint" style="margin:0">${esc(d)}</p>${UPB[k]?`<ul class="ups-b">${UPB[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">שלח בקשה</button>`}</div>`}).join("")}`}
+function secSub(k){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21)),log=(MEM&&MEM.log)||[],s=MEM?attStats():null;
+  if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:"יעלה בערב";
+  if(k==="log")return liveCls()?"השיעור פתוח לרישום":SRC2.filter(c=>c.mine).length?`${SRC2.filter(c=>c.mine).length} נרשמו השבוע`:"משקלים וסטים";
+  if(k==="prog")return s?`${s.wk}${s.q?"/"+s.q:""} השבוע · ${s.mn} החודש`:"";
+  if(k==="hist")return log.length?`${log.length} עם משקלים`:"לפי חודש";return ""}
+function studioBody(full){
+  const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],tiles=full&&MEM&&(MEMS==="in"||memPv);
+  const head=`${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
+  ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קוד הצטרפות</b><p class="hint" style="margin:6px 0 10px">את הקוד של 6 ספרות שלחנו בקבוצת הסטודיו. מקלידים אותו כאן, והנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
+  ${!full||MEM&&(memPv||MEMS==="in")||MEMS==="code"?"":MEMS==="pending"?`<div class="card"><p class="hint" style="margin:0">מצאנו את המנוי שלך בסטודיו. טל מאשר את החיבור, ואז המשקלים וההתקדמות שלך יופיעו כאן.</p></div>`:MEMS==="out"?"":`<div class="card"><p class="hint" style="margin:0">לא מצאנו מנוי בארבוקס עם המייל ${esc(window.pgMember?pgMember.email():"")}. אם נרשמת לסטודיו במייל אחר, ספרו לטל והוא יחבר אתכם.</p></div>`}`;
+  if(tiles&&MSEC){const S=SECS.find(z=>z[0]===MSEC)||["ups","ליווי אישי","--hot"];
+    const body=MSEC==="class"?secClass():MSEC==="log"?slSection(true):MSEC==="prog"?secProg():MSEC==="hist"?secHist():secUps();
+    return `<div class="sec-top" style="--c:var(${S[2]})"><button type="button" class="sec-bk" data-msec="" aria-label="חזרה למסך הבית"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h2>${esc(S[1])}</h2></div>${body}`}
+  if(tiles)return `${head}
+  ${liveCls()?slSection():""}
+  <div class="tiles">${SECS.map(([k,t,c,ic])=>`<button type="button" class="tile" data-msec="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(secSub(k))}</small></button>`).join("")}
+    <button type="button" class="tile wide" data-msec="ups" style="--c:var(--hot)"><span class="tile-i">${LOCK}</span><b>ליווי אישי</b><small>תפריט, תכנית אישית, פיזיו וטיפול</small></button></div>
+  ${MEM.plan?`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`:""}`;
+  return `${head}
+  ${full&&liveCls()?slSection():""}
+  <div class="sh"><h2>האימון בסטודיו</h2></div>
+  ${secClass()}
+  ${full&&liveCls()?"":slSection()}
+  <div class="sh"><h2>הנתונים שלי</h2>${((MEM&&MEM.log)||[]).length?`<span>${MEM.log.length} שיעורים</span>`:""}</div>
+  ${secProg()}
+  ${MEM&&!full?`<div class="sh"><h2>האימונים שלי</h2></div>${secHist()}`:""}
+  ${full?`<div class="sh"><h2>ליווי אישי</h2></div>${secUps()}`:""}`}
+document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy"))return;
+  const ms=t.closest("[data-msec]");if(ms){MSEC=ms.dataset.msec||null;LXO=null;render();window.scrollTo(0,0);return}
+  const lo=t.closest("[data-lxo]");if(lo){LXO=LXO===lo.dataset.lxo?null:lo.dataset.lxo;render();return}
+  const lu=t.closest("[data-lxu]");if(lu){LXU=lu.dataset.lxu;render();return}
+  const hm=t.closest("[data-hmo]");if(hm){HMO=hm.dataset.hmo;render();return}});
 function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","menu","measure","coach","biz"].forEach(x=>$("v-"+x).hidden=true);v.hidden=false;
   if(!memPv&&(!profSeen||MEMst<2)){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><p>טוען…</p></div>`;if(profSeen)loadMe();return}
   v.innerHTML=studioBody(true);const kg=$("kGo");if(kg)kg.onclick=async()=>{const k=$("kIn").value.replace(/\D/g,"");if(k.length!==6){$("kErr").textContent="הקוד הוא 6 ספרות";return}
@@ -1429,8 +1495,8 @@ function slForm(){const c=slCls(SLK);if(!c)return "";const ex=slMeta(c),ro=!!(me
     ${fbBlock(c)}
     <p class="hint" style="margin:0">מאמץ: 6 = עוד 4 חזרות בטנק · 8 = עוד 2 · 10 = לא הייתה עוד חזרה. בסבב החימום רושמים את המשקל הקל שהתחממת איתו.</p>
     ${ro?`<p class="hint">מצב שיקוף · לא נשמר</p>`:`<div class="rp-f"><button class="ghost" type="button" data-sclose="1">סגירה</button><button class="cta" type="button" data-ssave="1">${c.mine?"עדכון":"שמירה"}</button></div>`}</div>`}
-function slSection(){if(!(MEM&&(MEMS==="in"||memPv)))return "";
-  return `<div class="sh"><h2>רישום האימון שלי</h2></div>
+function slSection(bare){if(!(MEM&&(MEMS==="in"||memPv)))return "";
+  return `${bare?"":`<div class="sh"><h2>רישום האימון שלי</h2></div>`}
   ${SRC2.length?`<div class="chips sl-c">${SRC2.map(c=>`<button type="button" data-scls="${esc(c.key)}" aria-pressed="${SLK===c.key}">${esc(c.date===TODAY?"היום":c.date===addDays(TODAY,1)?"מחר":fmt(c.date))} · ${esc(c.time||"")} ${esc(c.cls||"")}${c.mine?" ✓":""}</button>`).join("")}</div>
     ${SLK?slForm():`<p class="hint lead">בוחרים שיעור ורושמים משקל וחזרות לכל סט, חימום ומאמץ. המאמן רואה את זה בשיעור הבא.</p>`}`
   :`<div class="card"><div class="empty">שיעור שנרשמת אליו בארבוקס יופיע כאן, ותוכל לרשום בו משקלים וסטים בתרגילים העיקריים.</div></div>`}`}
