@@ -736,7 +736,7 @@ button.ml-r{width:100%;background:none;border:0;border-bottom:1px solid var(--li
 .hmo{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.hmo button{flex:none}
 .hrow .ml-v{gap:2px}
 .bmk{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}.bmk .kpi b{font-size:22px}.bmk .kpi b small{font-size:12px;color:var(--muted);font-weight:500}.bmf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.bmf label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
-.tiles.pt .tile{min-height:96px;padding:12px}.tiles.pt .tile:nth-child(odd):last-child{grid-column:1/-1;min-height:0}
+.tiles.pt .tile{min-height:96px;padding:12px}.tiles.pt .tile.full{grid-column:1/-1;min-height:0}#v-smy>.sec-top+.hello{display:none}.tiles.pt .tile.day{min-height:0}.sum[data-tsec]{cursor:pointer}
 .bz-l{display:flex;flex-direction:column}.bz-r{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.bz-r small{display:block;color:var(--muted);font-size:12px}
 .bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
 .bz-s{gap:6px;opacity:.85}.bz-soon{align-self:flex-start;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
@@ -852,10 +852,10 @@ html[dir=ltr] #bfRs{direction:rtl}
 
 <nav class="nav" id="nav" hidden><div class="navin">
   <button class="nb" type="button" data-tab="today"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>היום</button>
-  <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>אימון</button>
+  <button class="nb" type="button" data-tab="workout"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>ליווי אישי</button>
   <button class="nb" type="button" data-tab="menu"><svg viewBox="0 0 24 24"><path d="M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2"/></svg>תפריט</button>
   <button class="nb" type="button" data-tab="measure"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>מדדים</button>
-  <button class="nb" type="button" data-tab="smy" hidden><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/></svg>סטודיו</button>
+  <button class="nb" type="button" data-tab="smy" hidden><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12M9 21v-6h6v6"/></svg>שיעורי קבוצה</button>
   <button class="nb" type="button" data-tab="prog" hidden><svg viewBox="0 0 24 24"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg>תכנית</button>
   <button class="nb" type="button" data-tab="brief" hidden><svg viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>שיעור</button>
   <button class="nb" type="button" data-tab="class" hidden><svg viewBox="0 0 24 24"><path d="M9 4h6v3H9zM6 6h3M15 6h3v15H6V6M9 12h6M9 16h4"/></svg>שיעור</button>
@@ -952,7 +952,7 @@ const EN={
 "חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.":"Some of Tal's programs. Tapping “I want to hear more” sends Tal a message and he'll get back to you.",
 "טל קיבל את הפנייה ויחזור אליך":"Tal got your request and will get back to you","אני רוצה לשמוע":"I want to hear more","הליווי מוקפא":"Coaching is paused","לא מנוי בסטודיו":"Not a studio member",
 "האימון הבא":"Next class","האימון שלי":"My workout","התפריט שלי":"My menu","בוצע היום ✓":"Done today ✓","היום יום מנוחה":"Rest day today","האימון של היום":"Today\u0027s workout","כל האפשרויות והכללים":"All options and rules","שקילה והתקדמות":"Weigh-in and progress","השיעורים והמשקלים":"Classes and weights","רישום האימון":"Log my class","ההתקדמות שלי":"My progress","האימונים שלי":"My classes","ליווי אישי":"Personal coaching",
-"המשקלים שלי":"My weights","הפרופיל שלי":"My profile","לא חובה · פעם בחודש":"Optional · once a month","גיל":"Age","גובה":"Height","אחוז שומן":"Body fat %","גובה (ס״מ)":"Height (cm)","עדכון לחודש הזה":"Update for this month","עדכון הנתונים של החודש":"Update this month\u0027s numbers","גיל, גובה, משקל ואחוז שומן, אם יש לך. ממלאים פעם בחודש ורואים איך זה משתנה. רק את/ה וטל רואים.":"Age, height, weight and body fat if you have it. Fill it in once a month and see how it changes. Only you and Tal see it.","אחד הערכים לא נראה תקין":"One of the values doesn\u0027t look right","לא מילאת כלום":"You haven\u0027t filled anything in","שיתוף החודש שלי כתמונה":"Share my month as an image","התמונה נשמרה ✓":"Image saved ✓","התקדמות בכוח":"Strength progress","כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.":"Once you log weights in your workouts, a chart for each exercise shows up here.","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
+"המשקלים שלי":"My weights","שיעורי קבוצה":"Group classes","היום שלי":"My day","ארוחות סומנו":"meals logged","לחיצה לסימון":"tap to log","הפרופיל שלי":"My profile","לא חובה · פעם בחודש":"Optional · once a month","גיל":"Age","גובה":"Height","אחוז שומן":"Body fat %","גובה (ס״מ)":"Height (cm)","עדכון לחודש הזה":"Update for this month","עדכון הנתונים של החודש":"Update this month\u0027s numbers","גיל, גובה, משקל ואחוז שומן, אם יש לך. ממלאים פעם בחודש ורואים איך זה משתנה. רק את/ה וטל רואים.":"Age, height, weight and body fat if you have it. Fill it in once a month and see how it changes. Only you and Tal see it.","אחד הערכים לא נראה תקין":"One of the values doesn\u0027t look right","לא מילאת כלום":"You haven\u0027t filled anything in","שיתוף החודש שלי כתמונה":"Share my month as an image","התמונה נשמרה ✓":"Image saved ✓","התקדמות בכוח":"Strength progress","כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.":"Once you log weights in your workouts, a chart for each exercise shows up here.","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
 "כמה אחוזים עלית מהפעם הראשונה שרשמת":"How much you've gone up since you first logged it","המשקל בכל פעם שרשמת את התרגיל":"Your weight each time you logged this exercise",
 "הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.":"The chart shows up once you've logged this exercise at least twice.",
 "השיעורים שלך יופיעו כאן, מסודרים לפי חודש.":"Your classes will show up here, sorted by month.","עם משקלים רשומים":"With weights logged","שיעור בסטודיו":"Studio class","שיא אישי":"Personal best","לא נרשמו משקלים":"No weights logged",
@@ -1314,8 +1314,12 @@ function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
   if(memPv){renderStudioMe();return}
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients,smy:renderSmy})[tab]();if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
+  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients,smy:renderSmy})[tab]();
+  const TT={workout:["ליווי אישי","--mes"],menu:["התפריט שלי","--warn"],measure:["מדדים","--wk"],smy:["שיעורי קבוצה","--hot"]},trn=!!prof&&(tab==="today"||!!TT[tab]);
+  if(trn){$("nav").hidden=true;if(TT[tab]){const v=$("v-"+tab);if(!v.querySelector(":scope>.sec-top"))v.insertAdjacentHTML("afterbegin",`<div class="sec-top" style="--c:var(${TT[tab][1]})"><button type="button" class="sec-bk" data-home="1" aria-label="חזרה למסך הבית"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h2>${TT[tab][0]}</h2></div>`)}}
+  else if((isOwner||isCoach)&&!memPv)$("nav").hidden=false;if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
 document.addEventListener("focusout",()=>setTimeout(()=>{if(dirty&&!typing())render()},60));
+document.addEventListener("click",ev=>{const h=ev.target.closest&&ev.target.closest("[data-home]");if(h){TSEC=null;sel=TODAY;go("today");window.scrollTo(0,0)}});
 
 function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioMe();return}$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;
   $("v-today").innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>ברוכים הבאים לפלייגראונד</h1><p>${uid?"קיבלנו אותך. טל יחבר אותך לתכנית האישית שלך ממש בקרוב, ואז הכול יופיע כאן.":"כדי להשתמש באפליקציה צריך להיות מחוברים לחשבון Claude באותו מייל שטל הזמין."}</p></div>`}
@@ -1493,6 +1497,7 @@ function studioBody(full){
   ${MEM&&!full?`<div class="sh"><h2>האימונים שלי</h2></div>${secHist()}`:""}
   ${full?`<div class="sh"><h2>ליווי אישי</h2></div>${secUps()}`:""}`}
 document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy,#v-measure"))return;
+  const ts=t.closest("[data-tsec]");if(ts&&t.closest("#v-today")&&prof){TSEC=ts.dataset.tsec||null;if(!TSEC)sel=TODAY;render();window.scrollTo(0,0);return}
   const ms=t.closest("[data-msec]");if(ms){MSEC=ms.dataset.msec||null;LXO=null;render();window.scrollTo(0,0);return}
   const lo=t.closest("[data-lxo]");if(lo){LXO=LXO===lo.dataset.lxo?null:lo.dataset.lxo;render();return}
   const lu=t.closest("[data-lxu]");if(lu){LXU=lu.dataset.lxu;render();return}
@@ -1504,9 +1509,9 @@ function renderStudioMe(){const v=$("v-today");$("nav").hidden=true;["workout","
     if(r.prog||(r.lk&&r.lk.state&&!["code","none"].includes(r.lk.state))){toast("מחובר ✓");setTimeout(()=>location.reload(),600)}
     else $("kErr").textContent=r.lk&&r.lk.locked?"יותר מדי ניסיונות. כתבו לטל":"הקוד לא נכון, או שהמייל לא רשום אצלנו בארבוקס. בדקו את הקוד ושנרשמתם עם המייל של המנוי"}}
 function renderSmy(){const v=$("v-smy");if(preview){if(!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>${isPaused()?"הליווי מוקפא":"לא מנוי בסטודיו"}</h1><p>${pvStLoading?"טוען…":isPaused()?"המתאמן לא מנוי פעיל בסטודיו, אז כרגע אין לו מה לראות באפליקציה.":"המתאמן לא מסומן ״כן״ ברשימת הלקוחות, או שאין לו מנוי פעיל בארבוקס."}</p></div>`;return}
-    v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false);return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
+    v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>שיעורי קבוצה</b></div></div>`+studioBody(false);return}if(MEMst<2){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;loadMe();return}
   if(isPaused()&&!(MEM&&MEMS==="in")){v.innerHTML=`<div class="welcome"><img src="pg-logo.png" alt=""><h1>הליווי מוקפא כרגע</h1><p>כשתחזרו לליווי, התכנית, התפריט וכל המעקב יחכו לכם כאן בדיוק כמו שהשארתם.</p></div>`;return}
-  v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>הסטודיו שלי</b></div></div>`+studioBody(false)}
+  v.innerHTML=`<div class="hello"><span class="avatar">ס</span><div><small>השיעורים שלך בפלייגראונד</small><b>שיעורי קבוצה</b></div></div>`+studioBody(false)}
 $("v-today").addEventListener("click",async ev=>{const b=ev.target.closest("[data-want]");if(!b||prof)return;if(memPv){toast("מצב שיקוף · לא נשלח");return}const k=b.dataset.want,u=UPS.find(x=>x[0]===k);if(!u||LEADM[k])return;
   b.disabled=true;const d={want:k,label:u[1],at:new Date().toISOString(),name:(MEM&&MEM.name)||"",email:window.pgMember?pgMember.email():"",st:"new"};
   try{await db.doc(`t/${uid}/leads/${k}`).set(d);LEADM[k]=d;toast("נשלח לטל ✓");render()}catch(e){b.disabled=false;toast("לא נשלח, נסו שוב")}});
@@ -1715,13 +1720,15 @@ function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const l
 const datedList=()=>woList().filter(x=>!x.fixed&&x.date).sort((a,b)=>a.date.localeCompare(b.date));
 const woDone=id=>Object.keys(wlog).some(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done);
 function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l[0]||null}
-function profTiles(rq,mc,wo,wl){const on=t=>{const b=NB(t);return b&&!b.hidden},Ls=wList(weigh),lw=Ls[Ls.length-1],T=[];
-  if(on("workout")&&woList().length)T.push(["workout","האימון שלי","--mes","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12",wo?(wl&&wl.done?"בוצע היום ✓":wo.title||"האימון של היום"):"היום יום מנוחה"]);
-  if(on("menu")&&prof.menu)T.push(["menu","התפריט שלי","--ok","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2",rq.length?`${mc}/${rq.length} ארוחות היום`:"כל האפשרויות והכללים"]);
+let TSEC=null;
+function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hidden},Ls=wList(weigh),lw=Ls[Ls.length-1],T=[];
+  if(on("workout")&&woList().length)T.push(["workout","ליווי אישי","--mes","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12",wo?(wl&&wl.done?"בוצע היום ✓":wo.title||"האימון של היום"):"היום יום מנוחה"]);
+  if(on("menu")&&prof.menu)T.push(["menu","התפריט שלי","--warn","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2","כל האפשרויות והכללים"]);
   if(on("measure"))T.push(["measure","מדדים","--wk","M4 20V10M10 20V4M16 20v-7M22 20H2",lw&&lw.kg?`${lw.kg} ק״ג · ${fmt(lw.k)}`:"שקילה והתקדמות"]);
-  if(on("smy"))T.push(["smy","הסטודיו שלי","--warn","M3 21V9l9-6 9 6v12M9 21v-6h6v6",MEM&&MEMS==="in"?(()=>{const s=attStats();return `${s.wk}${s.q?"/"+s.q:""} שיעורים השבוע`})():"השיעורים והמשקלים"]);
-  if(T.length<2)return "";
-  return `<div class="tiles pt">${T.map(([k,t,c,ic,sub])=>`<button type="button" class="tile" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
+  if(on("smy"))T.push(["smy","שיעורי קבוצה","--hot","M3 21V9l9-6 9 6v12M9 21v-6h6v6",MEM&&MEMS==="in"?(()=>{const s=attStats();return `${s.wk}${s.q?"/"+s.q:""} שיעורים השבוע`})():"השיעורים והמשקלים"]);
+  const D=dayT?`<button type="button" class="tile wide day" data-tsec="day" style="--c:var(--ok)"><span class="tile-i">${secIc("M5 13l4 4L19 7")}</span><b>היום שלי</b><small>${esc(dayT)}</small></button>`:"";
+  if(T.length<2&&!D)return "";
+  return `<div class="tiles pt">${D}${T.map(([k,t,c,ic,sub],i)=>`<button type="button" class="tile${T.length%2&&i===T.length-1?" full":""}" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
 function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
@@ -1737,24 +1744,26 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   hs.slice(0,3).forEach(x=>facts.push(["var(--mes)",x.short||x.t,hv(x,day.h[x.id])]));
   const pct=rq.length?mc/rq.length:(wl&&wl.done?1:0),stk=streakOf();
   if(sel===TODAY&&lastPct[TODAY]!=null&&lastPct[TODAY]<1&&pct>=1&&rq.length)setTimeout(celebrate,150);if(sel===TODAY)lastPct[TODAY]=pct;
+  const hasDay=meals().length||hs.length,home=hasDay&&TSEC!=="day";if(!hasDay)TSEC=null;
+  const dayT=hasDay?[rq.length?`${mc}/${rq.length} ארוחות סומנו`:"",hs.length?`${hs.length} הרגלים`:""].filter(Boolean).join(" · ")+" · לחיצה לסימון":"";
   $("v-today").innerHTML=`
-  <div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>
-  ${msgs[0]?`<div class="msg"><span class="tl"><img src="pg-logo.png" alt=""></span><div><small>${msgs[0].auto?"הסיכום השבועי מטל":"טל ליפשטט · המאמן שלך"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""}
-  <div class="strip">${strip}</div>
-  <div class="sum"><img class="wm" src="pg-logo.png" alt="">
+  ${home||!hasDay?`<div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>`:`<div class="sec-top" style="--c:var(--ok)"><button type="button" class="sec-bk" data-tsec="" aria-label="חזרה למסך הבית"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h2>היום שלי</h2></div>`}
+  ${home||!hasDay?(msgs[0]?`<div class="msg"><span class="tl"><img src="pg-logo.png" alt=""></span><div><small>${msgs[0].auto?"הסיכום השבועי מטל":"טל ליפשטט · המאמן שלך"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""):""}
+  ${home?"":`<div class="strip">${strip}</div>`}
+  <div class="sum"${home?' data-tsec="day" role="button" tabindex="0" aria-label="היום שלי"':""}><img class="wm" src="pg-logo.png" alt="">
     <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
     <div class="facts">${facts.map(f=>`<div class="fact"><i style="background:${f[0]}"></i>${esc(f[1])}<span>${esc(f[2])}</span></div>`).join("")}</div>
     <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
-  ${profTiles(rq,mc,wo,wl)}
-  ${(datedList().length>1?datedList():fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const dl=datedList().length>1,xl=dl?{done:woDone(x.id)}:wlog[logId(x.id,sel)],nx=!dl&&fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${dl?(x.date===TODAY?"היום · "+fmt(x.date):fmt(x.date)):x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
+  ${home||!hasDay?profTiles(rq,mc,wo,wl,home?dayT:""):""}
+  ${home?"":`  ${(datedList().length>1?datedList():fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const dl=datedList().length>1,xl=dl?{done:woDone(x.id)}:wlog[logId(x.id,sel)],nx=!dl&&fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${dl?(x.date===TODAY?"היום · "+fmt(x.date):fmt(x.date)):x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
   ${false?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
     return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
   ${hs.length?`<div class="sh"><h2>${esc(prof.habitsTitle||"הרגלים")}</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
-  <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}
+  <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}`}
 function habitHTML(x,day){const v=day.h[x.id];
   if(x.type==="toggle")return `<button class="tog" type="button" data-h="${x.id}" aria-pressed="${!!v}"><span class="bx">${CHK}</span><span>${esc(x.t)}${x.d?`<small>${esc(x.d)}</small>`:""}</span></button>`;
   if(x.type==="cups"){const n=v||0;return `<div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b><b style="color:var(--mes)">${x.liters?Lit(n)+" ליטר":n+" "+(x.unit||"")}</b></div>
@@ -2490,7 +2499,7 @@ document.addEventListener("click",ev=>{const t=ev.target;
   const chs=t.closest("[data-ch]");if(chs){const id=chs.dataset.ch;updDay(sel,d=>{d.h[id]=chs.dataset.v});render();return}
   const cp=t.closest("[data-chips]");if(cp){const id=cp.dataset.chips,v=cp.dataset.v;updDay(sel,d=>{const a=d.h[id]||[];d.h[id]=a.includes(v)?a.filter(x=>x!==v):[...a,v]});render();return}});
 $("v-today").addEventListener("input",ev=>{const t=ev.target;if(t.id==="note"){const v=t.value;updDay(sel,d=>{d.note=v})}else if(t.dataset&&t.dataset.num){const id=t.dataset.num,n=Math.round(+t.value);updDay(sel,d=>{if(n>0)d.h[id]=Math.min(n,200000);else delete d.h[id]})}});
-function go(t){tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients","smy"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
+function go(t){if(t==="today"&&tab==="today")TSEC=null;tab=t;document.body.classList.toggle("clsOn",t==="class");["today","workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients","smy"].forEach(v=>$("v-"+v).hidden=v!==t);if(t==="prog"&&stLoaded)loadStudio();if(t==="brief"&&bfLoaded)loadBriefs();if(["class","studio","coaches"].includes(t)&&stLoaded)loadStudio();
   document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",(b.dataset.tab===t||(b.dataset.tab==="coach"&&DASH.includes(t)))?"page":"false"));
   if(t==="coach"&&coachAt&&Date.now()-coachAt>60000)loadCoach();dirty=false;render();window.scrollTo(0,0)}
 setInterval(()=>{if(tab==="coach"&&isOwner&&!document.hidden)loadCoach()},120000);
