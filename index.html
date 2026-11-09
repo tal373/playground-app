@@ -735,6 +735,7 @@ button.ml-r{width:100%;background:none;border:0;border-bottom:1px solid var(--li
 .lxseg{display:flex;gap:6px;align-self:flex-start}.lxseg button{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600;font-size:13px}.lxseg button[aria-pressed="true"]{background:var(--wk);color:var(--navy);border-color:transparent}
 .hmo{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.hmo button{flex:none}
 .hrow .ml-v{gap:2px}
+.tiles.pt .tile{min-height:96px;padding:12px}.tiles.pt .tile:nth-child(odd):last-child{grid-column:1/-1;min-height:0}
 .bz-l{display:flex;flex-direction:column}.bz-r{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.bz-r small{display:block;color:var(--muted);font-size:12px}
 .bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
 .bz-s{gap:6px;opacity:.85}.bz-soon{align-self:flex-start;font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
@@ -949,7 +950,7 @@ const EN={
 "כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן.":"Once your membership is linked, your weights and progress from classes will show up here.",
 "חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.":"Some of Tal's programs. Tapping “I want to hear more” sends Tal a message and he'll get back to you.",
 "טל קיבל את הפנייה ויחזור אליך":"Tal got your request and will get back to you","אני רוצה לשמוע":"I want to hear more","הליווי מוקפא":"Coaching is paused","לא מנוי בסטודיו":"Not a studio member",
-"האימון הבא":"Next class","רישום האימון":"Log my class","ההתקדמות שלי":"My progress","האימונים שלי":"My classes","ליווי אישי":"Personal coaching",
+"האימון הבא":"Next class","האימון שלי":"My workout","התפריט שלי":"My menu","בוצע היום ✓":"Done today ✓","היום יום מנוחה":"Rest day today","האימון של היום":"Today\u0027s workout","כל האפשרויות והכללים":"All options and rules","שקילה והתקדמות":"Weigh-in and progress","השיעורים והמשקלים":"Classes and weights","רישום האימון":"Log my class","ההתקדמות שלי":"My progress","האימונים שלי":"My classes","ליווי אישי":"Personal coaching",
 "המשקלים שלי":"My weights","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
 "כמה אחוזים עלית מהפעם הראשונה שרשמת":"How much you've gone up since you first logged it","המשקל בכל פעם שרשמת את התרגיל":"Your weight each time you logged this exercise",
 "הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.":"The chart shows up once you've logged this exercise at least twice.",
@@ -1666,6 +1667,13 @@ function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const l
 const datedList=()=>woList().filter(x=>!x.fixed&&x.date).sort((a,b)=>a.date.localeCompare(b.date));
 const woDone=id=>Object.keys(wlog).some(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done);
 function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l[0]||null}
+function profTiles(rq,mc,wo,wl){const on=t=>{const b=NB(t);return b&&!b.hidden},Ls=wList(weigh),lw=Ls[Ls.length-1],T=[];
+  if(on("workout")&&woList().length)T.push(["workout","האימון שלי","--mes","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12",wo?(wl&&wl.done?"בוצע היום ✓":wo.title||"האימון של היום"):"היום יום מנוחה"]);
+  if(on("menu")&&prof.menu)T.push(["menu","התפריט שלי","--ok","M4 11h16a8 8 0 0 1-16 0zM12 3v4M8 5v2M16 5v2",rq.length?`${mc}/${rq.length} ארוחות היום`:"כל האפשרויות והכללים"]);
+  if(on("measure"))T.push(["measure","מדדים","--wk","M4 20V10M10 20V4M16 20v-7M22 20H2",lw&&lw.kg?`${lw.kg} ק״ג · ${fmt(lw.k)}`:"שקילה והתקדמות"]);
+  if(on("smy"))T.push(["smy","הסטודיו שלי","--warn","M3 21V9l9-6 9 6v12M9 21v-6h6v6",MEM&&MEMS==="in"?(()=>{const s=attStats();return `${s.wk}${s.q?"/"+s.q:""} שיעורים השבוע`})():"השיעורים והמשקלים"]);
+  if(T.length<2)return "";
+  return `<div class="tiles pt">${T.map(([k,t,c,ic,sub])=>`<button type="button" class="tile" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
 function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
@@ -1691,6 +1699,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
     <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
+  ${profTiles(rq,mc,wo,wl)}
   ${(datedList().length>1?datedList():fixedList().length>1?fixedList():(wo?[wo]:[])).map(x=>{const dl=datedList().length>1,xl=dl?{done:woDone(x.id)}:wlog[logId(x.id,sel)],nx=!dl&&fixedList().length>1&&x.id===wo.id;return `<button class="meal ${xl&&xl.done?"done":""}" type="button" data-tab="workout" data-wo="${x.id}" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(x.title)}</b><small>${nx?"התור הבא · ":""}${dl?(x.date===TODAY?"היום · "+fmt(x.date):fmt(x.date)):x.fixed?(fixedList().length>1?"לבחירה":"התכנית הקבועה שלך"):"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`}).join("")}
   ${false?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
