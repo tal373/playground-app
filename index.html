@@ -735,6 +735,7 @@ button.ml-r{width:100%;background:none;border:0;border-bottom:1px solid var(--li
 .lxseg{display:flex;gap:6px;align-self:flex-start}.lxseg button{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:600;font-size:13px}.lxseg button[aria-pressed="true"]{background:var(--wk);color:var(--navy);border-color:transparent}
 .hmo{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px}.hmo button{flex:none}
 .hrow .ml-v{gap:2px}
+.bmk{grid-template-columns:repeat(auto-fit,minmax(70px,1fr))}.bmk .kpi b{font-size:22px}.bmk .kpi b small{font-size:12px;color:var(--muted);font-weight:500}.bmf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.bmf label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
 .tiles.pt .tile{min-height:96px;padding:12px}.tiles.pt .tile:nth-child(odd):last-child{grid-column:1/-1;min-height:0}
 .bz-l{display:flex;flex-direction:column}.bz-r{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.bz-r small{display:block;color:var(--muted);font-size:12px}
 .bz-c{width:24px;height:24px;border-radius:50%;border:2px solid var(--muted);flex:none}.bz-c:hover{border-color:var(--ok)}
@@ -951,7 +952,7 @@ const EN={
 "חלק מהמסלולים של טל. לחיצה על ״אני רוצה לשמוע״ שולחת לטל הודעה והוא יחזור אליך.":"Some of Tal's programs. Tapping “I want to hear more” sends Tal a message and he'll get back to you.",
 "טל קיבל את הפנייה ויחזור אליך":"Tal got your request and will get back to you","אני רוצה לשמוע":"I want to hear more","הליווי מוקפא":"Coaching is paused","לא מנוי בסטודיו":"Not a studio member",
 "האימון הבא":"Next class","האימון שלי":"My workout","התפריט שלי":"My menu","בוצע היום ✓":"Done today ✓","היום יום מנוחה":"Rest day today","האימון של היום":"Today\u0027s workout","כל האפשרויות והכללים":"All options and rules","שקילה והתקדמות":"Weigh-in and progress","השיעורים והמשקלים":"Classes and weights","רישום האימון":"Log my class","ההתקדמות שלי":"My progress","האימונים שלי":"My classes","ליווי אישי":"Personal coaching",
-"המשקלים שלי":"My weights","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
+"המשקלים שלי":"My weights","הפרופיל שלי":"My profile","לא חובה · פעם בחודש":"Optional · once a month","גיל":"Age","גובה":"Height","אחוז שומן":"Body fat %","גובה (ס״מ)":"Height (cm)","עדכון לחודש הזה":"Update for this month","עדכון הנתונים של החודש":"Update this month\u0027s numbers","גיל, גובה, משקל ואחוז שומן, אם יש לך. ממלאים פעם בחודש ורואים איך זה משתנה. רק את/ה וטל רואים.":"Age, height, weight and body fat if you have it. Fill it in once a month and see how it changes. Only you and Tal see it.","אחד הערכים לא נראה תקין":"One of the values doesn\u0027t look right","לא מילאת כלום":"You haven\u0027t filled anything in","שיתוף החודש שלי כתמונה":"Share my month as an image","התמונה נשמרה ✓":"Image saved ✓","התקדמות בכוח":"Strength progress","כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.":"Once you log weights in your workouts, a chart for each exercise shows up here.","לחיצה פותחת גרף":"Tap for a chart","אחוזים":"Percent","שלח בקשה":"Send request",
 "כמה אחוזים עלית מהפעם הראשונה שרשמת":"How much you've gone up since you first logged it","המשקל בכל פעם שרשמת את התרגיל":"Your weight each time you logged this exercise",
 "הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.":"The chart shows up once you've logged this exercise at least twice.",
 "השיעורים שלך יופיעו כאן, מסודרים לפי חודש.":"Your classes will show up here, sorted by month.","עם משקלים רשומים":"With weights logged","שיעור בסטודיו":"Studio class","שיא אישי":"Personal best","לא נרשמו משקלים":"No weights logged",
@@ -1323,7 +1324,7 @@ function renderWelcome(){if(db&&uid&&!isOwner&&!isCoach&&!preview){renderStudioM
 let MEM=null,MEMst=0,CPV=[],LEADM={},MEMS="none",memPv=null,memSave=null;
 async function enterMemberView(aid){if(!isOwner||!window.pgMember)return;toast("טוען שיקוף…");const v=await pgMember.view(aid);if(!v){toast("לא הצלחנו לטעון");return}
   memSave={MEM,MEMst,CPV,LEADM,MEMS,tab,SRC2,SLK};MEM=v;SRC2=v.recent||[];SLK=null;MEMS=v.inc===true?"in":v.inc===false?"out":"pending";MEMst=2;CPV=await pgMember.preview();LEADM={};
-  if(v.uid){try{const s2=await db.collection(`t/${v.uid}/leads`).get();s2.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}}
+  BM={};if(v.uid){try{const s2=await db.collection(`t/${v.uid}/leads`).get();s2.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}try{const s3=await db.collection(`t/${v.uid}/bm`).get();s3.docs.forEach(d=>BM[d.id]=d.data())}catch(e){}}
   memPv={aid,name:v.name||""};const b=$("pvbar");b.querySelector("b").textContent=`שיקוף · ${memPv.name} (מתאמן סטודיו)${MEMS==="in"?"":MEMS==="out"?" · מסומן לא":" · עוד לא אושר"}`;b.hidden=false;
   tab="today";["workout","menu","measure","coach","claude","class","studio","coaches","brief","prog","biz","clients"].forEach(t=>$("v-"+t).hidden=true);$("v-today").hidden=false;render();window.scrollTo(0,0)}
 function exitMemberView(){const m=memSave||{};memPv=null;SRC2=m.SRC2||[];SLK=null;MEM=m.MEM||null;MEMst=m.MEMst||0;CPV=m.CPV||[];LEADM=m.LEADM||{};MEMS=m.MEMS||"none";$("pvbar").hidden=true;$("nav").hidden=false;go("clients")}
@@ -1356,6 +1357,27 @@ const sparkL=a=>{if(!a||a.length<2)return "";const v=a.map(p=>p.k),mn=Math.min(.
 const upsHtml=u=>u.length?`<div class="sum-up">${u.map(z=>`<span><b class="en">${esc(z.x)}</b> · מ-${z.a} ל-${z.b} ק״ג</span>`).join("")}</div>`:"";
 function shareTxt(){const s=attStats(),h=histBy((MEM&&MEM.log)||[]),u=liftUps(h,TODAY.slice(0,7)+"-01");
   return [`${MON[+TODAY.slice(5,7)-1]} ב-Playground Studio`,`${s.mn} שיעורים · ${s.st} שבועות ברצף`,...u.map(z=>`${z.x}: מ-${z.a} ל-${z.b} ק״ג`)].join("\n")}
+/* monthly summary as a branded image (story size) */
+async function shareImg(){const s=attStats(),h=histBy((MEM&&MEM.log)||[]),mo=TODAY.slice(0,7),u=liftUps(h,mo+"-01").slice(0,3),nm=((MEM&&MEM.name)||"").split(" ")[0];
+  const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  try{await document.fonts.ready}catch(e){}
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#173050");g.addColorStop(.55,"#0c1d33");g.addColorStop(1,"#081325");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const F=(w,sz)=>`${w} ${sz}px Rubik, "Segoe UI", Arial, sans-serif`;x.direction="rtl";x.textAlign="center";
+  try{const im=new Image();im.src="pg-logo.png";await im.decode();const lw=300,lh=lw*im.height/im.width;x.globalAlpha=.95;x.drawImage(im,(W-lw)/2,170,lw,lh);x.globalAlpha=1}catch(e){}
+  x.fillStyle="#93a6c2";x.font=F(600,44);x.fillText("PLAYGROUND STUDIO",W/2,560);
+  x.fillStyle="#f5f7fb";x.font=F(800,104);x.fillText(MON[+mo.slice(5)-1],W/2,700);
+  if(nm){x.fillStyle="#93a6c2";x.font=F(500,48);x.fillText(`החודש של ${nm}`,W/2,780)}
+  const box=(cx,val,lab,col)=>{x.fillStyle="rgba(255,255,255,.06)";x.beginPath();x.roundRect(cx-220,860,440,300,40);x.fill();
+    x.fillStyle=col;x.font=F(800,150);x.fillText(String(val),cx,1050);x.fillStyle="#93a6c2";x.font=F(500,44);x.fillText(lab,cx,1120)};
+  box(W/2+240,s.mn,"שיעורים","#5bb8ff");box(W/2-240,s.st,s.st===1?"שבוע ברצף":"שבועות ברצף","#4fd18b");
+  let y=1280;if(u.length){x.fillStyle="#f5f7fb";x.font=F(700,52);x.fillText("מה עלה החודש",W/2,y);y+=90;
+    u.forEach(z=>{const pc=z.a?Math.round((z.b-z.a)/z.a*100):0;x.fillStyle="rgba(255,255,255,.06)";x.beginPath();x.roundRect(110,y-62,W-220,100,30);x.fill();
+      const vt=`${z.a}→${z.b} kg${pc>0?`  +${pc}%`:""}`;x.direction="ltr";x.font=F(700,44);const room=W-300-x.measureText(vt).width-40;let fs=44,nt=z.x;x.font=F(700,fs);while(x.measureText(nt).width>room&&fs>32){fs-=2;x.font=F(700,fs)}while(x.measureText(nt).width>room&&nt.length>4)nt=nt.slice(0,-2);if(nt!==z.x)nt=nt.trim()+"…";x.textAlign="right";x.fillStyle="#f5f7fb";x.fillText(nt,W-150,y+4);
+      x.textAlign="left";x.fillStyle="#4fd18b";x.font=F(700,44);x.fillText(vt,150,y+4);x.textAlign="center";y+=130})}
+  x.fillStyle="#5f7596";x.font=F(500,38);x.direction="rtl";x.textAlign="center";x.fillText("טל ליפשטט · Playground Studio TLV",W/2,H-110);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png"));if(!blob)throw 0;const f=new File([blob],`playground-${mo}.png`,{type:"image/png"});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:shareTxt()})}catch(e){}return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("התמונה נשמרה ✓")}
 function sumCards(noM){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=stWeek(TODAY),mo=TODAY.slice(0,7),wk=MEM.wk||{},left=s.q?Math.max(0,s.q-s.wk):0;
   const dots=s.q?Array.from({length:Math.max(s.q,s.wk)},(_,i)=>`<i class="${i<s.wk?"on":""}"></i>`).join(""):"";
   let o=`<div class="card sumc"><div class="sum-h"><b>השבוע</b>${wk.k?`<small>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</small>`:""}</div>
@@ -1368,13 +1390,14 @@ function sumCards(noM){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws
   o+=`<div class="card sumc"><div class="sum-h"><b>${MON[+mo.slice(5)-1]}</b><small>החודש עד היום</small></div>
     <div class="kpis"><div class="kpi"><b>${s.mn}</b><small>שיעורים</small></div><div class="kpi"><b>${s.st}</b><small>שבועות ברצף</small></div></div>
     ${um.length?upsHtml(um):`<p class="hint" style="margin:8px 0 0">כשתרשמו משקלים, כאן יופיע מה עלה החודש.</p>`}
-    ${s.mn?`<button type="button" class="ghost" data-share="1">שיתוף</button>`:""}</div>`;
+    ${s.mn?`<button type="button" class="ghost" data-share="1">שיתוף החודש שלי כתמונה</button>`:""}</div>`;
   if(MEM.plan&&!noM)o+=`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`;
   return o}
 const liveCls=()=>SRC2.find(c=>c.date===TODAY&&nowMin()>=toMin(c.time)-20&&nowMin()<=toMin(c.time)+120);
 async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
   if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
+  try{const s=await db.collection(`t/${uid}/bm`).get();BM={};s.docs.forEach(d=>BM[d.id]=d.data())}catch(e){}
   MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
 let MSEC=null,LXU="kg",LXO=null,HMO=null;
 const SECS=[["class","האימון הבא","--mes","M4 6h16M4 12h16M4 18h10"],["log","רישום האימון","--ok","M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"],
@@ -1390,24 +1413,49 @@ function secClass(){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Da
       const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">${tg?`היום: ${tg.kg} ק״ג · `:""}בפעם הקודמת: ${esc(lo.kg?lo.kg+" ק״ג"+(lo.reps?" × "+lo.reps:""):(lo.reps||"")+" חזרות")}</small>`:"";
       return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div></details>`:""}
   </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
+function liftCard(rows){return `<div class="card mlx">${rows.map(({x,name,sub,val,h})=>{const f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
+      return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(name)}</b><small>${esc(sub||"")}</small></div>
+        <div class="ml-v"><b>${esc(val||"")}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג · ${pc>0?"+":""}${pc}% מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${op?"":sparkL(h)}</div></button>
+        ${op?`<div class="ml-ch">${h.length>1?`<div class="lxseg" role="group"><button type="button" data-lxu="kg" aria-pressed="${LXU==="kg"}">ק״ג</button><button type="button" data-lxu="pct" aria-pressed="${LXU==="pct"}">אחוזים</button></div>
+          ${LXU==="pct"?lineChart(h.map(p=>({k:p.d,v:Math.round((p.k-f.k)/f.k*100)})),0):lineChart(h.map(p=>({k:p.d,v:p.k})),f.k)}
+          <p class="hint" style="margin:0">${LXU==="pct"?"כמה אחוזים עלית מהפעם הראשונה שרשמת":"המשקל בכל פעם שרשמת את התרגיל"} · ${h.length} פעמים</p>`
+          :`<p class="hint" style="margin:0">הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.</p>`}</div>`:""}`}).join("")}</div>`}
 function secProg(){const lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
   const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null&&k>0)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
   const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10),prs=log.filter(l=>l.pr).length;
   return `<div class="sh"><h2>המשקלים שלי</h2>${lifts.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
   ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
-    <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
-      return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(shortEx(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
-        <div class="ml-v"><b>${o.kg?esc(o.kg)+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps?esc(o.reps):""}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג · ${pc>0?"+":""}${pc}% מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${op?"":sparkL(h)}</div></button>
-        ${op?`<div class="ml-ch">${h.length>1?`<div class="lxseg" role="group"><button type="button" data-lxu="kg" aria-pressed="${LXU==="kg"}">ק״ג</button><button type="button" data-lxu="pct" aria-pressed="${LXU==="pct"}">אחוזים</button></div>
-          ${LXU==="pct"?lineChart(h.map(p=>({k:p.d,v:Math.round((p.k-f.k)/f.k*100)})),0):lineChart(h.map(p=>({k:p.d,v:p.k})),f.k)}
-          <p class="hint" style="margin:0">${LXU==="pct"?"כמה אחוזים עלית מהפעם הראשונה שרשמת":"המשקל בכל פעם שרשמת את התרגיל"} · ${h.length} פעמים</p>`
-          :`<p class="hint" style="margin:0">הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.</p>`}</div>`:""}`}).join("")}</div>`
+    ${liftCard(lifts.map(([x,o])=>({x,name:shortEx(x),sub:[o.ver&&o.ver!==x&&shortEx(o.ver)!==shortEx(x)?o.ver:"",o.d?fmt(o.d):""].filter(Boolean).join(" · "),val:`${o.kg?o.kg+" ק״ג":""}${o.kg&&o.reps?" × ":""}${o.reps||""}`,h:hist[x]||[]})))}`
     :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
-  <div class="sh"><h2>סיכום</h2></div>${sumCards(true)}`}
+  ${MEM?`<div class="sh"><h2>סיכום</h2></div>${sumCards(true)}${bmCard()}`:""}`}
+/* personal workouts: best kg per exercise per session */
+function woProg(){const H={};Object.keys(wlog).forEach(key=>{const l=wlog[key];if(!l||!l.sets)return;const i=key.lastIndexOf("_"),wid=key.slice(0,i),d=key.slice(i+1),w=W[wid];if(!w||!/^\d{4}-\d\d-\d\d$/.test(d))return;
+    Object.entries(l.sets).forEach(([k,a])=>{const [bi,ii]=k.split("-").map(Number),it=(((w.blocks||[])[bi]||{}).items||[])[ii];if(!it||it.nokg)return;const mx=Math.max(0,...(a||[]).map(o=>numKg(o&&o.kg)||0));if(!mx)return;
+      const x=shortEx(it.n||"");if(!x)return;const arr=H[x]=H[x]||[];const e=arr.find(p=>p.d===d);if(e)e.k=Math.max(e.k,mx);else arr.push({d,k:mx})})});
+  return Object.entries(H).map(([x,h])=>[x,h.sort((p,q)=>p.d.localeCompare(q.d))]).sort((p,q)=>q[1][q[1].length-1].d.localeCompare(p[1][p[1].length-1].d)).slice(0,12)}
+function woProgHTML(){const P=woProg();
+  return `<div class="sh"><h2>התקדמות בכוח</h2>${P.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
+  ${P.length?liftCard(P.map(([x,h])=>{const l=h[h.length-1];return {x:"w:"+x,name:x,sub:fmt(l.d),val:l.k+" ק״ג",h}})):`<div class="card"><div class="empty">כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.</div></div>`}`}
+/* optional personal profile for studio members: one doc per month */
+let BM={};
+function bmCard(){const ks=Object.keys(BM).sort(),L={};ks.forEach(k=>Object.entries(BM[k]||{}).forEach(([f,v])=>{if(v!=null&&v!=="")L[f]=v}));const mo=TODAY.slice(0,7),has=!!BM[mo],kgs=ks.filter(k=>+BM[k].kg>0).map(k=>({k:k+"-01",v:+BM[k].kg}));
+  const F=(id,lab,val,step)=>`<label>${lab}<input id="${id}" type="number" inputmode="decimal" step="${step}" value="${val!=null&&val!==""?esc(String(val)):""}"></label>`;
+  return `<div class="sh"><h2>הפרופיל שלי</h2><span>לא חובה · פעם בחודש</span></div>
+  <div class="card bmc">${ks.length?`<div class="kpis bmk">${[["גיל",L.age,""],["גובה",L.height," ס״מ"],["משקל",L.kg," ק״ג"],["אחוז שומן",L.fat,"%"]].filter(z=>z[1]).map(z=>`<div class="kpi"><b>${esc(String(z[1]))}<small>${z[2]}</small></b><small>${z[0]}</small></div>`).join("")}</div>
+      <p class="hint" style="margin:0">${has?`עודכן ב${MON[+mo.slice(5)-1]} ✓`:`העדכון של ${MON[+mo.slice(5)-1]} עוד לא נעשה`}</p>`:`<p class="hint" style="margin:0">גיל, גובה, משקל ואחוז שומן, אם יש לך. ממלאים פעם בחודש ורואים איך זה משתנה. רק את/ה וטל רואים.</p>`}
+    ${kgs.length>1?lineChart(kgs,kgs[0].v):""}
+    <details class="mcx"${ks.length?"":" open"}><summary>${has?"עדכון הנתונים של החודש":"עדכון לחודש הזה"}</summary>
+      <div class="mrow bmf">${F("bmAge","גיל",L.age,1)}${F("bmH","גובה (ס״מ)",L.height,1)}${F("bmKg","משקל (ק״ג)",has?BM[mo].kg:"",0.1)}${F("bmFat","אחוז שומן",has?BM[mo].fat:"",0.1)}</div>
+      <button type="button" class="cta" id="bmSave" style="margin-top:10px">שמירה</button></details></div>`}
+async function bmSave(b){if(memPv){toast("מצב שיקוף · לא נשמר");return}const n=id=>{const v=parseFloat(($(id)||{}).value);return isFinite(v)&&v>0?v:null};
+  const d={age:n("bmAge"),height:n("bmH"),kg:n("bmKg"),fat:n("bmFat"),at:new Date().toISOString()};if(!d.age&&!d.height&&!d.kg&&!d.fat){toast("לא מילאת כלום");return}
+  if(d.fat&&d.fat>70||d.kg&&(d.kg<25||d.kg>300)||d.height&&(d.height<100||d.height>230)){toast("אחד הערכים לא נראה תקין");return}
+  b.disabled=true;const mo=TODAY.slice(0,7);try{await db.doc(`t/${uid}/bm/${mo}`).set(d);BM[mo]=d;toast("נשמר ✓");render()}catch(e){toast("לא נשמר, נסו שוב")}finally{b.disabled=false}}
+document.addEventListener("click",ev=>{const b=ev.target.closest&&ev.target.closest("#bmSave");if(b)bmSave(b)});
 function secHist(){const log=(MEM&&MEM.log)||[],att=((MEM&&MEM.att)||[]).filter(d=>d<=TODAY),byD={};log.forEach(l=>{(byD[l.date]=byD[l.date]||[]).push(l)});
   const ds=[...new Set([...att,...Object.keys(byD)])].sort().reverse(),mos=[...new Set(ds.map(d=>d.slice(0,7)))];
   if(!ds.length)return `<div class="card"><div class="empty">השיעורים שלך יופיעו כאן, מסודרים לפי חודש.</div></div>`;
-  const mo=HMO&&mos.includes(HMO)?HMO:mos[0],inM=ds.filter(d=>d.slice(0,7)===mo),wl=inM.filter(d=>byD[d]).length,mL=m=>`${MON[+m.slice(5)-1]}${m.slice(0,4)!==TODAY.slice(0,4)?" "+m.slice(0,4):""}`;
+  const mo=HMO&&mos.includes(HMO)?HMO:mos[0],inM=ds.filter(d=>d.slice(0,7)===mo),wl=inM.filter(d=>(byD[d]||[]).some(l=>Object.values(l.lx||{}).some(o=>o&&(o.kg||o.reps)))).length,mL=m=>`${MON[+m.slice(5)-1]}${m.slice(0,4)!==TODAY.slice(0,4)?" "+m.slice(0,4):""}`;
   return `${mos.length>1?`<div class="chips hmo">${mos.map(m=>`<button type="button" data-hmo="${m}" aria-pressed="${m===mo}">${mL(m)}</button>`).join("")}</div>`:""}
   <div class="kpis"><div class="kpi"><b>${inM.length}</b><small>שיעורים ב${mL(mo)}</small></div><div class="kpi"><b>${wl}</b><small>עם משקלים רשומים</small></div></div>
   <div class="card mlx">${inM.map(d=>{const L=byD[d]||[],ex=L.flatMap(l=>Object.entries(l.lx||{}).filter(([,o])=>o&&(o.kg||o.reps))),cls=L.map(l=>l.cls).filter(Boolean)[0]||"";
@@ -1421,7 +1469,7 @@ function secSub(k){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Dat
   if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:"יעלה בערב";
   if(k==="log")return liveCls()?"השיעור פתוח לרישום":SRC2.filter(c=>c.mine).length?`${SRC2.filter(c=>c.mine).length} נרשמו השבוע`:"משקלים וסטים";
   if(k==="prog")return s?`${s.wk}${s.q?"/"+s.q:""} השבוע · ${s.mn} החודש`:"";
-  if(k==="hist")return log.length?`${log.length} עם משקלים`:"לפי חודש";return ""}
+  if(k==="hist"){const n=log.filter(l=>Object.values(l.lx||{}).some(o=>o&&(o.kg||o.reps))).length;return n?`${n} עם משקלים`:s&&s.att.length?`${s.att.length} שיעורים`:"לפי חודש"}return ""}
 function studioBody(full){
   const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],tiles=full&&MEM&&(MEMS==="in"||memPv);
   const head=`${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
@@ -1444,7 +1492,7 @@ function studioBody(full){
   ${secProg()}
   ${MEM&&!full?`<div class="sh"><h2>האימונים שלי</h2></div>${secHist()}`:""}
   ${full?`<div class="sh"><h2>ליווי אישי</h2></div>${secUps()}`:""}`}
-document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy"))return;
+document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy,#v-measure"))return;
   const ms=t.closest("[data-msec]");if(ms){MSEC=ms.dataset.msec||null;LXO=null;render();window.scrollTo(0,0);return}
   const lo=t.closest("[data-lxo]");if(lo){LXO=LXO===lo.dataset.lxo?null:lo.dataset.lxo;render();return}
   const lu=t.closest("[data-lxu]");if(lu){LXU=lu.dataset.lxu;render();return}
@@ -1510,7 +1558,7 @@ async function slSave(btn){const c=slCls(SLK);if(!c)return;const meta=Object.fro
     toast("נשמר ✓");SLK=null;const a=await pgMember.me();if(a)MEM=a;render()}catch(e){toast("לא נשמר, נסו שוב")}finally{btn.disabled=false}}
 document.addEventListener("click",ev=>{const t=ev.target;if(!t.closest||!t.closest("#v-today,#v-smy"))return;
   const cl=t.closest("[data-scls]");if(cl){if(SLK===cl.dataset.scls)SLK=null;else slOpen(cl.dataset.scls);render();return}
-  const sh=t.closest("[data-share]");if(sh){const tx=shareTxt();if(navigator.share)navigator.share({text:tx}).catch(()=>{});else{try{navigator.clipboard.writeText(tx);toast("הועתק ✓")}catch(e){}}return}
+  const sh=t.closest("[data-share]");if(sh){shareImg().catch(()=>{const tx=shareTxt();if(navigator.share)navigator.share({text:tx}).catch(()=>{});else{try{navigator.clipboard.writeText(tx);toast("הועתק ✓")}catch(e){}}});return}
   if(!t.closest(".slf"))return;
   const fp=t.closest("[data-fbp]");if(fp){const v=+fp.dataset.fbp;SLFB.pain=SLFB.pain===v?null:v;if(!(SLFB.pain>0)){SLFB.where="";SLFB.ex=""}render();return}
   const fx=t.closest("[data-fbx]");if(fx){SLFB.ex=SLFB.ex===fx.dataset.fbx?"":fx.dataset.fbx;render();return}
@@ -2188,6 +2236,7 @@ function renderMeasure(){const Ls=wList(weigh),last=Ls[Ls.length-1],wk=weekStart
   $("v-measure").innerHTML=`
   <div class="sh"><h2>השבוע שלך</h2><span>ארוחות, אימונים ומים</span></div>
   <div class="card">${weekBars()}<div class="wklegend"><span><i class="bar"></i>ארוחות שסומנו</span><span><i class="o"></i>אימון</span>${habits().some(x=>x.type==="cups")?'<span><i class="d"></i>יעד מים</span>':""}</div></div>
+  ${Object.keys(W).length?woProgHTML():""}
   <div class="sh"><h2>הישגים</h2><span>${got} מתוך ${B.length}</span></div>
   <div class="badges">${[...B.filter(x=>x[3]),...B.filter(x=>!x[3])].map(([id,t,d,ok])=>`<div class="bdg ${ok?"ok":""}"><span class="md">${BADGE}</span><b>${t}</b><small>${d}</small></div>`).join("")}</div>
   <div class="sh"><h2>תמונות התקדמות</h2><span>${bk.length?`${bk.length} תמונות`:"פעם בשבועיים"}</span></div>
