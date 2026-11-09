@@ -1355,7 +1355,7 @@ const sparkL=a=>{if(!a||a.length<2)return "";const v=a.map(p=>p.k),mn=Math.min(.
 const upsHtml=u=>u.length?`<div class="sum-up">${u.map(z=>`<span><b class="en">${esc(z.x)}</b> · מ-${z.a} ל-${z.b} ק״ג</span>`).join("")}</div>`:"";
 function shareTxt(){const s=attStats(),h=histBy((MEM&&MEM.log)||[]),u=liftUps(h,TODAY.slice(0,7)+"-01");
   return [`${MON[+TODAY.slice(5,7)-1]} ב-Playground Studio`,`${s.mn} שיעורים · ${s.st} שבועות ברצף`,...u.map(z=>`${z.x}: מ-${z.a} ל-${z.b} ק״ג`)].join("\n")}
-function sumCards(){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=stWeek(TODAY),mo=TODAY.slice(0,7),wk=MEM.wk||{},left=s.q?Math.max(0,s.q-s.wk):0;
+function sumCards(noM){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=stWeek(TODAY),mo=TODAY.slice(0,7),wk=MEM.wk||{},left=s.q?Math.max(0,s.q-s.wk):0;
   const dots=s.q?Array.from({length:Math.max(s.q,s.wk)},(_,i)=>`<i class="${i<s.wk?"on":""}"></i>`).join(""):"";
   let o=`<div class="card sumc"><div class="sum-h"><b>השבוע</b>${wk.k?`<small>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</small>`:""}</div>
     <div class="sum-r"><span class="sum-n">${s.wk}${s.q?"/"+s.q:""}</span><span>שיעורים</span>${dots?`<span class="wkd">${dots}</span>`:""}</div>
@@ -1368,7 +1368,7 @@ function sumCards(){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=st
     <div class="kpis"><div class="kpi"><b>${s.mn}</b><small>שיעורים</small></div><div class="kpi"><b>${s.st}</b><small>שבועות ברצף</small></div></div>
     ${um.length?upsHtml(um):`<p class="hint" style="margin:8px 0 0">כשתרשמו משקלים, כאן יופיע מה עלה החודש.</p>`}
     ${s.mn?`<button type="button" class="ghost" data-share="1">שיתוף</button>`:""}</div>`;
-  if(MEM.plan)o+=`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`;
+  if(MEM.plan&&!noM)o+=`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`;
   return o}
 const liveCls=()=>SRC2.find(c=>c.date===TODAY&&nowMin()>=toMin(c.time)-20&&nowMin()<=toMin(c.time)+120);
 async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
@@ -1392,8 +1392,7 @@ function secClass(){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Da
 function secProg(){const lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
   const hist={};log.slice().reverse().forEach(l=>Object.entries(l.lx||{}).forEach(([x,o])=>{const k=numKg(o&&o.kg);if(k!=null&&k>0)(hist[x]=hist[x]||[]).push({d:l.date,k})}));
   const lifts=Object.entries(lx).filter(([,o])=>o&&(o.kg||o.reps)).sort((a,b)=>(b[1].d||"").localeCompare(a[1].d||"")).slice(0,10),prs=log.filter(l=>l.pr).length;
-  return `${sumCards()}
-  <div class="sh"><h2>המשקלים שלי</h2>${lifts.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
+  return `<div class="sh"><h2>המשקלים שלי</h2>${lifts.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
   ${lifts.length?`${prs?`<div class="kpis"><div class="kpi"><b>${log.length}</b><small>שיעורים מתועדים</small></div><div class="kpi"><b style="color:var(--ok)">${prs}</b><small>שיאים אישיים</small></div></div>`:""}
     <div class="card mlx">${lifts.map(([x,o])=>{const h=hist[x]||[],f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
       return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(shortEx(x))}</b><small>${o.ver?esc(o.ver)+" · ":""}${o.d?esc(fmt(o.d)):""}</small></div>
@@ -1402,7 +1401,8 @@ function secProg(){const lx=(MEM&&MEM.lx)||{},log=(MEM&&MEM.log)||[];
           ${LXU==="pct"?lineChart(h.map(p=>({k:p.d,v:Math.round((p.k-f.k)/f.k*100)})),0):lineChart(h.map(p=>({k:p.d,v:p.k})),f.k)}
           <p class="hint" style="margin:0">${LXU==="pct"?"כמה אחוזים עלית מהפעם הראשונה שרשמת":"המשקל בכל פעם שרשמת את התרגיל"} · ${h.length} פעמים</p>`
           :`<p class="hint" style="margin:0">הגרף יופיע אחרי שתרשמו את התרגיל לפחות פעמיים.</p>`}</div>`:""}`}).join("")}</div>`
-    :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}`}
+    :`<div class="card"><div class="empty">${MEM?"אחרי שיעור רושמים ב״רישום האימון״ את המשקלים והגרסה שעשית, והם יופיעו כאן עם ההתקדמות לאורך זמן.":"כשהמנוי יחובר, המשקלים וההתקדמות שלך מהשיעורים יופיעו כאן."}</div></div>`}
+  <div class="sh"><h2>סיכום</h2></div>${sumCards(true)}`}
 function secHist(){const log=(MEM&&MEM.log)||[],att=((MEM&&MEM.att)||[]).filter(d=>d<=TODAY),byD={};log.forEach(l=>{(byD[l.date]=byD[l.date]||[]).push(l)});
   const ds=[...new Set([...att,...Object.keys(byD)])].sort().reverse(),mos=[...new Set(ds.map(d=>d.slice(0,7)))];
   if(!ds.length)return `<div class="card"><div class="empty">השיעורים שלך יופיעו כאן, מסודרים לפי חודש.</div></div>`;
@@ -2164,7 +2164,7 @@ function renderMenu(){const mn=prof.menu;
 
 /* ===== MEASURES ===== */
 function lineChart(pts,base){const Wd=340,H=140,Lf=30,R=12,T=14,B=22,vals=pts.map(p=>p.v).concat(base!=null?[base]:[]);
-  const mn=Math.floor(Math.min(...vals))-1,mx=Math.ceil(Math.max(...vals))+1;
+  const mn=base===0&&Math.min(...vals)>=0?0:Math.floor(Math.min(...vals))-1,mx=Math.ceil(Math.max(...vals))+1;
   const x=i=>pts.length<2?(Lf+Wd-R)/2:Lf+i*(Wd-Lf-R)/(pts.length-1),y=v=>T+(mx-v)*(H-T-B)/(mx-mn);
   let g=[mn,Math.round((mn+mx)/2),mx].map(v=>`<line class="grid" x1="${Lf}" x2="${Wd-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${Lf-6}" y="${y(v)+3}" text-anchor="end">${v}</text>`).join("");
   if(base!=null)g+=`<line class="base" x1="${Lf}" x2="${Wd-R}" y1="${y(base)}" y2="${y(base)}"/><text x="${Wd-R}" y="${y(base)-5}" text-anchor="end">התחלה ${base}</text>`;
