@@ -155,7 +155,7 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
 (()=>{
-const SB=window.supabase.createClient("https://rrqngqxrcvhaeeudrhjz.supabase.co","sb_publishable_Cxxhu4h4CFtIUpqxcb-FTg_DIvC16lY");
+const SB=window.supabase.createClient("https://rrqngqxrcvhaeeudrhjz.supabase.co","sb_publishable_Cxxhu4h4CFtIUpqxcb-FTg_DIvC16lY",{auth:{storageKey:"pg-finance-auth",persistSession:true,autoRefreshToken:true}});
 const $g=id=>document.getElementById(id);
 let readyRes;const ready=new Promise(r=>readyRes=r);
 const L=new Set();const emit=()=>L.forEach(f=>{try{f()}catch(e){}});
@@ -190,9 +190,9 @@ let started=false;
 async function enter(session){
   if(!session){$g("gate").hidden=false;return}
   const {data:isAdmin}=await SB.rpc("is_admin");
-  if(!isAdmin){$g("gate").hidden=false;$g("gErr").textContent="לחשבון הזה אין הרשאה לכספים";await SB.auth.signOut();return}
+  if(!isAdmin){$g("gate").hidden=false;$g("gErr").textContent="לחשבון "+((session.user&&session.user.email)||"")+" אין הרשאה לכספים. צריך להיכנס עם המייל של מנהל פלייגראונד";return}
   $g("gate").hidden=true;
-  const br=document.querySelector(".brand");if(br&&!$g("gOut")){const b=document.createElement("button");b.id="gOut";b.className="outbtn";b.type="button";b.textContent="יציאה";b.onclick=async()=>{await SB.auth.signOut();location.reload()};br.appendChild(b)}
+  const br=document.querySelector(".brand");if(br&&!$g("gOut")){const b=document.createElement("button");b.id="gOut";b.className="outbtn";b.type="button";b.textContent="יציאה";b.onclick=async()=>{await SB.auth.signOut({scope:"local"});location.reload()};br.appendChild(b)}
   if(!started){started=true;live();readyRes()}
 }
 $g("gForm").addEventListener("submit",async e=>{e.preventDefault();$g("gErr").textContent="";$g("gGo").disabled=true;
