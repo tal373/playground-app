@@ -179,6 +179,7 @@ const db={doc,collection:coll};
 const assets={async upload(f){const safe=(f.name||"file").replace(/[^\w.\-]+/g,"_").slice(-80);const id=Date.now().toString(36)+"-"+safe;
   const {error}=await SB.storage.from("fin").upload(id,f,{contentType:f.type||"application/octet-stream",upsert:false});if(error)throw E(error);return {id}}};
 const downloads={async save({filename,data}){const b=new Blob([data],{type:"text/csv;charset=utf-8"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}};
+window.pgFin={async analyze(path,candidates){try{const {data,error}=await SB.functions.invoke("fin-doc",{body:{path,candidates}});return error?{error:true}:data}catch(e){return {error:true}}}};
 window.claude={use:n=>ready.then(()=>n==="db"?db:n==="assets"?assets:n==="downloads"?downloads:null)};
 /* uploaded documents open through a short-lived private link */
 document.addEventListener("click",async e=>{const a=e.target.closest&&e.target.closest('a[href^="/_blob/"]');if(!a)return;e.preventDefault();
@@ -389,15 +390,15 @@ function docs(){
   after=()=>{const z=$("drop");if(!z)return;z.addEventListener("dragover",e=>{e.preventDefault();z.classList.add("over")});z.addEventListener("dragleave",()=>z.classList.remove("over"));z.addEventListener("drop",e=>{e.preventDefault();z.classList.remove("over");uploadFiles([...e.dataTransfer.files],null)})};
   const expOpts=p=>S.exp.filter(r=>!p||r.period===p).sort((a,b)=>a.vendor.localeCompare(b.vendor)).map(r=>`<option value="${r.id}">${esc(PN[r.period]+" · "+r.vendor+" · "+fmt(r.amount))}</option>`).join("");
   return head("מסמכים","חשבוניות, קבלות, תלושים ודוחות — הכל במקום אחד")+
-  (assets?`<div class="drop" id="drop" role="button" tabindex="0"><b>גוררים לכאן קבצים, או לוחצים לבחירה</b>PDF או תמונה. אחרי ההעלאה משייכים כל קובץ להוצאה</div>`:`<div class="card empty">העלאת קבצים זמינה למי שיש לו הרשאת עריכה לעמוד</div>`)+
+  (assets?`<div class="drop" id="drop" role="button" tabindex="0"><b>גוררים לכאן קבצים, או לוחצים לבחירה</b>PDF או תמונה, גם כמה ביחד. המערכת קוראת כל קובץ ומשייכת אותו להוצאה לבד</div>`:`<div class="card empty">העלאת קבצים זמינה למי שיש לו הרשאת עריכה לעמוד</div>`)+
   `<section class="card" style="margin-top:14px"><h2>תיבת דואר נכנס <span class="chip ${inbox.length?"c-warn":"c-ok"}">${inbox.length}</span></h2><p class="cap">קבצים שעוד לא שויכו להוצאה</p>
-  ${inbox.length?`<div class="tbl"><table style="min-width:640px"><thead><tr><th>קובץ</th><th>סוג</th><th>חודש</th><th>לשייך להוצאה</th><th></th></tr></thead><tbody>${inbox.map(d=>`<tr><td><a href="/_blob/${encodeURIComponent(d.assetId)}" target="_blank" rel="noopener" style="color:var(--accent)">📎 ${esc(d.name)}</a><div class="d">${esc((d.uploadedAt||"").slice(0,10))}</div></td>
+  ${inbox.length?`<div class="tbl"><table style="min-width:640px"><thead><tr><th>קובץ</th><th>סוג</th><th>חודש</th><th>לשייך להוצאה</th><th></th></tr></thead><tbody>${inbox.map(d=>`<tr><td><a href="/_blob/${encodeURIComponent(d.assetId)}" target="_blank" rel="noopener" style="color:var(--accent)">📎 ${esc(d.name)}</a><div class="d">${esc((d.uploadedAt||"").slice(0,10))}</div>${d.ext&&!d.ext.err?`<div class="n">נקרא: ${esc(d.ext.vendor||"?")}${d.ext.total!=null?" · "+fmt(d.ext.total)+" "+(d.ext.currency==="ILS"?"₪":esc(d.ext.currency)):""}${d.ext.date?" · "+dd(d.ext.date):""}</div>`:d.ext&&d.ext.err?`<div class="n">לא הצלחתי לקרוא את הקובץ</div>`:`<div class="n">עוד לא נקרא <button class="btn sm ghost" data-rd="${d.id}">לקרוא</button></div>`}</td>
    <td><select class="s" data-dkind="${d.id}">${DOCK.map(k=>`<option ${k===d.kind?"selected":""}>${k}</option>`).join("")}</select></td>
    <td><select class="s" data-dper="${d.id}">${PERIODS.map(([k,t])=>`<option value="${k}" ${k===d.period?"selected":""}>${t}</option>`).join("")}</select></td>
-   <td><select class="s" data-dlink="${d.id}" style="max-width:260px"><option value="">בחירת הוצאה…</option>${expOpts(d.period)}</select></td>
+   <td>${(d.suggest||[]).map(id=>{const e=S.exp.find(x=>x.id===id);return e?`<button class="btn sm" style="display:block;margin-bottom:4px;text-align:right" data-sug="${d.id}|${id}">✓ ${esc(e.vendor)} · ${fmt(e.amount)} · ${e.date?dd(e.date):PN[e.period]}</button>`:""}).join("")}<select class="s" data-dlink="${d.id}" style="max-width:260px"><option value="">בחירת הוצאה…</option>${expOpts(d.period)}</select></td>
    <td><button class="btn sm" data-ddel="${d.id}" aria-label="מחיקה">✕</button></td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">אין קבצים שמחכים לשיוך</div>'}</section>
   <section class="card" style="margin-top:14px"><h2>כל המסמכים ששויכו <span class="chip c-ok">${linked.length}</span></h2><p class="cap">לפי חודש</p>
-  ${PERIODS.map(([k,t])=>{const L=linked.filter(d=>{const e=S.exp.find(x=>x.id===d.expenseId);return e&&e.period===k});return L.length?`<div style="margin-bottom:10px"><b>${t}</b><div class="files" style="margin-top:4px">${L.map(d=>{const e=S.exp.find(x=>x.id===d.expenseId);return `<a href="/_blob/${encodeURIComponent(d.assetId)}" target="_blank" rel="noopener" style="max-width:none">📎 ${esc(d.kind||"")} · ${esc(e?e.vendor:"")} · ${esc(d.name)}</a>`}).join("")}</div></div>`:""}).join("")||'<div class="empty">עוד אין מסמכים משויכים</div>'}
+  ${PERIODS.map(([k,t])=>{const L=linked.filter(d=>{const e=S.exp.find(x=>x.id===d.expenseId);return e&&e.period===k});return L.length?`<div style="margin-bottom:10px"><b>${t}</b><div class="files" style="margin-top:4px">${L.map(d=>{const e=S.exp.find(x=>x.id===d.expenseId);return `<a href="/_blob/${encodeURIComponent(d.assetId)}" target="_blank" rel="noopener" style="max-width:none">📎 ${esc(d.kind||"")} · ${esc(e?e.vendor:"")} · ${esc(d.name)}${d.auto?" · שויך אוטומטית":""}</a>`}).join("")}</div></div>`:""}).join("")||'<div class="empty">עוד אין מסמכים משויכים</div>'}
   <p class="note">חשבוניות של יולי–אוגוסט נמצאות בבורד במאנדיי. בדף ההוצאות יש קישור ליד כל שורה.</p></section>`;
 }
 
@@ -440,6 +441,8 @@ document.addEventListener("click",async e=>{
   if(e.target.closest("[data-clearcat]")){exCat=null;render();return}
   const cb=e.target.closest(".bar[data-cat]");if(cb){exCat=cb.dataset.cat;if(period==="all"||!PN[period])period="2026-10";location.hash="#expenses";if(route==="expenses")render();return}
   const g=e.target.closest("[data-goto]");if(g){period=g.dataset.goto;save()}
+  const sg=e.target.closest("[data-sug]");if(sg){const [a,b]=sg.dataset.sug.split("|");return linkDoc(a,b)}
+  const rd=e.target.closest("[data-rd]");if(rd){const dc=S.docs.find(x=>x.id===rd.dataset.rd);if(dc){toast("קורא את "+dc.name+"…");return autoMatch(dc.id,dc.assetId,dc.name)}return}
   const up=e.target.closest("[data-up]");if(up&&assets){upTarget=up.dataset.up;$("fileIn").value="";$("fileIn").click();return}
   if(e.target.closest("#drop")&&assets){upTarget=null;$("fileIn").value="";$("fileIn").click();return}
   const df=e.target.closest("[data-delflow]");if(df){del("flows",df.dataset.delflow);return}
@@ -476,11 +479,28 @@ async function uploadFiles(files,expId){
   for(const f of files){
     toast("מעלה "+f.name+"…");
     try{const a=await assets.upload(f);const exp=expId?S.exp.find(x=>x.id===expId):null;
-      await db.collection("docs").add({name:f.name,assetId:a.id,uploadedAt:new Date().toISOString(),kind:"חשבונית",period:exp?exp.period:(PN[period]&&period!=="all"?period:"2026-11"),expenseId:expId||null});
-      if(exp&&exp.invoice!=="התקבלה")await db.doc("expenses/"+exp.id).update({invoice:"התקבלה"});
-      toast("הועלה: "+f.name);
+      const ref=await db.collection("docs").add({name:f.name,assetId:a.id,uploadedAt:new Date().toISOString(),kind:"חשבונית",period:exp?exp.period:(PN[period]&&period!=="all"?period:"2026-11"),expenseId:expId||null});
+      if(exp){if(exp.invoice!=="התקבלה")await db.doc("expenses/"+exp.id).update({invoice:"התקבלה"});toast("הועלה: "+f.name);continue}
+      toast("קורא את "+f.name+"…");await autoMatch(ref.id,a.id,f.name);
     }catch(err){toast("ההעלאה נכשלה: "+(err.code||err.message))}
   }
+}
+async function autoMatch(docId,assetId,name){
+  if(!window.pgFin)return;
+  const has=new Set(S.docs.filter(d=>d.expenseId).map(d=>d.expenseId));
+  const cand=S.exp.filter(r=>r.amount>0&&r.invoice!=="לא נדרש").map(r=>({id:r.id,vendor:r.vendor,amount:r.amount,date:r.date||r.period,source:r.source,has:has.has(r.id)||r.invoice==="התקבלה"}));
+  const res=await pgFin.analyze(assetId,cand);
+  if(!res||res.error){await db.doc("docs/"+docId).update({ext:{err:true}});toast("לא הצלחתי לקרוא את "+name+". אפשר לשייך ידנית");return}
+  const ext={vendor:res.vendor||"",date:res.date||"",total:res.total,currency:res.currency||"ILS",docNo:res.doc_no||""};
+  const KM={"חשבונית":"חשבונית","קבלה":"קבלה","תלוש":"תלוש שכר","דוח":"דוח בנק","אחר":"אחר"};
+  const up={ext,suggest:(res.matches||[]).map(m=>m.id).filter(id=>S.exp.some(x=>x.id===id)).slice(0,3)};
+  if(KM[res.kind])up.kind=KM[res.kind];
+  const best=(res.matches||[])[0],e=best&&S.exp.find(x=>x.id===best.id);
+  if(e)up.period=e.period;else if(ext.date)up.period=ext.date.slice(0,7)>="2026-09"?ext.date.slice(0,7):"2026-07-08";
+  if(up.period&&!PN[up.period])delete up.period;
+  const amtOk=e&&ext.total!=null&&ext.currency==="ILS"&&Math.abs(Number(ext.total)-e.amount)<=1;
+  if(e&&best.confidence==="high"&&amtOk){up.auto=true;await db.doc("docs/"+docId).update(up);await linkDoc(docId,e.id);toast("שויך אוטומטית: "+e.vendor+" · "+fmt(e.amount)+" ₪");return}
+  await db.doc("docs/"+docId).update(up);toast(up.suggest.length?name+": יש הצעה לשיוך בתיבת המסמכים":name+": לא נמצאה הוצאה מתאימה");
 }
 async function linkDoc(docId,expId){try{await db.doc("docs/"+docId).update({expenseId:expId});await db.doc("expenses/"+expId).update({invoice:"התקבלה"});toast("שויך להוצאה")}catch(e){toast("השיוך נכשל")}}
 async function exportCsv(p){
