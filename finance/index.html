@@ -36,7 +36,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:1
 .nav a[aria-current="page"]{background:#fff;color:var(--navy)}
 .nav svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav .badge{margin-inline-start:auto;background:var(--bad);color:#fff;font:600 11px var(--font-d);border-radius:999px;padding:0 7px}
-.rail .foot{margin-top:auto;font-size:12px;color:var(--rail-ink);padding:0 10px}
+.rail .foot{font-size:12px;color:var(--rail-ink);padding:0 10px}
+.rchlink{margin-top:auto;margin-bottom:10px;display:block;text-align:center;color:#fff;text-decoration:none;font:600 13.5px var(--font-d);border:1px solid rgba(255,255,255,.3);border-radius:9px;padding:8px 10px}
+.rchlink:hover{background:rgba(255,255,255,.08)}
 .main{min-width:0;padding-block:20px 90px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
 .top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .top h1{font:700 clamp(21px,3vw,26px) var(--font-d);margin:0}
@@ -109,7 +111,7 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 @media (max-width:760px){
   .app{grid-template-columns:minmax(0,1fr)}
   .rail{position:fixed;inset:auto 0 0 0;height:auto;flex-direction:row;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));z-index:30;overflow-x:auto}
-  .brand,.rail .foot{display:none}
+  .brand,.rail .foot,.rchlink{display:none}
   .nav{flex-direction:row;margin:0;gap:2px}
   .nav a{flex-direction:column;gap:2px;font-size:11px;padding:6px 8px;white-space:nowrap}
   .nav .badge{position:absolute;margin:0;transform:translate(-14px,-4px)}
@@ -125,6 +127,7 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 <aside class="rail">
   <div class="brand">פלייגראונד · כספים<small>Play Ground TLV</small></div>
   <nav class="nav" id="nav"></nav>
+  <a class="rchlink" href="rch/">אזור רואה חשבון</a>
   <div class="foot" id="railFoot">מרכנתיל ···1067</div>
 </aside>
 <main class="main" id="main"><div class="empty">טוען…</div></main>
@@ -480,7 +483,7 @@ async function uploadFiles(files,expId){
     toast("מעלה "+f.name+"…");
     try{const a=await assets.upload(f);const exp=expId?S.exp.find(x=>x.id===expId):null;
       const ref=await db.collection("docs").add({name:f.name,assetId:a.id,uploadedAt:new Date().toISOString(),kind:"חשבונית",period:exp?exp.period:(PN[period]&&period!=="all"?period:"2026-11"),expenseId:expId||null});
-      if(exp){if(exp.invoice!=="התקבלה")await db.doc("expenses/"+exp.id).update({invoice:"התקבלה"});toast("הועלה: "+f.name);continue}
+      if(exp){if(exp.invoice!=="התקבלה")await db.doc("expenses/"+exp.id).update({invoice:"התקבלה"});toast("הועלה: "+f.name);readVat(ref.id,a.id);continue}
       toast("קורא את "+f.name+"…");await autoMatch(ref.id,a.id,f.name);
     }catch(err){toast("ההעלאה נכשלה: "+(err.code||err.message))}
   }
@@ -491,7 +494,7 @@ async function autoMatch(docId,assetId,name){
   const cand=S.exp.filter(r=>r.amount>0&&r.invoice!=="לא נדרש").map(r=>({id:r.id,vendor:r.vendor,amount:r.amount,date:r.date||r.period,source:r.source,has:has.has(r.id)||r.invoice==="התקבלה"}));
   const res=await pgFin.analyze(assetId,cand);
   if(!res||res.error){await db.doc("docs/"+docId).update({ext:{err:true}});toast("לא הצלחתי לקרוא את "+name+". אפשר לשייך ידנית");return}
-  const ext={vendor:res.vendor||"",date:res.date||"",total:res.total,currency:res.currency||"ILS",docNo:res.doc_no||""};
+  const ext={vendor:res.vendor||"",date:res.date||"",total:res.total,vat:res.vat,tax:res.tax_invoice,currency:res.currency||"ILS",docNo:res.doc_no||"",vatChecked:true};
   const KM={"חשבונית":"חשבונית","קבלה":"קבלה","תלוש":"תלוש שכר","דוח":"דוח בנק","אחר":"אחר"};
   const up={ext,suggest:(res.matches||[]).map(m=>m.id).filter(id=>S.exp.some(x=>x.id===id)).slice(0,3)};
   if(KM[res.kind])up.kind=KM[res.kind];
@@ -502,6 +505,7 @@ async function autoMatch(docId,assetId,name){
   if(e&&best.confidence==="high"&&amtOk){up.auto=true;await db.doc("docs/"+docId).update(up);await linkDoc(docId,e.id);toast("שויך אוטומטית: "+e.vendor+" · "+fmt(e.amount)+" ₪");return}
   await db.doc("docs/"+docId).update(up);toast(up.suggest.length?name+": יש הצעה לשיוך בתיבת המסמכים":name+": לא נמצאה הוצאה מתאימה");
 }
+async function readVat(docId,assetId){if(!window.pgFin||/\.(csv|txt)$/i.test(assetId))return;try{const r=await pgFin.analyze(assetId,[]);if(!r||r.error)return;const cur=await db.doc("docs/"+docId).get();const d=cur.exists?cur.data():{};await db.doc("docs/"+docId).update({ext:{...(d.ext||{}),vendor:r.vendor||"",date:r.date||"",total:r.total,vat:r.vat,tax:r.tax_invoice,currency:r.currency||"ILS",docNo:r.doc_no||"",vatChecked:true}})}catch(e){}}
 async function linkDoc(docId,expId){try{await db.doc("docs/"+docId).update({expenseId:expId});await db.doc("expenses/"+expId).update({invoice:"התקבלה"});toast("שויך להוצאה")}catch(e){toast("השיוך נכשל")}}
 async function exportCsv(p){
   const R=expOf(p).slice().sort((a,b)=>a.period.localeCompare(b.period));
