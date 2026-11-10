@@ -108,14 +108,25 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 .toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:40}
 .lg{display:flex;gap:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap;margin-bottom:6px}
 .lg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:5px;vertical-align:-1px}
+.mtop,.msheet{display:none}
 @media (max-width:760px){
   .app{grid-template-columns:minmax(0,1fr)}
-  .rail{position:fixed;inset:auto 0 0 0;height:auto;flex-direction:row;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));z-index:30;overflow-x:auto}
-  .brand,.rail .foot,.rchlink{display:none}
-  .nav{flex-direction:row;margin:0;gap:2px}
-  .nav a{flex-direction:column;gap:2px;font-size:11px;padding:6px 8px;white-space:nowrap}
-  .nav .badge{position:absolute;margin:0;transform:translate(-14px,-4px)}
-  .nav a{position:relative}
+  .rail{display:none}
+  .main{padding-bottom:40px}
+  .mtop{display:flex;position:sticky;top:0;z-index:30;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px}
+  .mtop b{font:700 17px var(--font-d)}
+  .mbtn{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--font-d);color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:10px;padding:8px 13px;cursor:pointer}
+  .mbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .msheet{display:block;position:fixed;inset:0;z-index:45;background:rgba(7,18,41,.55)}
+  .msheet[hidden]{display:none}
+  .mpanel{position:absolute;inset:auto 0 0 0;background:var(--bg);border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+  .mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font:700 16px var(--font-d)}
+  .mx{background:none;border:0;color:var(--muted);font:600 14px var(--font-b);cursor:pointer;padding:6px}
+  .mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .mgrid a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:92px;background:var(--surface);border:1px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none;font:600 13.5px var(--font-d);text-align:center;padding:10px 6px}
+  .mgrid a[aria-current="page"]{background:var(--navy);border-color:var(--navy);color:#fff}
+  .mgrid svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mgrid .badge{position:absolute;top:7px;left:7px;background:var(--bad);color:#fff;font:600 11px var(--font-d);border-radius:999px;padding:0 7px}
 }
 @media (prefers-reduced-motion:no-preference){.fill,.prog span{transition:width .3s ease}}
 </style>
@@ -124,6 +135,7 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 
 
 <div class="app">
+<header class="mtop" id="mtop"><b id="mTitle">כספים</b><button class="mbtn" id="mMenu" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>תפריט</button></header>
 <aside class="rail">
   <div class="brand">פלייגראונד · כספים<small>Play Ground TLV</small></div>
   <nav class="nav" id="nav"></nav>
@@ -131,6 +143,7 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 </aside>
 <main class="main" id="main"><div class="empty">טוען…</div></main>
 </div>
+<div class="msheet" id="msheet" hidden><div class="mpanel" role="dialog" aria-label="תפריט"><div class="mhead"><span>לאן הולכים?</span><button class="mx" id="mClose" type="button">סגירה</button></div><div class="mgrid" id="mgrid"></div></div></div>
 <input type="file" id="fileIn" accept="application/pdf,image/*" multiple hidden>
 
 <div id="gate" class="gate" hidden>
@@ -264,8 +277,12 @@ function projection(){
 /* ---------- shell ---------- */
 function nav(){
   const A=alerts();const counts={expenses:S.exp.filter(r=>r.invoice==="חסר"&&r.amount>0).length,docs:S.docs.filter(d=>!d.expenseId).length,cash:(projection()||{}).breach?1:0};
-  $("nav").innerHTML=ROUTES.map(([k,t])=>`<a href="#${k}" aria-current="${route===k?"page":"false"}"><svg viewBox="0 0 24 24">${ICON[k]}</svg><span>${t}</span>${counts[k]?`<span class="badge">${counts[k]}</span>`:""}</a>`).join("")+`<a href="rch/" aria-current="false"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg><span>רואה חשבון</span></a>`;
+  const IT=ROUTES.map(([k,t])=>({h:"#"+k,t,i:ICON[k],c:counts[k],cur:route===k})).concat([{h:"rch/",t:"רואה חשבון",i:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/>',c:0,cur:false}]);
+  const html=IT.map(x=>`<a href="${x.h}" aria-current="${x.cur?"page":"false"}"><svg viewBox="0 0 24 24">${x.i}</svg><span>${x.t}</span>${x.c?`<span class="badge">${x.c}</span>`:""}</a>`).join("");
+  $("nav").innerHTML=html;const g=$("mgrid");if(g)g.innerHTML=html;
+  const mt=$("mTitle");if(mt){const r=ROUTES.find(r=>r[0]===route);mt.textContent=r?r[1]:"כספים"}
 }
+document.addEventListener("click",e=>{const sh=$("msheet");if(!sh)return;if(e.target.closest("#mMenu")){sh.hidden=false;return}if(e.target.closest("#mClose")||e.target===sh||e.target.closest("#mgrid a"))sh.hidden=true});
 function monthSwitch(withAll){return `<div class="months" role="group" aria-label="חודש">${PERIODS.map(([k,t])=>`<button data-p="${k}" aria-pressed="${period===k}">${t}</button>`).join("")}${withAll?`<button data-p="all" aria-pressed="${period==="all"}">הכל</button>`:""}</div>`}
 function head(t,sub,sw){return `<div class="top"><div><h1>${t}</h1>${sub?`<p>${sub}</p>`:""}</div>${sw||""}</div>`}
 function render(){
