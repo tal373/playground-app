@@ -36,7 +36,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:1
 .nav a[aria-current="page"]{background:#fff;color:var(--navy)}
 .nav svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .nav .badge{margin-inline-start:auto;background:var(--bad);color:#fff;font:600 11px var(--font-d);border-radius:999px;padding:0 7px}
-.rail .foot{font-size:12px;color:var(--rail-ink);padding:0 10px}
+.rail .foot{margin-top:auto;font-size:12px;color:var(--rail-ink);padding:0 10px}
 .rchlink{margin-top:auto;margin-bottom:10px;display:block;text-align:center;color:#fff;text-decoration:none;font:600 13.5px var(--font-d);border:1px solid rgba(255,255,255,.3);border-radius:9px;padding:8px 10px}
 .rchlink:hover{background:rgba(255,255,255,.08)}
 .main{min-width:0;padding-block:20px 90px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
@@ -127,7 +127,6 @@ select.s{font:13px var(--font-b);border:1px solid var(--line);border-radius:6px;
 <aside class="rail">
   <div class="brand">פלייגראונד · כספים<small>Play Ground TLV</small></div>
   <nav class="nav" id="nav"></nav>
-  <a class="rchlink" href="rch/">אזור רואה חשבון</a>
   <div class="foot" id="railFoot">מרכנתיל ···1067</div>
 </aside>
 <main class="main" id="main"><div class="empty">טוען…</div></main>
@@ -265,7 +264,7 @@ function projection(){
 /* ---------- shell ---------- */
 function nav(){
   const A=alerts();const counts={expenses:S.exp.filter(r=>r.invoice==="חסר"&&r.amount>0).length,docs:S.docs.filter(d=>!d.expenseId).length,cash:(projection()||{}).breach?1:0};
-  $("nav").innerHTML=ROUTES.map(([k,t])=>`<a href="#${k}" aria-current="${route===k?"page":"false"}"><svg viewBox="0 0 24 24">${ICON[k]}</svg><span>${t}</span>${counts[k]?`<span class="badge">${counts[k]}</span>`:""}</a>`).join("");
+  $("nav").innerHTML=ROUTES.map(([k,t])=>`<a href="#${k}" aria-current="${route===k?"page":"false"}"><svg viewBox="0 0 24 24">${ICON[k]}</svg><span>${t}</span>${counts[k]?`<span class="badge">${counts[k]}</span>`:""}</a>`).join("")+`<a href="rch/" aria-current="false"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7M9 8h3"/></svg><span>רואה חשבון</span></a>`;
 }
 function monthSwitch(withAll){return `<div class="months" role="group" aria-label="חודש">${PERIODS.map(([k,t])=>`<button data-p="${k}" aria-pressed="${period===k}">${t}</button>`).join("")}${withAll?`<button data-p="all" aria-pressed="${period==="all"}">הכל</button>`:""}</div>`}
 function head(t,sub,sw){return `<div class="top"><div><h1>${t}</h1>${sub?`<p>${sub}</p>`:""}</div>${sw||""}</div>`}
