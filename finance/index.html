@@ -210,7 +210,7 @@ SB.auth.getSession().then(({data})=>enter(data.session));
 const ICON={overview:'<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 9h8V3h-8z"/>',cash:'<path d="M3 17l5-5 4 4 8-8"/><path d="M14 8h6v6"/>',months:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',expenses:'<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>',docs:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3"/>',pay:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 11h5M19.5 8.5v5"/>',loans:'<path d="M3 10l9-6 9 6"/><path d="M5 10v9M19 10v9M9 10v9M15 10v9M3 21h18"/>',income:'<path d="M12 3v18M17 7.5C17 5.6 14.8 4.5 12 4.5S7 5.6 7 7.5 9 10.5 12 11s5 1.6 5 3.5-2.2 3-5 3-5-1.1-5-3"/>'};
 const ROUTES=[["overview","סקירה"],["cash","תזרים"],["months","חודשים"],["expenses","הוצאות"],["docs","מסמכים"],["pay","שכר"],["loans","הלוואות"],["income","הכנסות"]];
 const CATS=["שכר","שכירות","מיסים ואגרות","מימון","שיווק ופרסום","אוכל סופר וכיבוד","תוכנה ומערכות","שירותים מקצועיים","ביטוח","ציוד","ספקים","חשמל","תפעול ותחזוקה","תקשורת","מים","ניקיון","עמלות בנק","נסיעות","החזר ללקוח","משיכת בעלים","החזר הוצאות","לבירור"];
-const PERIODS=[["2026-07-08","יולי–אוג׳"],["2026-09","ספטמבר"],["2026-10","אוקטובר"],["2026-11","נובמבר"]];
+const PERIODS=[["2026-07-08","יולי–אוג׳"],["2026-09","ספטמבר"],["2026-10","אוקטובר"],["2026-11","נובמבר"],["2026-12","דצמבר"]];
 const PN=Object.fromEntries(PERIODS);
 const INV=["התקבלה","חסר","לא נדרש"];
 const DOCK=["חשבונית","קבלה","תלוש שכר","דוח בנק","חוזה","אחר"];
@@ -426,7 +426,7 @@ function loans(){
 
 function income(){
   after=()=>{};
-  const rows=[["2026-07","יולי"],["2026-08","אוגוסט"],["2026-09","ספטמבר"],["2026-10","אוקטובר"],["2026-11","נובמבר"]];
+  const rows=[["2026-07","יולי"],["2026-08","אוגוסט"],["2026-09","ספטמבר"],["2026-10","אוקטובר"],["2026-11","נובמבר"],["2026-12","דצמבר"]];
   return head("הכנסות","קבלות ארבוקס לפי חודש, ומה צפוי להיכנס")+
   `<div class="tbl"><table><thead><tr><th>חודש</th><th style="text-align:left">ארבוקס</th><th style="text-align:left">מזומן מחוץ לארבוקס</th><th style="text-align:left">סה״כ</th><th>מקור</th>${ro()?"":"<th>עדכון ארבוקס</th><th>עדכון מזומן</th>"}</tr></thead><tbody>${rows.map(([k,t])=>`<tr><td>${t}</td><td class="amt num">${S.inc[k]!=null?fmt(S.inc[k]):"<span class='chip c-warn'>לא נמדד</span>"}</td><td class="amt num">${S.inc[k+"_cash"]?fmt(S.inc[k+"_cash"]):"—"}</td><td class="amt num v">${incM(k)!=null?fmt(incM(k)):"—"}</td><td style="color:var(--muted);font-size:13px">${S.inc[k]!=null?esc(S.inc[k+"_src"]||"קבלות ארבוקס לפי תאריך הפקה"):"צריך למשוך מדוח הקבלות"}${S.inc[k+"_cashNote"]?`<div class="n">מזומן: ${esc(S.inc[k+"_cashNote"])}</div>`:""}</td>${ro()?"":`<td><input class="f" type="number" step="0.01" data-inc="${k}" value="${S.inc[k]??""}" style="width:110px"></td><td><input class="f" type="number" step="0.01" data-cash="${k}" value="${S.inc[k+"_cash"]??""}" style="width:100px"></td>`}</tr>`).join("")}</tbody></table></div>
   <section class="card" style="margin-top:14px"><h2>הוראות קבע בנובמבר</h2><p class="cap">מארבוקס, 9.11</p>${S.inc.so?`<div class="alerts">${Object.entries(S.inc.so).map(([a,b])=>`<div class="alert" style="grid-template-columns:minmax(0,1fr) auto"><span>${esc(a)}</span><b class="num">${typeof b==="number"?fmt(b)+" ₪":esc(b)}</b></div>`).join("")}</div>`:'<div class="empty">אין נתונים</div>'}</section>`;
