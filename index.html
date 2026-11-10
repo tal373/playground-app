@@ -1729,7 +1729,7 @@ function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hid
   const D=dayT?`<button type="button" class="tile wide day" data-tsec="day" style="--c:var(--ok)"><span class="tile-i">${secIc("M5 13l4 4L19 7")}</span><b>היום שלי</b><small>${esc(dayT)}</small></button>`:"";
   if(T.length<2&&!D)return "";
   return `<div class="tiles pt">${D}${T.map(([k,t,c,ic,sub],i)=>`<button type="button" class="tile${T.length%2&&i===T.length-1?" full":""}" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
-function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
+function renderToday(){setTimeout(sweepOther,1200);const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
   let strip="";for(let i=6;i>=0;i--){const k=addDays(TODAY,-i),d=fromKey(k);
@@ -1761,7 +1761,7 @@ function renderToday(){const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),do
   ${false?`<button class="meal ${wl&&wl.done?"done":""}" type="button" data-tab="workout" style="border-color:#4a7fc455"><span class="ic" style="background:#4a7fc422"><svg viewBox="0 0 24 24" style="stroke:var(--hot)"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg></span><span class="tx"><b>${esc(wo.title)}</b><small>${wo.fixed?"התכנית הקבועה שלך":"האימון שלך מטל"} · לחיצה לפתיחה</small></span><span class="st">${CHK}</span></button>`:""}
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
-    return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
+    return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}${(()=>{const y=(day.meals||{})[m.id];return y&&y.xa&&y.x&&y.xa.t===String(y.x).trim()&&y.xa.k>0?` · כ-${ri(y.xa.k)} קק״ל`:""})()}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
   ${hs.length?`<div class="sh"><h2>${esc(prof.habitsTitle||"הרגלים")}</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
   <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}`}
 function habitHTML(x,day){const v=day.h[x.id];
@@ -1856,7 +1856,16 @@ const mLine=(it,s)=>{const t=mNut(it,s),u=mUnit(it,s);return `${u[1]===1?"":ri(m
 const mSel=(gi,ii,it,x)=>{const s=mOf(x,gi,ii,it),us=unitsFor(it[2].fn||it[0]);
   return `<div class="qrow mrow"><input type="number" inputmode="decimal" step="0.25" min="0" data-ma="${gi}-${ii}" value="${s.a}" aria-label="כמה"><select data-mu="${gi}-${ii}" aria-label="איך מודדים">${us.map(z=>`<option value="${z[0]}"${z[0]===mUnit(it,s)[0]?" selected":""}>${z[0]}</option>`).join("")}</select><small data-mt="${gi}-${ii}">${mLine(it,s)}</small></div>`};
 const qSel=(gi,ii,it,x)=>{if(isM(it))return mSel(gi,ii,it,x);const v=qOf(x,gi,ii),n=it[2];return `<div class="qrow"><span>כמות</span><select data-q="${gi}-${ii}" aria-label="כמות">${QS.map(([q,t])=>`<option value="${q}"${q===v?" selected":""}>${t}</option>`).join("")}</select>${n&&v!==1?`<small>כ-${ri(n.k*v)} קק״ל · ${ri(n.p*v)} ג׳ חלבון</small>`:""}</div>`};
-function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it)){o.push(mNut(it,mOf(x,g,i,it)));return}const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];if(x.xa&&x.x&&x.xa.t===x.x.trim()&&x.xa.k>0)o.push(x.xa);Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it)){o.push(mNut(it,mOf(x,g,i,it)));return}const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
+/* free-text "I ate something else": estimate nutrition so it counts in the day total */
+const XA_BUSY=new Set();
+async function analyzeOther(k,mid){const key=k+"|"+mid;if(XA_BUSY.has(key)||preview)return;const y=((days[k]||{}).meals||{})[mid];const t=y&&String(y.x||"").trim();if(!t||(y.xa&&y.xa.t===t))return;
+  XA_BUSY.add(key);try{let res=window.pgAI?await window.pgAI.recipe(t):null;if(!res)res=parseRecipe(t,FOOD);
+    const it=(res.items||[]).map(x=>{const v=nut(x.per,x.g);return {n:x.n,g:x.g,k:r1(v.k),p:r1(v.p),c:r1(v.c),f:r1(v.f)}}),T=sumF(it);
+    const cur=((days[k]||{}).meals||{})[mid];if(!cur||String(cur.x||"").trim()!==t)return;
+    updDay(k,d=>{const z=d.meals[mid]||{};z.xa={t,k:r1(T.k),p:r1(T.p),c:r1(T.c),f:r1(T.f),items:it,ai:!!window.pgAI};d.meals[mid]=z});if(!typing())render()}
+  catch(e){}finally{XA_BUSY.delete(key)}}
+function sweepOther(){if(preview||typing()||!prof)return;for(let i=0;i<7;i++){const k=addDays(TODAY,-i),d=days[k];if(!d||!d.meals)continue;Object.entries(d.meals).forEach(([mid,y])=>{const t=y&&String(y.x||"").trim();if(t&&!(y.xa&&y.xa.t===t))analyzeOther(k,mid)})}}
 const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
