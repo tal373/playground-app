@@ -828,9 +828,10 @@ html[dir=ltr] #bfRs{direction:rtl}
 .sumc [data-share]{margin-top:12px;width:100%}
 .fbk{display:flex;flex-direction:column;gap:8px;margin:12px 0 10px}.fbk input,.fbk textarea{width:100%;box-sizing:border-box}
 .mship{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin:0 0 4px}
+.upl{width:100%;margin-top:10px;font-size:14px}.mrest>summary{cursor:pointer;font-weight:700;padding:4px 0}.mrest .mcls{margin-top:10px}
 </style></head><body>
 <div class="app">
-  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small>ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
+  <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small id="bsub">ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
   <div class="banner" id="banner" hidden></div>
   <div class="pvbar" id="pvbar" hidden><b></b><span>מתעדכן בזמן אמת · לא נשמר כלום</span><button type="button">חזרה ללוח</button></div>
   <section class="view" id="v-today"></section>
@@ -885,7 +886,7 @@ html[dir=ltr] #bfRs{direction:rtl}
     <img src="pg-logo.png" alt="Playground">
     <div class="aby"><b>PLAYGROUND STUDIO</b><span>ליווי אישי · טל ליפשטט</span></div>
     <h1 id="aTitle">כניסה לאפליקציה</h1>
-    <p id="aSub">אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.</p>
+    <p id="aSub">האימונים, ההתקדמות והליווי שלך בפלייגראונד.</p>
     <form id="aForm" novalidate>
       <input id="aMail" type="email" dir="ltr" autocomplete="email" placeholder="המייל שלך" required>
       <input id="aPass" type="password" dir="ltr" autocomplete="current-password" placeholder="סיסמה (לפחות 6 תווים)" required>
@@ -929,7 +930,7 @@ const EN={
 "היום":"Today","אימון":"Workout","תפריט":"Menu","מדדים":"Progress","סטודיו":"Studio","תכנית":"Program","בריף":"Brief","שיעור":"Class","דשבורד":"Dashboard",
 "בחירת ארוחה":"Choose a meal","אימון מודרך":"Guided workout","סגירה":"Close","מנוחה":"Rest","דלג":"Skip",
 /* auth */
-"כניסה לאפליקציה":"Sign in","אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
+"כניסה לאפליקציה":"Sign in","האימונים, ההתקדמות והליווי שלך בפלייגראונד.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
 "המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
 "הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":"Sign up with the email on your studio membership and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
 "שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה":"Wrong email or password. First time here? Sign up first: tap Sign up below","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
@@ -1213,7 +1214,7 @@ let mode="in";
 function showAuth(on){$a("auth").hidden=!on;$a("aOut").hidden=on}
 function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aTitle").textContent=m==="up"?"הרשמה":m==="reset"?"סיסמה חדשה":m==="forgot"?"שחזור סיסמה":"כניסה לאפליקציה";
-  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"אימון, תזונה ושיקום. הכל במקום אחד, ואני איתך לאורך הדרך.";
+  $a("aSub").textContent=m==="up"?"נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":m==="reset"?"בחרו סיסמה חדשה":m==="forgot"?"נשלח אליך מייל עם קישור":"האימונים, ההתקדמות והליווי שלך בפלייגראונד.";
   $a("aMail").hidden=m==="reset";$a("aPass").hidden=m==="forgot";$a("aCode").hidden=m!=="up";$a("aRemL").hidden=m==="reset"||m==="forgot";
   $a("aPass").autocomplete=m==="in"?"current-password":"new-password";
   $a("aGo").textContent=m==="up"?"הרשמה":m==="reset"?"שמירה":m==="forgot"?"שליחה":"כניסה";
@@ -1384,7 +1385,7 @@ async function shareImg(){const s=attStats(),h=histBy((MEM&&MEM.log)||[]),mo=TOD
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast("התמונה נשמרה ✓")}
 function sumCards(noM){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws=stWeek(TODAY),mo=TODAY.slice(0,7),wk=MEM.wk||{},left=s.q?Math.max(0,s.q-s.wk):0;
   const dots=s.q?Array.from({length:Math.max(s.q,s.wk)},(_,i)=>`<i class="${i<s.wk?"on":""}"></i>`).join(""):"";
-  let o=`<div class="card sumc"><div class="sum-h"><b>השבוע</b>${wk.k?`<small>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</small>`:""}</div>
+  let o=`<div class="card sumc"><div class="sum-h"><b>השבוע</b></div>
     <div class="sum-r"><span class="sum-n">${s.wk}${s.q?"/"+s.q:""}</span><span>שיעורים</span>${dots?`<span class="wkd">${dots}</span>`:""}</div>
     ${s.q&&s.wk>=s.q?`<p class="hint" style="margin:8px 0 0;color:var(--ok)">עמדת ביעד השבועי ✓</p>`:left===1?`<p class="hint" style="margin:8px 0 0">עוד שיעור אחד השבוע לפי המנוי</p>`:left>1?`<p class="hint" style="margin:8px 0 0">עוד ${left} שיעורים השבוע לפי המנוי</p>`:""}
     ${upsHtml(liftUps(h,ws))}</div>`;
@@ -1408,15 +1409,21 @@ const SECS=[["class","האימון הבא","--mes","M4 6h16M4 12h16M4 18h10"],["
   ["prog","ההתקדמות שלי","--wk","M3 20h18M6 16l4-5 3 3 5-7"],["hist","האימונים שלי","--warn","M4 5h16v16H4zM4 9h16M9 3v4M15 3v4"]];
 const UPB={menu:["תפריט לפי המטרה וההרגלים שלך","סימון ארוחות פשוט באפליקציה","טל מעדכן את התפריט לפי ההתקדמות"],home:["אימונים לימים בלי סטודיו","סרטון לכל תרגיל וטיימר","התכנית מתעדכנת לפי מה שרושמים"],physio:["טיפול ידני","תכנית שיקום אישית","חזרה מדורגת לאימונים"]};
 const secIc=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></svg>`;
-function secClass(){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21)),dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
-  return cp.length?cp.map(c=>`<div class="card mcls">
-    <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="small"?"Small Group":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
+const regOf=c=>SRC2.find(r=>r.date===c.date&&String(r.key||"").endsWith("-"+c.type));
+const clsOver=c=>{if(c.date!==TODAY)return c.date<TODAY;const r=regOf(c);return r&&r.time?nowMin()>toMin(r.time)+75:new Date().getHours()>=21};
+const upCls=()=>CPV.filter(c=>!clsOver(c));
+const nextReg=()=>SRC2.filter(r=>r.date>TODAY).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")))[0];
+function secClass(){const all=upCls(),cp=all.filter(regOf),rest=all.filter(c=>!regOf(c)),dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
+  const card=c=>`<div class="card mcls">
+    <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}${regOf(c)&&regOf(c).time?" · "+esc(regOf(c).time):""}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="small"?"Small Group":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
     ${c.title?`<h3 class="en">${esc(c.title)}</h3>`:""}
-    ${c.note?`<p class="mc-n">${esc(c.note)}</p>`:""}
+    ${c.cnote?`<p class="mc-n">${esc(c.cnote)}</p>`:""}
     ${(c.main||[]).length?`<details class="mcx"><summary>התרגילים המרכזיים · ${c.main.length}</summary><div class="mc-ex">${c.main.map(m=>{const t=(m.v&&m.v.t)||exClean(m.n),u=m.v&&m.v.u;
       const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">${tg?`היום: ${tg.kg} ק״ג · `:""}בפעם הקודמת: ${esc(lo.kg?lo.kg+" ק״ג"+(lo.reps?" × "+lo.reps:""):(lo.reps||"")+" חזרות")}</small>`:"";
       return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div></details>`:""}
-  </div>`).join(""):`<div class="card"><div class="empty">האימון של מחר יעלה כאן בערב.</div></div>`}
+  </div>`;
+  return (cp.length?cp.map(card).join(""):(()=>{const nx=nextReg();return nx?`<div class="card"><div class="empty">השיעור הבא שלך: ${esc(fmt(nx.date))} · ${esc(nx.time||"")} ${esc(nx.cls||"")}. התרגילים שלו יעלו כאן יום לפני.</div></div>`:`<div class="card"><div class="empty">לא נרשמת לשיעור קרוב. נרשמים באפליקציית ארבוקס, והשיעור יופיע כאן עם התרגילים.</div></div>`})())
+    +(rest.length?`<details class="card mcx mrest"><summary>עוד שיעורים בסטודיו היום ומחר · ${rest.length}</summary>${rest.map(card).join("")}</details>`:"")}
 function liftCard(rows){return `<div class="card mlx">${rows.map(({x,name,sub,val,h})=>{const f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
       return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(name)}</b><small>${esc(sub||"")}</small></div>
         <div class="ml-v"><b>${esc(val||"")}</b>${dl?`<small style="color:${dl>0?"var(--ok)":"var(--muted)"}">${dl>0?"+":""}${dl} ק״ג · ${pc>0?"+":""}${pc}% מההתחלה</small>`:h.length>1?`<small>${h.length} פעמים</small>`:""}${op?"":sparkL(h)}</div></button>
@@ -1469,12 +1476,13 @@ function secUps(){return `<p class="hint lead">המסלולים האישיים �
   ${UPS.map(([k,t,d,ic])=>{const sent=LEADM[k];return `<div class="card ups"><div class="ups-h"><span class="ups-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic}"/></svg></span><b>${esc(t)}</b><span class="ups-l">${LOCK}</span></div>
     <p class="hint" style="margin:0">${esc(d)}</p>${UPB[k]?`<ul class="ups-b">${UPB[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
     ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">שלח בקשה</button>`}</div>`}).join("")}`}
-function secSub(k){const cp=CPV.filter(c=>c.date>TODAY||(c.date===TODAY&&new Date().getHours()<21)),log=(MEM&&MEM.log)||[],s=MEM?attStats():null;
-  if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:"יעלה בערב";
-  if(k==="log")return liveCls()?"השיעור פתוח לרישום":SRC2.filter(c=>c.mine).length?`${SRC2.filter(c=>c.mine).length} נרשמו השבוע`:"משקלים וסטים";
+function secSub(k){const cp=upCls().filter(regOf),log=(MEM&&MEM.log)||[],s=MEM?attStats():null;
+  if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:(()=>{const nx=nextReg();return nx?fmt(nx.date)+" · "+(nx.time||""):"לא נרשמת לשיעור קרוב"})();
+  if(k==="log")return liveCls()?"השיעור פתוח לרישום":SRC2.filter(c=>c.mine).length?`${SRC2.filter(c=>c.mine).length} אימונים רשומים`:"משקלים וסטים";
   if(k==="prog")return s?`${s.wk}${s.q?"/"+s.q:""} השבוע · ${s.mn} החודש`:"";
   if(k==="hist"){const n=log.filter(l=>Object.values(l.lx||{}).some(o=>o&&(o.kg||o.reps))).length;return n?`${n} עם משקלים`:s&&s.att.length?`${s.att.length} שיעורים`:"לפי חודש"}return ""}
 function studioBody(full){
+  {const b=document.getElementById("bsub");if(b)b.textContent=(MEM&&!prof&&!isOwner&&!isCoach)?"STUDIO · TEL AVIV":"ליווי אישי · טל ליפשטט"}
   const nm=(MEM&&MEM.name)||"",first=nm.split(" ")[0],tiles=full&&MEM&&(MEMS==="in"||memPv);
   const head=`${full?`<div class="hello"><span class="avatar">${esc(first?ini(nm):"P")}</span><div><small>סטודיו פלייגראונד</small><b>${first?`היי ${esc(first)}`:"ברוכים הבאים"}</b></div></div>`:""}
   ${full&&!memPv&&!prof&&(MEMS==="code"||MEMS==="none")?`<div class="card" id="kCard"><b>קוד הצטרפות</b><p class="hint" style="margin:6px 0 10px">את הקוד של 6 ספרות שלחנו בקבוצת הסטודיו. מקלידים אותו כאן, והנתונים שלך מהסטודיו יופיעו.</p><div class="stp2" style="direction:rtl"><input id="kIn" type="text" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code" placeholder="000000" style="flex:1"><button type="button" class="cta" id="kGo" style="width:auto;height:auto;padding:10px 18px;font-size:15px">חיבור</button></div><p class="aerr" id="kErr" role="alert"></p></div>`:""}
@@ -1485,8 +1493,9 @@ function studioBody(full){
   if(tiles)return `${head}
   ${liveCls()?slSection():""}
   <div class="tiles">${SECS.map(([k,t,c,ic])=>`<button type="button" class="tile" data-msec="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(secSub(k))}</small></button>`).join("")}
-    <button type="button" class="tile wide" data-msec="ups" style="--c:var(--hot)"><span class="tile-i">${LOCK}</span><b>ליווי אישי</b><small>תפריט, תכנית אישית, פיזיו וטיפול</small></button></div>
-  ${MEM.plan?`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`:""}`;
+    </div>
+  ${MEM.plan?`<div class="mship"><span>${esc(MEM.plan)}</span>${MEM.end?`<span>בתוקף עד ${esc(fmt(MEM.end))}</span>`:""}</div>`:""}
+  <button type="button" class="ghost upl" data-msec="ups">ליווי אישי עם טל · תפריט, תכנית אישית ופיזיו</button>`;
   return `${head}
   ${full&&liveCls()?slSection():""}
   <div class="sh"><h2>האימון בסטודיו</h2></div>
@@ -1602,7 +1611,7 @@ let CL=null,clF="pending",clQ="",clAt=0;
 const CLW=/[?&]cl=1\b/.test(location.search);
 async function loadClients(){clAt=Date.now();try{const s=await db.collection("cl").get();CL={};s.docs.forEach(d=>CL[d.id]=d.data())}catch(e){CL=CL||{}}if(tab==="clients"&&!typing())render()}
 function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach");return}
-  if(!CL||!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;if(!CL)loadClients();if(!stLoaded)Promise.resolve(loadStudio()).then(()=>{if(tab==="clients")render()});return}
+  if(!CL||!stLoaded){v.innerHTML=`<div class="card"><div class="empty">טוען…</div></div>`;if(!CL)loadClients();if(!stLoaded&&!stLoading)Promise.resolve(loadStudio()).then(()=>{if(tab==="clients"&&stLoaded)render()});return}
   if(Date.now()-clAt>120000)loadClients();
   const all=Object.entries(CL).filter(([,c])=>c.active!==false),st=c=>c.inc===true?"in":c.inc===false?"out":"pending";
   const cnt={pending:0,in:0,out:0};all.forEach(([,c])=>cnt[st(c)]++);
@@ -1662,7 +1671,7 @@ function renderBiz(){const v=$("v-biz");if(!isOwner||preview){go("coach");return
   <div class="card">
     ${rs.length?`<div class="bz-l">${rs.map(([id,r])=>{const late=r.due&&r.due<TODAY;return `<div class="bz-r"><button type="button" class="bz-c" data-bzd="${esc(id)}" aria-label="בוצע"></button><div style="flex:1"><b>${esc(r.t)}</b>${r.due?`<small style="${late?"color:var(--bad)":""}">${esc(r.due===TODAY?"היום":fmt(r.due))}</small>`:""}</div></div>`}).join("")}</div>`:`<div class="empty">אין תזכורות פתוחות</div>`}
     <div class="addrow sm"><input type="text" id="bzT" placeholder="+ תזכורת חדשה" autocomplete="off"><input type="date" id="bzD" style="flex:none;width:9.5em"><button class="ghost" type="button" id="bzA">הוספה</button></div></div>
-  ${[["יומן אימונים","קביעת אימונים אישיים מול היומן שלך, תזכורת אוטומטית למתאמן."],["גבייה","חבילות, מי שילם ומי לא, תזכורות תשלום. בלי סליקה."],["הכנסות והוצאות","דשבורד חודשי מנתוני אמת בלבד: בנק, כאל וארבוקס."]].map(([t,d])=>`<div class="card bz-s"><b>${t}</b><p class="hint" style="margin:0">${d}</p><span class="bz-soon">בשלב הבא</span></div>`).join("")}`;
+  `;;
   $("bzOut").onclick=()=>go(dashLast);
   const add=async()=>{const t=$("bzT").value.trim();if(!t)return;const id=Date.now().toString(36),r={t,due:$("bzD").value||"",at:new Date().toISOString()};BZ[id]=r;render();try{await db.doc(`x/rem/${id}`).set(r)}catch(e){delete BZ[id];render();toast("לא נשמר")}};
   $("bzA").onclick=add;$("bzT").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();add()}}}
@@ -2055,7 +2064,7 @@ function renderWorkout(){const list=woList();
   const fx=fixedList(),nx=nextFixed();
   $("v-workout").innerHTML=`
   ${fx.length>1?`<div class="wopick">${fx.map(x=>`<button type="button" data-wo="${x.id}" aria-pressed="${x.id===w.id}">${esc(x.title)}${nx&&x.id===nx.id?"<small>התור הבא</small>":""}</button>`).join("")}</div>`:""}
-  <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${w.note?`<p>${esc(w.note)}</p>`:""}
+  <div class="wo-hero"><img class="wm" src="pg-logo.png" alt=""><small>${w.fixed?"התכנית הקבועה שלך":esc(w.tag||"אימון")}${w.date&&!w.fixed?" · "+fmt(w.date):""}</small><h2>${esc(w.title)}</h2>${(w.cnote||(!/^\d{4}-\d\d-\d\d-(powerlab|method|flex|small)$/.test(String(w.id||""))&&w.note))?`<p>${esc(w.cnote||w.note)}</p>`:""}
     ${totalSets?`<div class="wo-prog"><i style="width:${doneSets/totalSets*100}%"></i></div><p>${lg.done?`<span class="wk-ok">האימון של היום הושלם ✓</span>`:`${doneSets} מתוך ${totalSets} סטים היום`}</p>`:lg.done?`<p class="wk-ok">האימון של היום הושלם ✓</p>`:""}
     ${totalSets&&!isSt?`<button class="go-btn" type="button" id="guided">${PLAY.replace('aria-hidden="true"','style="width:16px;height:16px;fill:currentColor;transform:scaleX(-1)"')}${doneSets?"המשך אימון מודרך":"התחל אימון מודרך"}</button>`:""}</div>
   ${(w.blocks||[]).map((b,bi)=>!isM(b)?"":`<div class="blk"><div class="blk-h">${isSt?"":`<span class="n">${bi+1}</span>`}<div><b>${esc(b.name)}</b><small>${esc(b.format||"")}${b.pick!=null?` · ${b.pick?`בוחרים ${b.pick} מתוך ${(b.items||[]).length}`:"לא חובה"}`:""}${(()=>{const r=restOf(b);return r&&!/Rest|מנוחה/i.test(b.format||"")?` · מנוחה ${r>=60?Math.floor(r/60)+":"+pad(r%60):r+" שנ׳"}`:""})()}${(lg.score||{})[bi]?` · <b class="wk-ok">תוצאה: ${esc(lg.score[bi])}</b>`:""}</small></div></div>
@@ -2068,7 +2077,7 @@ function renderWorkout(){const list=woList();
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
     <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
     <div class="btns" style="margin-top:0"><button class="cta" type="button" id="woDone">${lg.done?"עדכון הדיווח":"סיימתי את האימון"}</button></div></div>
-  ${list.length>1?`<div class="sh"><h2>אימונים נוספים</h2></div><div class="past">${list.filter(x=>x.id!==w.id).map(x=>`<button type="button" data-wo="${x.id}"><span>${esc(x.title)}</span><small>${x.fixed?"קבוע":fmt(x.date)}</small></button>`).join("")}</div>`:""}`;
+  ${list.length>1?`<div class="sh"><h2>אימונים נוספים</h2></div><div class="past">${list.filter(x=>x.id!==w.id&&!(x.date&&x.date>TODAY&&/^\d{4}-\d\d-\d\d-(powerlab|method|flex|small)$/.test(String(x.id||"")))).slice(0,10).map(x=>`<button type="button" data-wo="${x.id}"><span>${esc(x.title)}</span><small>${x.fixed?"קבוע":fmt(x.date)+(/-method$/.test(x.id)?" · Method":/-powerlab$/.test(x.id)?" · Power Lab":/-flex$/.test(x.id)?" · Flex":"")}</small></button>`).join("")}</div>`:""}`;
   $("woDone").onclick=()=>{setLog(w.id,TODAY,l=>{l.done=true;l.note=$("woNote").value.trim()});toast("הדיווח נשלח לטל");render()};
   const g=$("guided");if(g)g.onclick=()=>openPlayer(w)}
 const vids=it=>{const v=it.v||[];if(!v.length)return "";return `<span class="ths">${v.map(x=>{const th=ytTh(x.u);return th?`<a class="th" href="${esc(x.u)}" target="_blank" rel="noopener" aria-label="${esc(x.t||"סרטון")}"><img src="${th}" alt="" loading="lazy"><i>${PLAY}</i></a>`:`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`}).join("")}</span>`};
@@ -2715,10 +2724,10 @@ const metaOf=(x,L)=>{for(const b of exBlocks(WD[rType]))if((b.str||b.core)&&b.me
 const exName=x=>String(x).replace(/\s*\(Var\)\s*-.*$/i,"").replace(/\s*\([^)]*\/[^)]*\)\s*$/,"").trim()||x;
 const setTot=m=>m.sets+(m.warm?1:0);
 const setsOf=(L,m)=>{const n=setTot(m),a=Array.isArray(L.sets)?L.sets.slice():[];if(!a.length&&(L.kg||L.reps))a[m.warm?1:0]={kg:L.kg||"",reps:L.reps||""};for(let k=0;k<n;k++)a[k]=a[k]||{kg:"",reps:""};return a.slice(0,n)};
-const setDone=o=>!!(o&&String(o.reps||"").trim());
+const setDone=o=>!!(o&&(String(o.reps||"").trim()||String(o.kg||"").trim()));
 const setLbl=(m,k)=>m.warm?(k?`סט ${k}`:"חימום"):`סבב ${k+1}`;
 function setsSync(L,m){const a=setsOf(L,m);L.sets=a;if(m.mode==="hold")L.unit="sec";else if(m.mode==="int")L.unit="reps@"+m.work;let best=null;
-  a.forEach((o,k)=>{if(m.warm&&!k)return;const v=parseFloat(String(o.kg||"").replace(",","."));const sc=isFinite(v)?v:-1;if(String(o.reps||"").trim()&&(!best||sc>=best.v))best={v:sc,o}});
+  a.forEach((o,k)=>{if(m.warm&&!k)return;const v=parseFloat(String(o.kg||"").replace(",","."));const sc=isFinite(v)?v:-1;if((String(o.reps||"").trim()||String(o.kg||"").trim())&&(!best||sc>=best.v))best={v:sc,o}});
   if(best){L.kg=String(best.o.kg||"").trim();L.reps=String(best.o.reps||"").trim()}else{L.kg="";L.reps=""}}
 function timeRows(p,i,x,m){const L=(p.lx||{})[x]||{},f=L.fail||{},n=m.sets,bad=Object.keys(f).length;
   const head=m.mode==="hold"?`החזקה${m.hold?" "+m.hold:""}`:`${m.work} שנ׳ עבודה`;
@@ -2922,7 +2931,7 @@ function renderStudio(){const v=$("v-studio");
       ${r.note?`<p class="hint">על השיעור: ${esc(r.note)}</p>`:""}</div>`:""}</div>`}).join("")}</div>
   <div class="sh"><h2>מתאמני הסטודיו</h2><span>${Object.keys(RO).length}</span></div>
   <input type="text" id="stQ" placeholder="חיפוש לפי שם" value="${esc(stQ)}">
-  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${ldBox(id,1)}${r.inj?`<div class="known">רגישות: ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"בשיעור אחרון: "+esc(fmt(r.seen)):"עוד לא דווח"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
+  <div class="flags">${ro.slice(0,60).map(([id,r])=>`<button class="flag" type="button" data-mem="${esc(id)}" style="--c:${r.inj?"var(--warn)":"var(--s3)"};text-align:right;width:100%"><div style="flex:1"><b>${esc(r.name)}</b>${ldBox(id,1)}${r.inj?`<div class="known">רגישות: ${esc(r.inj)}</div>`:""}<div class="hint">${r.seen?"שיעור אחרון: "+esc(fmt(r.seen)):"עוד אין שיעור"}</div></div></button>`).join("")||`<div class="card"><div class="empty">המתאמנים יתווספו כאן מהדיווחים של המאמנים.</div></div>`}</div>`;
   const s=$("stQ");s.oninput=()=>{stQ=s.value;const pos=s.selectionStart;dirty=false;renderStudio();dashSeg();const n=$("stQ");n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}
 
 async function openMember(id){stSel=id;stLogs=null;render();window.scrollTo(0,0);
