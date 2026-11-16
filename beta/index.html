@@ -828,7 +828,11 @@ html[dir=ltr] #bfRs{direction:rtl}
 .sumc [data-share]{margin-top:12px;width:100%}
 .fbk{display:flex;flex-direction:column;gap:8px;margin:12px 0 10px}.fbk input,.fbk textarea{width:100%;box-sizing:border-box}
 .mship{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin:0 0 4px}
-.upl{width:100%;margin-top:10px;font-size:14px}.mrest>summary{cursor:pointer;font-weight:700;padding:4px 0}.mrest .mcls{margin-top:10px}
+.upl{width:100%;margin-top:10px;font-size:14px}
+.otd{border:1px solid var(--hot);display:grid;gap:4px}.otd-h{font-size:17px}.otd-s{border-top:1px solid rgba(127,127,127,.25);padding:8px 0 4px}.otd-s summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none}.otd-s summary::-webkit-details-marker{display:none}
+.otd-n{background:var(--hot);color:#fff;border-radius:99px;padding:0 10px;font-size:13px;font-weight:700}.otd-s ul{margin:6px 0 2px;padding-inline-start:18px;display:grid;gap:5px;font-size:14px}.otd-s small{color:var(--muted)}
+.nxt{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--ok)}.nxt small{display:block;color:var(--muted);font-size:12px}.nxt b{font-size:16px}.nxt .cta{flex:none;width:auto;padding:10px 18px;margin:0}.nxt.done{border-color:transparent;opacity:.85}
+.b2-rest>summary{cursor:pointer;padding:10px 0;color:var(--muted);font-size:14px}.mrest>summary{cursor:pointer;font-weight:700;padding:4px 0}.mrest .mcls{margin-top:10px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small id="bsub">ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -1189,6 +1193,7 @@ window.pgMember={async link(k){try{const {data}=await SB.functions.invoke("membe
   async claim(k){try{const {data}=await SB.rpc("claim_invite",{p_k:k});try{await SB.auth.updateUser({data:{k}})}catch(e){}const lk=await this.link(k);return {ok:!!(data&&data.ok),prog:!!(data&&data.prog),lk}}catch(e){return {ok:false}}},
   async me(){try{const {data,error}=await SB.rpc("my_member");return error?null:(data||null)}catch(e){return null}},
   async preview(){try{const {data,error}=await SB.rpc("class_preview");return error?[]:(data||[])}catch(e){return []}},
+  async today(){try{const {data,error}=await SB.rpc("owner_today");return error?null:data}catch(e){return null}},
   email(){return (me&&me.email)||""},
   async recent(){try{const {data,error}=await SB.rpc("my_recent_classes");return error?[]:(data||[])}catch(e){return []}},
   async view(aid){try{const {data,error}=await SB.rpc("member_view",{p_aid:String(aid)});return error?null:data}catch(e){return null}},
@@ -1221,6 +1226,7 @@ function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
 $a("aSwitch").onclick=()=>setMode(mode==="in"?"up":"in");
 $a("aForgot").onclick=()=>setMode("forgot");
+{const k=new URLSearchParams(location.search).get("k");if(k&&/^\d{6}$/.test(k)){try{localStorage.pgK=k}catch(e){}setMode("up");$a("aCode").value=k;$a("aSub").textContent="נרשמים עם כל מייל ובוחרים סיסמה. הקוד האישי שלך כבר בפנים."}}
 const HE={"Invalid login credentials":"מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה","User already registered":"המייל הזה כבר רשום. נסו כניסה","Email not confirmed":"צריך לאשר את המייל דרך הקישור שנשלח"};
 $a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.trim().toLowerCase(),pw=$a("aPass").value;$a("aErr").textContent="";
   if(mode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){$a("aErr").textContent="צריך מייל תקין";return}
@@ -1400,7 +1406,7 @@ function sumCards(noM){if(!MEM)return "";const s=attStats(),h=histBy(MEM.log),ws
   return o}
 const liveCls=()=>SRC2.find(c=>c.date===TODAY&&nowMin()>=toMin(c.time)-20&&nowMin()<=toMin(c.time)+120);
 async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||(MEMst===2&&!force))return;MEMst=1;
-  if(window.pgMember){const lk=await pgMember.link();MEMS=(lk&&lk.state)||"none";const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
+  if(window.pgMember){const pk=(()=>{try{return localStorage.pgK||""}catch(e){return ""}})();const lk=await pgMember.link(pk||undefined);MEMS=(lk&&lk.state)||"none";if(pk&&lk&&lk.state==="in"){try{localStorage.removeItem("pgK")}catch(e){}}const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   try{const s=await db.collection(`t/${uid}/bm`).get();BM={};s.docs.forEach(d=>BM[d.id]=d.data())}catch(e){}
   MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
@@ -1446,7 +1452,7 @@ function woProg(){const H={};Object.keys(wlog).forEach(key=>{const l=wlog[key];i
   return Object.entries(H).map(([x,h])=>[x,h.sort((p,q)=>p.d.localeCompare(q.d))]).sort((p,q)=>q[1][q[1].length-1].d.localeCompare(p[1][p[1].length-1].d)).slice(0,12)}
 function woProgHTML(){const P=woProg();
   return `<div class="sh"><h2>התקדמות בכוח</h2>${P.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
-  ${P.length?liftCard(P.map(([x,h])=>{const l=h[h.length-1];return {x:"w:"+x,name:x,sub:fmt(l.d),val:l.k+" ק״ג",h}})):`<div class="card"><div class="empty">כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.</div></div>`}`}
+  ${P.length?liftCard(P.map(([x,h])=>{const l=h[h.length-1];return {x:"w:"+x,name:x,sub:fmt(l.d),val:l.k+" ק״ג",h}})):(MEM&&(MEM.log||[]).length?`<div class="card"><div class="empty">המשקלים שרשמת בשיעורי הסטודיו נמצאים ב<button type="button" class="linkb" onclick="go('smy')">שיעורי קבוצה ←</button></div></div>`:`<div class="card"><div class="empty">כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.</div></div>`)}`}
 /* optional personal profile for studio members: one doc per month */
 let BM={};
 function bmCard(){const ks=Object.keys(BM).sort(),L={};ks.forEach(k=>Object.entries(BM[k]||{}).forEach(([f,v])=>{if(v!=null&&v!=="")L[f]=v}));const mo=TODAY.slice(0,7),has=!!BM[mo],kgs=ks.filter(k=>+BM[k].kg>0).map(k=>({k:k+"-01",v:+BM[k].kg}));
@@ -1630,7 +1636,9 @@ function renderClients(){const v=$("v-clients");if(!isOwner||preview){go("coach"
   const qi=$("clQ");qi.oninput=()=>{clQ=qi.value;const p=qi.selectionStart;dirty=false;renderClients();const n=$("clQ");n.focus();try{n.setSelectionRange(p,p)}catch(e){}};
   const ab=$("clAllIn");if(ab)ab.onclick=async()=>{ab.disabled=true;const ids=list.map(([id])=>id);let bad=0;
     for(const id of ids){CL[id].inc=true;try{await db.doc(`cl/${id}`).update({inc:true,dec:TODAY})}catch(e){CL[id].inc=null;bad++}}render();toast(bad?`${bad} לא נשמרו`:`${ids.length} סומנו ✓`)}}
-$("v-clients").addEventListener("click",async ev=>{const co=ev.target.closest("[data-clo]");if(co){clOpen=clOpen===co.dataset.clo?null:co.dataset.clo;render();return}
+$("v-clients").addEventListener("click",async ev=>{const ci=ev.target.closest("[data-ccinv]");if(ci){const c=CL[ci.dataset.ccinv]||{},f=String(c.name||"").split(" ")[0],u=location.origin+location.pathname+"?k="+c.k;
+    const t=`היי ${f}, טל כאן 🙂\nפתחתי לך את האפליקציה של פלייגראונד: לפני שיעור רואים מה מחכה, ואחרי השיעור רושמים משקל בתרגיל המרכזי. ככה בפעם הבאה יודעים בדיוק כמה להרים.\n\nזה הקישור האישי שלך: ${u}\nלוחצים על ההרשמה ובוחרים מייל וסיסמה. זה לוקח דקה.`;
+    try{await navigator.clipboard.writeText(t);toast("ההודעה הועתקה ✓")}catch(e){const i=ci.parentElement.querySelector("input");if(i){i.select()}toast("סמנו והעתיקו את הקישור")}return}const co=ev.target.closest("[data-clo]");if(co){clOpen=clOpen===co.dataset.clo?null:co.dataset.clo;render();return}
   const cp=ev.target.closest("[data-ccp]");if(cp){cp.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b===cp?"true":"false"));return}
   if(ev.target.closest("[data-ccx]")){clOpen=null;render();return}const cs=ev.target.closest("[data-ccs]");if(cs){cs.disabled=true;await clSave(cs.dataset.ccs);cs.disabled=false;return}
   const pv=ev.target.closest("[data-clpv]");if(pv){const c=CL[pv.dataset.clpv]||{};if(!coachAt){toast("טוען…");await loadCoach()}
@@ -1649,6 +1657,7 @@ let clOpen=null,pvFrom=null;
 const sidOf=(aid,c)=>{const a=String(aid);const hit=Object.entries(RO).find(([,r])=>String(r.aid||"")===a)||Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(c&&c.name));return hit?hit[0]:null};
 function clCard(id,c){const sid=sidOf(id,c),r=(sid&&RO[sid])||{};
   return `<div class="cl-card">${sid?ldBox(sid,1):""}
+    ${c.k?`<label>הזמנה אישית <small>קישור עם הקוד האישי. נכנסים עם כל מייל</small></label><div class="addrow sm"><input type="text" readonly dir="ltr" value="${esc(location.origin+location.pathname+"?k="+c.k)}"><button class="ghost" type="button" data-ccinv="${esc(id)}">העתקת הודעה</button></div>`:""}
     <label>פציעות ורגישויות <small>המאמנים רואים ליד השם בשיעור</small></label><input type="text" id="ccInj" value="${esc(r.inj||"")}" placeholder="למשל: כתף ימין רגישה, להימנע מלחיצה מעל הראש">
     <label>הריון</label><div class="chips sm">${[["","לא"],["1","שליש ראשון"],["2","שליש שני"],["3","שליש שלישי"],["pp","אחרי לידה"]].map(([k,l])=>`<button type="button" data-ccp="${k}" aria-pressed="${(r.preg||"")===k}">${l}</button>`).join("")}</div>
     <label>הערה למאמנים <small>מופיעה בשיעור</small></label><input type="text" id="ccCn" value="${esc(r.cnote||"")}" placeholder="למשל: מתחיל, לעבוד על טכניקה לפני משקל">
@@ -1738,6 +1747,11 @@ function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hid
   const D=dayT?`<button type="button" class="tile wide day" data-tsec="day" style="--c:var(--ok)"><span class="tile-i">${secIc("M5 13l4 4L19 7")}</span><b>היום שלי</b><small>${esc(dayT)}</small></button>`:"";
   if(T.length<2&&!D)return "";
   return `<div class="tiles pt">${D}${T.map(([k,t,c,ic,sub],i)=>`<button type="button" class="tile${T.length%2&&i===T.length-1?" full":""}" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
+function nextStep(rq,mc,wo,wl){let t="",b="";
+  if(rq.length&&mc<rq.length){t=`נשארו ${rq.length-mc} ארוחות לסמן היום`;b=`<button type="button" class="cta" data-tsec="day">לסימון</button>`}
+  else if(wo&&!(wl&&wl.done)){t="האימון של היום מחכה לך";b=`<button type="button" class="cta" onclick="go('workout')">לאימון</button>`}
+  else return `<div class="card nxt done"><b>הכל סומן היום ✓</b></div>`;
+  return `<div class="card nxt"><div><small>הצעד הבא</small><b>${t}</b></div>${b}</div>`}
 function renderToday(){setTimeout(sweepOther,1200);const day=getDay(sel),rq=reqMeals(),mc=mealsCount(day),dow=fromKey(sel).getDay();
   const h=new Date().getHours(),greet=h<12?"בוקר טוב":h<17?"צהריים טובים":h<21?"ערב טוב":"לילה טוב";
   const first=(window.pgT?pgT(prof.name||""):(prof.name||"")).split(" ")[0];
@@ -1758,10 +1772,11 @@ function renderToday(){setTimeout(sweepOther,1200);const day=getDay(sel),rq=reqM
   $("v-today").innerHTML=`
   ${home||!hasDay?`<div class="hello"><span class="avatar">${esc(first.slice(0,1))}</span><div><small>${greet}</small><b>${esc(first)}</b></div></div>`:`<div class="sec-top" style="--c:var(--ok)"><button type="button" class="sec-bk" data-tsec="" aria-label="חזרה למסך הבית"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h2>היום שלי</h2></div>`}
   ${home||!hasDay?(msgs[0]?`<div class="msg"><span class="tl"><img src="pg-logo.png" alt=""></span><div><small>${msgs[0].auto?"הסיכום השבועי מטל":"טל ליפשטט · המאמן שלך"} · ${fmt(msgs[0].at)}</small><p>${esc(msgs[0].text)}</p></div></div>`:""):""}
+  ${home&&sel===TODAY&&hasDay?nextStep(rq,mc,wo,wl):""}
   ${home?"":`<div class="strip">${strip}</div>`}
   <div class="sum"${home?' data-tsec="day" role="button" tabindex="0" aria-label="היום שלי"':""}><img class="wm" src="pg-logo.png" alt="">
     <div class="ring"><svg viewBox="0 0 104 104"><circle class="tr" cx="52" cy="52" r="44"/><circle class="br" cx="52" cy="52" r="44" style="stroke-dasharray:${RC};stroke-dashoffset:${RC*(1-pct)}"/></svg><div class="in"><b>${Math.round(pct*100)}%</b><small>היום</small></div></div>
-    <div class="facts">${facts.map(f=>`<div class="fact"><i style="background:${f[0]}"></i>${esc(f[1])}<span>${esc(f[2])}</span></div>`).join("")}</div>
+    <div class="facts">${(home?facts.filter(f=>f[1]!=="קלוריות"&&f[1]!=="חלבון").slice(0,3):facts).map(f=>`<div class="fact"><i style="background:${f[0]}"></i>${esc(f[1])}<span>${esc(f[2])}</span></div>`).join("")}</div>
     <div class="streak ${stk?"on":""}">${FLAME}<b>${stk}</b><span>${stk===1?"יום ברצף":"ימים ברצף"}</span></div>
     ${prof.menu&&prof.menu.target?`<p class="cap">${esc(prof.menu.target)}</p>`:""}
   </div>
@@ -2345,6 +2360,16 @@ function analyze(id){const c=C[id],p=c.prof||{},ms=((p.menu&&p.menu.meals)||[]).
 const mailOf=id=>(meta[id]&&meta[id].email)||(names[id]&&names[id].email)||"";
 const mailBox=id=>`<div class="assign"><input id="em-${id}" type="email" dir="ltr" placeholder="המייל של המתאמן" value="${esc(mailOf(id))}" style="flex:1;min-width:0;padding:10px;border-radius:12px"><button type="button" data-mail="${id}">שמירת מייל</button></div>`;
 const nameOf=id=>(C[id]&&C[id].prof&&C[id].prof.name)||(names[id]&&names[id].name)||mailOf(id)||"מתאמן/ת חדש/ה";
+let OTDH="",otdAt=0;
+async function loadOTD(){const el=document.getElementById("otd");if(!el||!window.pgMember||!pgMember.today)return;if(Date.now()-otdAt<120000&&OTDH){if(el.innerHTML!==OTDH)el.innerHTML=OTDH;return}otdAt=Date.now();const d=await pgMember.today();if(!d)return;
+ const sec=(t,arr,f,open)=>arr&&arr.length?`<details class="otd-s"${open?" open":""}><summary><b>${t}</b><span class="otd-n">${arr.length}</span></summary><ul>${arr.slice(0,15).map(x=>`<li>${f(x)}</li>`).join("")}${arr.length>15?`<li><small>ועוד ${arr.length-15}</small></li>`:""}</ul></details>`:"",fd=x=>x?fmt(x):"";
+ const body=sec("כאב והערות מהשבוע",d.pain,x=>`${esc(x.n||"")}${x.lvl&&x.lvl!=="0"?` · כאב ${esc(x.lvl)}/10`:""}${x.where?` · ${esc(x.where)}`:""}${x.note?` · ${esc(x.note)}`:""} <small>${esc(fd(x.d))}${x.src&&x.src!=="self"?" · "+esc(x.src):""}</small>`,1)
+  +sec("שיעורים בלי דיווח מאמן",d.unreported,x=>`${esc(fd(x.d))} · ${esc(x.t||"")} <bdi>${esc(x.cls||"")}</bdi> · ${esc(x.coach||"")} <small>${x.n} מתאמנים</small>`)
+  +sec("לקוחות ליווי שלא דיווחו 3 ימים",d.silent,x=>`${esc(x.n||"")} <small>${x.last?"אחרון: "+esc(fd(x.last)):"עוד לא דיווח"}</small>`)
+  +sec("נכנסו לאפליקציה ומחכים לשיוך",d.waiting,x=>`<bdi>${esc(x.e||"")}</bdi> <small>${esc(fd(x.j))}</small>`)
+  +sec("מתאמני סטודיו שלא הגיעו 10 ימים",d.away,x=>`${esc(x.n||"")} <small>${x.last?"אחרון: "+esc(fd(x.last)):"עוד לא הגיע"} · ${esc(x.plan||"")}</small>`);
+ OTDH=`<div class="card otd"><b class="otd-h">מה דורש אותי היום</b>${body||`<p class="hint" style="margin:0">הכל בשליטה. אין כאבים, דיווחים חסרים או מתאמנים שנעלמו.</p>`}</div>`;
+ const e2=document.getElementById("otd");if(e2)e2.innerHTML=OTDH}
 function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   if(coachSel==="__rec"){renderCoachRecipes();return}
   if(coachSel&&C[coachSel]){renderCoachDetail(coachSel);return}
@@ -2353,6 +2378,7 @@ function renderCoach(){if(!coachAt&&!coachLoading){loadCoach()}
   const allFlags=[];act.forEach(id=>A[id].flags.forEach(f=>allFlags.push([f[0],`${nameOf(id)} · ${f[1]}`,id,f[1]])));
   $("v-coach").innerHTML=`
   <div class="hello"><span class="avatar" style="border-color:var(--hot)">ט</span><div><small>לוח המאמן${coachAt?` · עודכן ${pad(coachAt.getHours())}:${pad(coachAt.getMinutes())}`:""}</small><b>כל המתאמנים</b></div><button class="ghost" type="button" id="cRef" style="margin-inline-start:auto;padding:8px 14px">רענון</button></div>
+  <div id="otd">${OTDH}</div>${(setTimeout(loadOTD,0),"")}
   ${coachLoading&&!coachAt?`<div class="card"><div class="empty">טוען את המתאמנים…</div></div>`:""}
   <div class="kpis"><div class="kpi"><b>${act.length}</b><small>מתאמנים פעילים</small></div><div class="kpi"><b>${todayN}</b><small>דיווחו היום</small></div>
     <div class="kpi"><b style="color:${att?"var(--bad)":"var(--ok)"}">${att}</b><small>דורשים תשומת לב</small></div><div class="kpi"><b>${pend.length}</b><small>מחכים לשיוך</small></div></div>
@@ -3095,7 +3121,7 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   ${ros.length>1?`<div class="b2-tm">${ros.map(x=>`<button type="button" data-b2t="${esc(x.time||"")}" aria-pressed="${x===r}"><b>${esc(x.time||"")}</b><small>${esc(firstN(x.coach||""))}</small></button>`).join("")}</div>`:""}
   <div class="b2-wk">${wk.k?`<div class="b2-wt"><small>השבוע</small><button type="button" class="b2-link" data-b2w="1">כל השבוע ←</button></div><b>${esc(wk.k)}${wk.rpe?" · RPE "+esc(wk.rpe):""}</b>${(wk.aim||wk.why)?`<p>${esc(wk.aim||wk.why)}</p>`:""}`:""}${b.goal?`<small style="margin-top:10px">מטרת היום</small><b>${esc(b.goal)}</b>${b.goal2?`<p>${esc(b.goal2)}</p>`:""}`:""}</div>
   ${sec("מתאמנים",r?`${esc(r.time||"")} · ${esc(r.coach||"")}${r.reg?" · "+esc(r.reg):""}`:"")}
-  <div class="card b2-c">${ppl.length?ppl.map(x=>{const ok=x.sid+"|"+key,n=Math.max(x.ents.length,B2O[ok]||0);
+  <div class="card b2-c">${ppl.length?((rend,hasF=x=>!!(x.cond||x.m.length||(x.ld||[]).length||x.prev||x.ents.length))=>{const fl=ppl.filter(hasF),rest=ppl.filter(x=>!hasF(x));return fl.map(rend).join("")+(rest.length?`<details class="b2-rest"${fl.length?"":" open"}><summary>${rest.length} מתאמנים בלי הערות · ${rest.map(x=>esc(String(x.p.name||"").split(" ")[0])).join(", ")}</summary>${rest.map(rend).join("")}</details>`:"")})(x=>{const ok=x.sid+"|"+key,n=Math.max(x.ents.length,B2O[ok]||0);
     const form=(c,i)=>{const V=f=>esc(c&&c[f]!=null?c[f]:"");return `<div class="b2-in" data-bn="${esc(x.sid)}" data-bk="${esc(key)}" data-bi="${i}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">${n>1?`<small class="b2-ix">הערה ${i+1}</small>`:""}
         <div class="b2-pr"><input type="text" inputmode="numeric" data-f="lvl" placeholder="רמת כאב" value="${V("lvl")}"><input type="text" data-f="where" placeholder="איפה כואב" value="${V("where")}"><input type="text" data-f="ex" placeholder="באיזה תרגיל" value="${V("ex")}"></div>
         <input type="text" data-f="gave" placeholder="מה נתתי במקום" value="${V("gave")}">
@@ -3103,7 +3129,7 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
         <small class="b2-st">${c&&c.at?"נשמר ✓"+(c.by?" · "+esc(c.by):""):""}</small></div>`};
     return `<div class="b2-pp"><div class="b2-pn"><b>${esc(x.p.name||"")}</b>${x.cond?`<span class="b2-cond">${esc(x.cond)}</span>`:""}${n?"":`<button type="button" class="b2-rep" data-b2o="${esc(ok)}">משהו לא כשורה</button>`}</div>
       ${x.m.length?`<ul class="b2-mods">${x.m.map(z=>{const i=z.indexOf(": ");return i>0?`<li><b>${esc(z.slice(0,i))}</b><span>${esc(z.slice(i+2))}</span></li>`:`<li><span>${esc(z)}</span></li>`}).join("")}</ul>`:""}${x.ld.map(z=>`<div class="b2-prev">⚠️ ${esc(ldTxt(z))}</div>`).join("")}${prevTxt(x.prev)}${b2St(x)}
-      ${Array.from({length:n},(_,i)=>form(x.ents[i],i)).join("")}${n?`<button type="button" class="b2-rep b2-more" data-b2o="${esc(ok)}">+ עוד הערה</button>`:""}</div>`}).join(""):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
+      ${Array.from({length:n},(_,i)=>form(x.ents[i],i)).join("")}${n?`<button type="button" class="b2-rep b2-more" data-b2o="${esc(ok)}">+ עוד הערה</button>`:""}</div>`}):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
     <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
