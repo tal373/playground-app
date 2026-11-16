@@ -2609,8 +2609,8 @@ function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).f
   names.forEach(n=>{if(DR.people.some(p=>lowN(p.name)===lowN(n)))return;const hit=Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(n));if(hit&&DR.people.some(p=>p.id===hit[0]))return;
     DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
   DR.rAt=rrc.at||"1"}
-const RP=new URLSearchParams(location.search).get("rep");
-function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
+let repHold=false;const RP=new URLSearchParams(location.search).get("rep");
+function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];repHold=true;pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
 function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
@@ -2624,7 +2624,7 @@ async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&D
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
     fill(MYR,Object.fromEntries(mr.docs.map(d=>[d.id,d.data()])));
     if(isOwner&&db.reports){const rs=await db.reports(addDays(TODAY,-30));fill(REPS,Object.fromEntries(rs.map(r=>[r.id,r.data])))}
-    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime;DRS=d.DRS||{}}}
+    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){if(repHold)DRS=d.DRS||{};else{DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime;DRS=d.DRS||{}}}}
     stLoaded=true;stAt=Date.now()}catch(e){setSave("שגיאה בטעינה","err")}
   stLoading=false;if(["class","studio","coaches","prog","brief"].includes(tab))render()}
 
