@@ -1226,7 +1226,7 @@ function setMode(m){mode=m;$a("aErr").textContent="";
   $a("aSwitch").textContent=m==="in"?"פעם ראשונה כאן? הרשמה":"יש לי כבר חשבון, כניסה";$a("aForgot").hidden=m!=="in"}
 $a("aSwitch").onclick=()=>setMode(mode==="in"?"up":"in");
 $a("aForgot").onclick=()=>setMode("forgot");
-{const k=new URLSearchParams(location.search).get("k");if(k&&/^\d{6}$/.test(k)){try{localStorage.pgK=k}catch(e){}setMode("up");$a("aCode").value=k;$a("aSub").textContent="נרשמים עם כל מייל ובוחרים סיסמה. הקוד האישי שלך כבר בפנים."}}
+const pgKApply=()=>{const k=new URLSearchParams(location.search).get("k");if(k&&/^\d{6}$/.test(k)){try{localStorage.pgK=k}catch(e){}setMode("up");$a("aCode").value=k;$a("aSub").textContent="נרשמים עם כל מייל ובוחרים סיסמה. הקוד האישי שלך כבר בפנים."}};pgKApply();
 const HE={"Invalid login credentials":"מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה","User already registered":"המייל הזה כבר רשום. נסו כניסה","Email not confirmed":"צריך לאשר את המייל דרך הקישור שנשלח"};
 $a("aForm").onsubmit=async ev=>{ev.preventDefault();const em=$a("aMail").value.trim().toLowerCase(),pw=$a("aPass").value;$a("aErr").textContent="";
   if(mode!=="reset"&&!/^\S+@\S+\.\S+$/.test(em)){$a("aErr").textContent="צריך מייל תקין";return}
@@ -1250,7 +1250,7 @@ SB.auth.onAuthStateChange((ev,s)=>{me=s&&s.user?{id:s.user.id,email:s.user.email
   if(ev==="SIGNED_OUT"&&booted)location.reload()});
 (async()=>{let forget=false;try{forget=localStorage.pgRem==="0"&&!sessionStorage.pgLive}catch(e){}
   if(forget){await SB.auth.signOut({scope:"local"});showAuth(true);setMode("in");return}
-  const {data}=await SB.auth.getSession();if(!data.session){showAuth(true);setMode("in")}})();
+  const {data}=await SB.auth.getSession();if(!data.session){showAuth(true);setMode("in");pgKApply()}})();
 })();
 </script>
 <script>
@@ -1452,7 +1452,7 @@ function woProg(){const H={};Object.keys(wlog).forEach(key=>{const l=wlog[key];i
   return Object.entries(H).map(([x,h])=>[x,h.sort((p,q)=>p.d.localeCompare(q.d))]).sort((p,q)=>q[1][q[1].length-1].d.localeCompare(p[1][p[1].length-1].d)).slice(0,12)}
 function woProgHTML(){const P=woProg();
   return `<div class="sh"><h2>התקדמות בכוח</h2>${P.length?`<span>לחיצה פותחת גרף</span>`:""}</div>
-  ${P.length?liftCard(P.map(([x,h])=>{const l=h[h.length-1];return {x:"w:"+x,name:x,sub:fmt(l.d),val:l.k+" ק״ג",h}})):(MEM&&(MEM.log||[]).length?`<div class="card"><div class="empty">המשקלים שרשמת בשיעורי הסטודיו נמצאים ב<button type="button" class="linkb" onclick="go('smy')">שיעורי קבוצה ←</button></div></div>`:`<div class="card"><div class="empty">כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.</div></div>`)}`}
+  ${P.length?liftCard(P.map(([x,h])=>{const l=h[h.length-1];return {x:"w:"+x,name:x,sub:fmt(l.d),val:l.k+" ק״ג",h}})):(MEM&&(MEM.log||[]).some(l=>Object.values(l.lx||{}).some(o=>o&&(o.kg||o.reps)))?`<div class="card"><div class="empty">המשקלים שרשמת בשיעורי הסטודיו נמצאים ב<button type="button" class="linkb" onclick="go('smy')">שיעורי קבוצה ←</button></div></div>`:`<div class="card"><div class="empty">כשתרשמו משקלים באימונים, כאן יופיע גרף לכל תרגיל.</div></div>`)}`}
 /* optional personal profile for studio members: one doc per month */
 let BM={};
 function bmCard(){const ks=Object.keys(BM).sort(),L={};ks.forEach(k=>Object.entries(BM[k]||{}).forEach(([f,v])=>{if(v!=null&&v!=="")L[f]=v}));const mo=TODAY.slice(0,7),has=!!BM[mo],kgs=ks.filter(k=>+BM[k].kg>0).map(k=>({k:k+"-01",v:+BM[k].kg}));
@@ -1748,7 +1748,7 @@ function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hid
   if(T.length<2&&!D)return "";
   return `<div class="tiles pt">${D}${T.map(([k,t,c,ic,sub],i)=>`<button type="button" class="tile${T.length%2&&i===T.length-1?" full":""}" data-tab="${k}" style="--c:var(${c})"><span class="tile-i">${secIc(ic)}</span><b>${esc(t)}</b><small>${esc(sub)}</small></button>`).join("")}</div>`}
 function nextStep(rq,mc,wo,wl){let t="",b="";
-  if(rq.length&&mc<rq.length){t=`נשארו ${rq.length-mc} ארוחות לסמן היום`;b=`<button type="button" class="cta" data-tsec="day">לסימון</button>`}
+  if(rq.length&&mc<rq.length){t=rq.length-mc===1?"נשארה ארוחה אחת לסמן היום":`נשארו ${rq.length-mc} ארוחות לסמן היום`;b=`<button type="button" class="cta" data-tsec="day">לסימון</button>`}
   else if(wo&&!(wl&&wl.done)){t="האימון של היום מחכה לך";b=`<button type="button" class="cta" onclick="go('workout')">לאימון</button>`}
   else return `<div class="card nxt done"><b>הכל סומן היום ✓</b></div>`;
   return `<div class="card nxt"><div><small>הצעד הבא</small><b>${t}</b></div>${b}</div>`}
