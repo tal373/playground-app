@@ -1412,6 +1412,7 @@ const secIc=d=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d}"/></sv
 const regOf=c=>SRC2.find(r=>r.date===c.date&&String(r.key||"").endsWith("-"+c.type));
 const clsOver=c=>{if(c.date!==TODAY)return c.date<TODAY;const r=regOf(c);return r&&r.time?nowMin()>toMin(r.time)+75:new Date().getHours()>=21};
 const upCls=()=>CPV.filter(c=>!clsOver(c));
+const nextReg=()=>SRC2.filter(r=>r.date>TODAY).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")))[0];
 function secClass(){const all=upCls(),cp=all.filter(regOf),rest=all.filter(c=>!regOf(c)),dayL=d=>d===TODAY?"היום":d===addDays(TODAY,1)?"מחר":fmt(d);
   const card=c=>`<div class="card mcls">
     <div class="mc-h"><span class="mc-d">${esc(dayL(c.date))}${regOf(c)&&regOf(c).time?" · "+esc(regOf(c).time):""}</span><b>${esc(c.type==="method"?"Method":c.type==="powerlab"?"Power Lab":c.type==="flex"?"Flex":c.type==="small"?"Small Group":c.type==="kids"?"Kids Class":c.type||"")}</b></div>
@@ -1421,7 +1422,7 @@ function secClass(){const all=upCls(),cp=all.filter(regOf),rest=all.filter(c=>!r
       const lo=lastOf(exClean(m.n)),tg=tgtOf(exClean(m.n),lo),lt=lo?`<small class="ltp">${tg?`היום: ${tg.kg} ק״ג · `:""}בפעם הקודמת: ${esc(lo.kg?lo.kg+" ק״ג"+(lo.reps?" × "+lo.reps:""):(lo.reps||"")+" חזרות")}</small>`:"";
       return ytOk(u)?`<a href="${esc(u)}" target="_blank" rel="noopener" class="mc-i"><span class="pl">▶</span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></a>`:`<div class="mc-i"><span class="pl off"></span><span><b class="en">${esc(t)}</b><small class="en">${esc(m.n)}</small>${lt}</span></div>`}).join("")}</div></details>`:""}
   </div>`;
-  return (cp.length?cp.map(card).join(""):`<div class="card"><div class="empty">לא נרשמת לשיעור היום או מחר. נרשמים באפליקציית ארבוקס, והשיעור יופיע כאן עם התרגילים.</div></div>`)
+  return (cp.length?cp.map(card).join(""):(()=>{const nx=nextReg();return nx?`<div class="card"><div class="empty">השיעור הבא שלך: ${esc(fmt(nx.date))} · ${esc(nx.time||"")} ${esc(nx.cls||"")}. התרגילים שלו יעלו כאן יום לפני.</div></div>`:`<div class="card"><div class="empty">לא נרשמת לשיעור קרוב. נרשמים באפליקציית ארבוקס, והשיעור יופיע כאן עם התרגילים.</div></div>`})())
     +(rest.length?`<details class="card mcx mrest"><summary>עוד שיעורים בסטודיו היום ומחר · ${rest.length}</summary>${rest.map(card).join("")}</details>`:"")}
 function liftCard(rows){return `<div class="card mlx">${rows.map(({x,name,sub,val,h})=>{const f=h[0],l=h[h.length-1],dl=f&&l&&h.length>1?Math.round((l.k-f.k)*10)/10:0,pc=dl&&f.k?Math.round(dl/f.k*100):0,op=LXO===x;
       return `<button type="button" class="ml-r" data-lxo="${esc(x)}" aria-expanded="${op}"><div><b class="en">${esc(name)}</b><small>${esc(sub||"")}</small></div>
@@ -1476,7 +1477,7 @@ function secUps(){return `<p class="hint lead">המסלולים האישיים �
     <p class="hint" style="margin:0">${esc(d)}</p>${UPB[k]?`<ul class="ups-b">${UPB[k].map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
     ${sent?`<div class="ups-ok">✓ טל קיבל את הפנייה ויחזור אליך</div>`:`<button type="button" class="cta" data-want="${k}">שלח בקשה</button>`}</div>`}).join("")}`}
 function secSub(k){const cp=upCls().filter(regOf),log=(MEM&&MEM.log)||[],s=MEM?attStats():null;
-  if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:"לא נרשמת היום או מחר";
+  if(k==="class")return cp.length?`${cp[0].date===TODAY?"היום":cp[0].date===addDays(TODAY,1)?"מחר":fmt(cp[0].date)} · ${cp[0].title||""}`:(()=>{const nx=nextReg();return nx?fmt(nx.date)+" · "+(nx.time||""):"לא נרשמת לשיעור קרוב"})();
   if(k==="log")return liveCls()?"השיעור פתוח לרישום":SRC2.filter(c=>c.mine).length?`${SRC2.filter(c=>c.mine).length} אימונים רשומים`:"משקלים וסטים";
   if(k==="prog")return s?`${s.wk}${s.q?"/"+s.q:""} השבוע · ${s.mn} החודש`:"";
   if(k==="hist"){const n=log.filter(l=>Object.values(l.lx||{}).some(o=>o&&(o.kg||o.reps))).length;return n?`${n} עם משקלים`:s&&s.att.length?`${s.att.length} שיעורים`:"לפי חודש"}return ""}
@@ -2076,7 +2077,7 @@ function renderWorkout(){const list=woList();
     <div class="feel">${[1,2,3,4,5].map(i=>`<button type="button" data-feel="${i}" aria-pressed="${lg.feel===i}">${FEEL[i]}</button>`).join("")}</div>
     <textarea id="woNote" rows="3" placeholder="משהו שכאב, שהיה קשה, או שעבד מעולה">${esc(lg.note||"")}</textarea>
     <div class="btns" style="margin-top:0"><button class="cta" type="button" id="woDone">${lg.done?"עדכון הדיווח":"סיימתי את האימון"}</button></div></div>
-  ${list.length>1?`<div class="sh"><h2>אימונים נוספים</h2></div><div class="past">${list.filter(x=>x.id!==w.id).map(x=>`<button type="button" data-wo="${x.id}"><span>${esc(x.title)}</span><small>${x.fixed?"קבוע":fmt(x.date)}</small></button>`).join("")}</div>`:""}`;
+  ${list.length>1?`<div class="sh"><h2>אימונים נוספים</h2></div><div class="past">${list.filter(x=>x.id!==w.id&&!(x.date&&x.date>TODAY&&/^\d{4}-\d\d-\d\d-(powerlab|method|flex|small)$/.test(String(x.id||"")))).slice(0,10).map(x=>`<button type="button" data-wo="${x.id}"><span>${esc(x.title)}</span><small>${x.fixed?"קבוע":fmt(x.date)+(/-method$/.test(x.id)?" · Method":/-powerlab$/.test(x.id)?" · Power Lab":/-flex$/.test(x.id)?" · Flex":"")}</small></button>`).join("")}</div>`:""}`;
   $("woDone").onclick=()=>{setLog(w.id,TODAY,l=>{l.done=true;l.note=$("woNote").value.trim()});toast("הדיווח נשלח לטל");render()};
   const g=$("guided");if(g)g.onclick=()=>openPlayer(w)}
 const vids=it=>{const v=it.v||[];if(!v.length)return "";return `<span class="ths">${v.map(x=>{const th=ytTh(x.u);return th?`<a class="th" href="${esc(x.u)}" target="_blank" rel="noopener" aria-label="${esc(x.t||"סרטון")}"><img src="${th}" alt="" loading="lazy"><i>${PLAY}</i></a>`:`<a href="${esc(x.u)}" target="_blank" rel="noopener">${PLAY}${esc(x.t||"סרטון")}</a>`}).join("")}</span>`};
