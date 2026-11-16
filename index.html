@@ -1748,7 +1748,7 @@ const fixedList=()=>woList().filter(x=>x.fixed);
 function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const last=id=>Object.keys(wlog).filter(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done).map(k=>k.slice(id.length+1)).sort().pop()||"";return f.slice().sort((a,b)=>last(a.id).localeCompare(last(b.id)))[0]}
 const datedList=()=>woList().filter(x=>!x.fixed&&x.date).sort((a,b)=>a.date.localeCompare(b.date));
 const woDone=id=>Object.keys(wlog).some(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done);
-function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l[0]||null}
+function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l.find(x=>!stuId(x.id))||null}
 let TSEC=null;
 function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hidden},Ls=wList(weigh),lw=Ls[Ls.length-1],T=[];
   if(on("workout")&&woList().length)T.push(["workout","ליווי אישי","--mes","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12",wo?(wl&&wl.done?"בוצע היום ✓":wo.title||"האימון של היום"):"היום יום מנוחה"]);
