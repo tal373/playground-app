@@ -934,7 +934,7 @@ const EN={
 "היום":"Today","אימון":"Workout","תפריט":"Menu","מדדים":"Progress","סטודיו":"Studio","תכנית":"Program","בריף":"Brief","שיעור":"Class","דשבורד":"Dashboard",
 "בחירת ארוחה":"Choose a meal","אימון מודרך":"Guided workout","סגירה":"Close","מנוחה":"Rest","דלג":"Skip",
 /* auth */
-"כניסה לאפליקציה":"Sign in","האימונים, ההתקדמות והליווי שלך בפלייגראונד.":"Training, nutrition and rehab. All in one place, and I'm with you along the way.",
+"כניסה לאפליקציה":"Sign in","האימונים, ההתקדמות והליווי שלך בפלייגראונד.":"Your training, progress and coaching at Playground.","נרשמים עם כל מייל ובוחרים סיסמה. הקוד האישי שלך כבר בפנים.":"Sign up with any email and choose a password. Your personal code is already filled in.","לא נרשמת לשיעור קרוב. נרשמים באפליקציית ארבוקס, והשיעור יופיע כאן עם התרגילים.":"You have no upcoming class booked. Book in the Arbox app and the class will show up here with its exercises.","לא נרשמת לשיעור קרוב":"No upcoming class booked","ליווי אישי עם טל · תפריט, תכנית אישית ופיזיו":"Personal coaching with Tal · menu, personal plan and physio","הצעד הבא":"Next step","נשארה ארוחה אחת לסמן היום":"One meal left to log today","לסימון":"Log it","האימון של היום מחכה לך":"Today's workout is waiting for you","לאימון":"Go to workout","הכל סומן היום":"All logged today","המשקלים שרשמת בשיעורי הסטודיו נמצאים ב":"The weights you logged in studio classes are under ","משהו השתבש במסך הזה. שאר האפליקציה ממשיכה לעבוד.":"Something went wrong on this screen. The rest of the app keeps working.","רענון":"Refresh","זו האפליקציה של מאמני פלייגראונד. המתאמנים נכנסים לאפליקציה הרגילה:":"This is the Playground coaches app. Trainees use the regular app:",
 "המייל שלך":"Your email","סיסמה (לפחות 6 תווים)":"Password (at least 6 characters)","זכור אותי":"Remember me","כניסה":"Sign in","פעם ראשונה כאן? הרשמה":"First time here? Sign up","שכחתי סיסמה":"Forgot password","התנתקות":"Log out",
 "הרשמה":"Sign up","סיסמה חדשה":"New password","שחזור סיסמה":"Reset password","נרשמים עם המייל שנתתם לטל ובוחרים סיסמה":"Sign up with the email you gave Tal and choose a password","נרשמים עם המייל שרשום אצלנו בארבוקס ובוחרים סיסמה":"Sign up with the email on your studio membership and choose a password","בחרו סיסמה חדשה":"Choose a new password","נשלח אליך מייל עם קישור":"We'll email you a link",
 "שמירה":"Save","שליחה":"Send","יש לי כבר חשבון, כניסה":"I already have an account, sign in","מייל או סיסמה לא נכונים. פעם ראשונה כאן? צריך קודם להירשם: לחצו למטה על הרשמה":"Wrong email or password. First time here? Sign up first: tap Sign up below","המייל הזה כבר רשום. נסו כניסה":"This email is already registered. Try signing in",
@@ -1072,6 +1072,12 @@ const PAT=[
   R("אימונים: (\\d+)",m=>"Workouts: "+m[1]),R("מים: הגעת ליעד ב-(.+)",m=>"Water: goal reached on "+DD(m[1])),
   R("משקל: ([\\d.]+) ק״ג(?: \\(([+-]?[\\d.]+) מהשקילה הקודמת\\))?",m=>"Weight: "+m[1]+" kg"+(m[2]?" ("+m[2]+" since the last weigh-in)":"")),
   R("רצף נוכחי: (.+) 🔥",m=>"Current streak: "+DD(m[1])+" 🔥"),
+  R("השיעור הבא שלך: (.+?) · (\\S*) (.*)\\. התרגילים שלו יעלו כאן יום לפני\\.",m=>"Your next class: "+tr(m[1])+" · "+m[2]+" "+m[3]+". Its exercises will be posted here the day before."),
+  R("עוד שיעורים בסטודיו היום ומחר · (\\d+)",m=>"More studio classes today and tomorrow · "+m[1]),
+  R("(\\d+)(/\\d+)? השבוע · (\\d+) החודש",m=>m[1]+(m[2]||"")+" this week · "+m[3]+" this month"),
+  R("(\\d+) עם משקלים",m=>m[1]+" with weights"),
+  R("(\\d+) אימונים רשומים",m=>m[1]+(m[1]==="1"?" workout logged":" workouts logged")),
+  R("נשארו (\\d+) ארוחות לסמן היום",m=>m[1]+" meals left to log today"),
   R("(.*\\S) (\\d[\\d.,]*)",m=>{const h=tr(m[1]);return h!==m[1]?h+" "+m[2]:null})
 ];
 const low=s=>/^(Breakfast|Lunch|Dinner)$/.test(s)?s.toLowerCase():s;
@@ -1317,11 +1323,15 @@ const isPaused=()=>!!(prof&&prof.paused)&&(!isOwner||!!preview);
 function applyPause(){if(isOwner&&!preview)return;if(isCoach&&!prof)return;const pz=isPaused(),C=["today","workout","menu","measure"];
   C.forEach(t=>{const b=NB(t);if(b)b.hidden=pz});const sb=NB("smy");if(sb)sb.hidden=!(pz||(MEM&&MEMS==="in"));
   if(pz&&C.includes(tab)){tab="smy";C.forEach(v=>$("v-"+v).hidden=true);$("v-smy").hidden=false;document.querySelectorAll(".nb").forEach(b=>b.setAttribute("aria-current",b.dataset.tab==="smy"?"page":"false"))}}
-function render(){if(!booted)return;if(typing()){dirty=true;return}dirty=false;
+let RCN=0,RCT=0;
+function logErr(where,e){try{if(typeof db!=="undefined"&&db&&typeof uid!=="undefined"&&uid&&!readOnly)db.doc(`t/${uid}/err/${Date.now().toString(36)}`).set({where:String(where),msg:String((e&&e.message)||e).slice(0,300),stack:String((e&&e.stack)||"").slice(0,600),at:new Date().toISOString(),ua:navigator.userAgent.slice(0,80)}).catch(()=>{})}catch(_){}}
+function viewFail(t,e){try{console.error(e)}catch(_){}logErr("view:"+t,e);const v=document.getElementById("v-"+t);if(v)v.innerHTML=`<div class="card"><div class="empty">משהו השתבש במסך הזה. שאר האפליקציה ממשיכה לעבוד. <button type="button" class="linkb" onclick="location.reload()">רענון</button></div></div>`}
+window.addEventListener("error",ev=>logErr("global",ev.error||ev.message));window.addEventListener("unhandledrejection",ev=>logErr("promise",ev.reason));
+function render(){if(!booted)return;{const n=Date.now();if(n-RCT>1000){RCT=n;RCN=0}if(++RCN>150){viewFail(tab,new Error("render loop"));return}}if(typing()){dirty=true;return}dirty=false;
   if(memPv){renderStudioMe();return}
   if(!isOwner&&!isCoach&&!prof){renderWelcome();return}
   applyPause();
-  ({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients,smy:renderSmy})[tab]();
+  try{({today:renderToday,workout:renderWorkout,menu:renderMenu,measure:renderMeasure,coach:renderCoach,claude:renderClaude,class:renderClass,studio:renderStudio,coaches:renderCoaches,brief:renderBrief,prog:renderProg,biz:renderBiz,clients:renderClients,smy:renderSmy})[tab]()}catch(e){viewFail(tab,e);return}
   const TT={workout:["ליווי אישי","--mes"],menu:["התפריט שלי","--warn"],measure:["מדדים","--wk"],smy:["שיעורי קבוצה","--hot"]},trn=!!prof&&(tab==="today"||!!TT[tab]);
   if(trn){$("nav").hidden=true;if(TT[tab]){const v=$("v-"+tab);if(!v.querySelector(":scope>.sec-top"))v.insertAdjacentHTML("afterbegin",`<div class="sec-top" style="--c:var(${TT[tab][1]})"><button type="button" class="sec-bk" data-home="1" aria-label="חזרה למסך הבית"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><h2>${TT[tab][0]}</h2></div>`)}}
   else if((isOwner||isCoach)&&!memPv)$("nav").hidden=false;if(isOwner&&!preview&&DASH.includes(tab))dashSeg()}
@@ -3019,7 +3029,7 @@ function renderCoaches(){const v=$("v-coaches");
         <button class="ghost" type="button" data-codel="${esc(c.email)}" style="align-self:flex-start;padding:8px 14px;${coaDel===c.email?"color:var(--bad);border-color:var(--bad)":""}">${coaDel===c.email?"לחץ שוב להסרה":"הסרת המאמן מהאפליקציה"}</button></div>`:""}</div>`}).join("")||`<div class="card"><div class="empty">עוד אין מאמנים</div></div>`}</div>
   <div class="sh"><h2>הוספת מאמן</h2></div>
   <div class="card"><input type="text" id="coName" placeholder="שם, למשל שמעון"><input type="text" id="coMail" inputmode="email" dir="ltr" placeholder="email@gmail.com"><button class="cta" type="button" id="coAdd">הוספה</button>
-    <p class="hint">המאמן נרשם לאפליקציה עם המייל הזה ובוחר סיסמה. אחרי ההרשמה הוא רואה רק את מסך הדיווח.</p></div>`;
+    <p class="hint">המאמן נכנס לאפליקציית המאמנים, נרשם עם המייל הזה ובוחר סיסמה, ורואה רק את הבריף והדיווח. הקישור למאמנים: <bdi dir="ltr">tal373.github.io/playground-app/coach/</bdi></p></div>`;
   $("coRef").onclick=()=>{COA=null;loadStudio(true)};
   $("coAdd").onclick=async()=>{const n=$("coName").value.trim(),m=$("coMail").value.trim().toLowerCase();if(!n||!/^\S+@\S+\.\S+$/.test(m)){toast("צריך שם ומייל תקין");return}
     try{await db.addCoach(m,n);COA=null;toast("נוסף ✓");loadCoaches()}catch(e){toast("לא נוסף")}}}
@@ -3316,9 +3326,10 @@ let liveU=[];
   booted=true;
   if(!db){setSave("לא מחובר","err");renderWelcome();return}
   if((isOwner||isCoach)&&window.pgStaff&&pgStaff())return;
+  if(window.PG_ENTRY==="coach"){const b=document.getElementById("bsub");if(b)b.textContent="צוות המאמנים";if(!isOwner&&!isCoach&&uid){$("nav").hidden=true;["workout","menu","measure","coach"].forEach(v=>$("v-"+v).hidden=true);$("v-today").hidden=false;$("v-today").innerHTML=`<div class="card"><div class="empty">זו האפליקציה של מאמני פלייגראונד. המתאמנים נכנסים לאפליקציה הרגילה: <a href="./">פלייגראונד</a></div></div>`;setSave("מחובר ✓","ok");return}}
   if(isOwner){$("nav").hidden=false;document.querySelector('.nb[data-tab="coach"]').hidden=false;
     if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}
-    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(CLW){try{history.replaceState(null,"",location.pathname)}catch(e){}dashLast="clients";go("clients");return}if(!(isCoach&&openRep()))go("coach");return}
+    ["today","workout","menu","measure"].forEach(t=>document.querySelector(`.nb[data-tab="${t}"]`).hidden=true);if(CLW){try{history.replaceState(null,"",location.pathname)}catch(e){}dashLast="clients";go("clients");return}if(!(isCoach&&openRep()))go(window.PG_ENTRY==="coach"?"brief":"coach");return}
   if(isCoach&&uid){$("nav").hidden=false;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false;setSave("מחובר ✓","ok");if(!openRep())go("brief");return}
   if(!uid){setSave("לא מחובר","err");renderWelcome();return}
   setSave("מחובר ✓","ok");
