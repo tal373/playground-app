@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>פלייגראונד · מאמנים</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../icon-512.png"><link rel="icon" href="../icon-192.png">
+<meta name="theme-color" content="#0c1d33"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="PG מאמנים">
+<style>html,body{background:#0c1d33;margin:0;height:100%}</style></head><body>
+<script>
+/* Playground coaches app: same data and code as the main app, opens straight to the brief and the class report */
+window.PG_ENTRY="coach";
+fetch("../?v="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{
+  t=t.replace("<head>",'<head><base href="/playground-app/"><script>window.PG_ENTRY="coach"<\/script>')
+   .replace('href="manifest.webmanifest"','href="coach/manifest.webmanifest"')
+   .replace(/<title>[^<]*<\/title>/,"<title>פלייגראונד · מאמנים</title>");
+  document.open();document.write(t);document.close()
+}).catch(()=>{document.body.innerHTML='<p style="color:#fff;font-family:sans-serif;padding:24px;text-align:center">אין חיבור לאינטרנט. נסו שוב.</p>'});
+</script>
+</body></html>
