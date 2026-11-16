@@ -1419,7 +1419,7 @@ async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||
   if(window.pgMember){const pk=(()=>{try{return localStorage.pgK||""}catch(e){return ""}})();const lk=await pgMember.link(pk||undefined);MEMS=(lk&&lk.state)||"none";if(pk&&lk&&lk.state==="in"){try{localStorage.removeItem("pgK")}catch(e){}}const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   try{const s=await db.collection(`t/${uid}/bm`).get();BM={};s.docs.forEach(d=>BM[d.id]=d.data())}catch(e){}
-  MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
+  MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(["smy","today","workout"].includes(tab)&&!typing())render()}else render()}
 let MSEC=null,LXU="kg",LXO=null,HMO=null;
 const SECS=[["class","האימון הבא","--mes","M4 6h16M4 12h16M4 18h10"],["log","רישום האימון","--ok","M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"],
   ["prog","ההתקדמות שלי","--wk","M3 20h18M6 16l4-5 3 3 5-7"],["hist","האימונים שלי","--warn","M4 5h16v16H4zM4 9h16M9 3v4M15 3v4"]];
@@ -1740,7 +1740,8 @@ async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(
 
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
-const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||(x.date>=addDays(TODAY,-7)&&!(x.until&&x.until<TODAY))||x.id===woSel).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
+const stuId=id=>/^\d{4}-\d\d-\d\d-(powerlab|method|flex|kids|small)$/.test(id),stuReg=x=>(SRC2||[]).some(r=>r.date===x.date&&String(r.key||"").endsWith("-"+x.id.slice(11)));
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||(x.date>=addDays(TODAY,-7)&&!(x.until&&x.until<TODAY))||x.id===woSel).filter(x=>!stuId(x.id)||x.id===woSel||stuReg(x)).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
 const logId=(wid,date)=>`${wid}_${date}`;
 const fixedList=()=>woList().filter(x=>x.fixed);
 /* fixed workouts alternate: the next one is the one done least recently (never done first) */
@@ -3290,18 +3291,18 @@ $("v-prog").addEventListener("click",ev=>{const d=ev.target.closest("[data-pgsd]
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 let pvMemSave=null,pvStLoading=false;
-async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS};MEM=null;MEMS="none";pvStLoading=true;
+async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS,SRC2};MEM=null;MEMS="none";SRC2=[];pvStLoading=true;
   try{if(!CL){const s2=await db.collection("cl").get();CL={};s2.docs.forEach(d=>CL[d.id]=d.data())}
     const em=lowN(c&&c.t&&c.t.email);let aid=Object.keys(CL).find(k=>em&&lowN(CL[k].email)===em);
     if(!aid){const mm=await db.doc(`m/${id}`).get();if(mm.exists)aid=String((mm.data()||{}).aid||"")}
-    if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
+    if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&preview===id)SRC2=v.recent||[];if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
   pvStLoading=false;if(preview===id){applyPause();if(!typing())render()}}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;if(window.pgPreviewLang){let l;try{const t=await db.doc(`t/${id}`).get();if(t.exists)l=(t.data()||{}).lang}catch(e){}pgPreviewLang(l)}preview=id;uid=id;prof=c.prof;pvStudio(id);
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=c.pend?[]:subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(window.pgPreviewEnd)pgPreviewEnd();if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(window.pgPreviewEnd)pgPreviewEnd();if(pvMemSave){({MEM,MEMst,CPV,MEMS,SRC2}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
