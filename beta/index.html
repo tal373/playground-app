@@ -947,7 +947,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .oxk{font-size:12.5px;color:var(--muted)}
 .oxw input{width:100%;font:inherit;font-size:14px;background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;color:var(--ink)}
 #oxList{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
-.oxa{display:flex;align-items:center;gap:10px;background:var(--s1);border-radius:12px;padding:9px 10px;text-align:right;width:100%;color:var(--ink)}
+.oxa{display:flex;align-items:center;gap:10px;background:var(--s1);border-radius:12px;padding:9px 10px;text-align:start;width:100%;color:var(--ink)}
 .oxa span{flex:1;display:flex;flex-direction:column;min-width:0}
 .oxa b{font-size:14px}
 .oxa small{color:var(--muted);font-size:12px}
@@ -2138,6 +2138,7 @@ function grpOf(n,p){n=String(n||"");const k=+p[0]||0,pr=+p[1]||0,c=+p[2]||0,f=+p
   if(FRUITW.test(n))return "fruit";if(k<=50&&!/משקה|חלב|רוטב|מיץ|מרק/.test(n))return "veg";
   if(/ביצה|חלבון ביצה|עדשים|חומוס מבושל|שעועית|אדממה|טופו|אבקת חלבון|חטיף חלבון/.test(n)||pr*4>=k*.4)return "protein";
   if(f*9>=k*.6)return "fat";if(c*4>=k*.5)return "carb";return "other"}
+const EN_=()=>window.pgLang==="en",OXL=(h,e)=>EN_()?e:h;
 const OXC=new WeakMap();
 /* the splitter sometimes wrote totals instead of per-100g: known foods take the database values; for the rest pick the reading that matches the option's calories */
 function oxNorm(it){if(OXC.has(it))return OXC.get(it);const T=it[2]&&+it[2].k||0,xs=it[3].x.filter(a=>a&&a.n&&+a.g>0);
@@ -2160,20 +2161,20 @@ let OXW=null;
 function oxSwapHTML(key,z){const q=(OXW&&OXW.q)||"",base={per:z.a.per,g:z.a.g,grp:z.a.grp},pool=oxPool().filter(F=>F.n!==z.n);
   let list=q.trim()?pool.filter(F=>F.n.includes(q.trim())):pool.filter(F=>F.grp===(z.a.grp||grpOf(z.a.n,z.a.per)));
   list=list.map(F=>oxEquiv(base,F)).filter(Boolean).slice(0,q.trim()?12:10);
-  return `<div class="oxw"><b class="oxk">חלופות ל${esc(z.a.n)} · בכמות ששווה לה</b><input type="search" data-oxq="${key}" placeholder="חפשו מוצר מהמאגר במקום" value="${esc(q)}" autocomplete="off">
+  return `<div class="oxw"><b class="oxk">${OXL(`חלופות ל${esc(z.a.n)} · בכמות ששווה לה`,"Swaps in an equal amount")}</b><input type="search" data-oxq="${key}" placeholder="${OXL("חפשו מוצר מהמאגר במקום","Search the food list")}" value="${esc(q)}" autocomplete="off">
     <div id="oxList">${oxListHTML(key,list,z)}</div></div>`}
-function oxListHTML(key,list,z){return (z.sw?`<button type="button" class="oxa" data-oxr="${key}"><i></i><span><b>${esc(z.a.n)}</b><small>חזרה למקור · ${esc(z.a.qt||ri(z.a.g)+" ג׳")}</small></span></button>`:"")
-  +(list.map(s=>`<button type="button" class="oxa${z.sw&&z.n===s.n?" on":""}" data-oxw="${key}|${esc(s.n)}"><i></i><span><b>${esc(s.n)}</b><small>${esc(s.qt)}${/ג׳$/.test(s.qt)?"":` [${s.g} ג׳]`} · ${ri(s.per[0]*s.g/100)} קק״ל · ${r1(s.per[1]*s.g/100)} ג׳ חלבון</small></span></button>`).join("")||`<div class="hint">לא נמצא במאגר</div>`)}
+function oxListHTML(key,list,z){return (z.sw?`<button type="button" class="oxa" data-oxr="${key}"><i></i><span><b>${esc(z.a.n)}</b><small>${OXL("חזרה למקור · "+(z.a.qt||ri(z.a.g)+" ג׳"),"Back to original · "+ri(z.a.g)+" g")}</small></span></button>`:"")
+  +(list.map(s=>`<button type="button" class="oxa${z.sw&&z.n===s.n?" on":""}" data-oxw="${key}|${esc(s.n)}"><i></i><span><b>${esc(s.n)}</b><small>${OXL(`${esc(s.qt)}${/ג׳$/.test(s.qt)?"":` [${s.g} ג׳]`} · ${ri(s.per[0]*s.g/100)} קק״ל · ${r1(s.per[1]*s.g/100)} ג׳ חלבון`,`${s.g} g · ${ri(s.per[0]*s.g/100)} kcal · ${r1(s.per[1]*s.g/100)} g protein`)}</small></span></button>`).join("")||`<div class="hint">${OXL("לא נמצא במאגר","Nothing found")}</div>`)}
 function oxPanel(gi,ii,it,x){const zs=oxItems(x,gi,ii,it);
-  return `<div class="oxp"><div class="oxh">מה בצלחת <small>· מסמנים מה נאכל, ואפשר להחליף רכיב</small></div>${zs.map(z=>{const key=`${gi}-${ii}-${z.j}`,open=OXW&&OXW.k===key;
-    return `<div class="oxi${z.no?" off":""}"><button type="button" class="oxc" data-oxn="${key}" aria-pressed="${!z.no}" aria-label="נאכל">✓</button>
-      <div class="oxb"><div class="oxt"><b>${esc(z.n)}</b>${z.no?"":`<em>נאכל</em>`}</div><small>${esc(z.qt||oxQt(z.n,z.g))}${z.qt&&/ג׳/.test(z.qt)?"":` [${ri(z.g)} ג׳]`}${z.sw?" · הוחלף":""}</small><small class="oxm">${ri(z.k)} קק״ל · חלבון ${ri(z.p)} · פחמ׳ ${ri(z.c)} · שומן ${ri(z.f)}</small></div>
-      ${z.grp==="other"?"":`<button type="button" class="oxs" data-oxs="${key}" aria-expanded="${!!open}">${open?"סגירה":"החלפה"}</button>`}</div>${open?oxSwapHTML(key,z):""}`}).join("")}</div>`}
+  return `<div class="oxp"><div class="oxh">${OXL("מה בצלחת <small>· מסמנים מה נאכל, ואפשר להחליף רכיב</small>","What's on your plate <small>· tick what you ate, swap any item</small>")}</div>${zs.map(z=>{const key=`${gi}-${ii}-${z.j}`,open=OXW&&OXW.k===key;
+    return `<div class="oxi${z.no?" off":""}"><button type="button" class="oxc" data-oxn="${key}" aria-pressed="${!z.no}" aria-label="${OXL("נאכל","Eaten")}">✓</button>
+      <div class="oxb"><div class="oxt"><b>${esc(z.n)}</b>${z.no?"":`<em>${OXL("נאכל","Eaten")}</em>`}</div><small>${EN_()?ri(z.g)+" g"+(z.sw?" · swapped":""):`${esc(z.qt||oxQt(z.n,z.g))}${z.qt&&/ג׳/.test(z.qt)?"":` [${ri(z.g)} ג׳]`}${z.sw?" · הוחלף":""}`}</small><small class="oxm">${OXL(`${ri(z.k)} קק״ל · חלבון ${ri(z.p)} · פחמ׳ ${ri(z.c)} · שומן ${ri(z.f)}`,`${ri(z.k)} kcal · protein ${ri(z.p)} · carbs ${ri(z.c)} · fat ${ri(z.f)}`)}</small></div>
+      ${z.grp==="other"?"":`<button type="button" class="oxs" data-oxs="${key}" aria-expanded="${!!open}">${open?OXL("סגירה","Close"):OXL("החלפה","Swap")}</button>`}</div>${open?oxSwapHTML(key,z):""}`}).join("")}</div>`}
 function mealTarget(m,x){const sl=(x&&x.sel)||{},t=[];Object.entries(sl).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it))t.push(mNut(it,mOf(x,g,i,it)));else{const f=qOf(x,g,i),ox=oxOf(it);t.push(ox?sumF(ox.map(a=>nut(a.per,a.g*f))):{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}}));
   if(t.length)return sumF(t);const a=((m.groups||[])[0]||{}).items||[],ks=a.filter(it=>it[2]&&it[2].k>0&&!isM(it)).map(it=>it[2]).sort((p,q)=>p.k-q.k);return ks.length?ks[Math.floor(ks.length/2)]:null}
 const MTI={k:["קלוריות","#ff8a7a",'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.6 1 2.5 2 3 0-3 .5-5.5.5-8z"/>'],p:["חלבון","#b7a8ff",'<path d="M15.5 4.5a4 4 0 0 1 0 6l-5 5-3-3 5-5a4 4 0 0 1 3-3zM8 14l-3.5 3.5a1.5 1.5 0 1 0 2 2L10 16"/>'],c:["פחמימה","#8cc2ff",'<path d="M12 21V8M12 8c-2-1-3-3-3-5 2 0 3 1 3 3 0-2 1-3 3-3 0 2-1 4-3 5zM12 13c-2-1-4-1-5-3 2-.5 4 0 5 2 1-2 3-2.5 5-2-1 2-3 2-5 3z"/>'],f:["שומן","#7bd389",'<path d="M12 3c3.5 0 6 4.5 6 9.5A6 6 0 0 1 6 12.5C6 7.5 8.5 3 12 3z"/><circle cx="12" cy="14" r="2.5"/>']};
 function mealTiles(m,x){const T=mealTarget(m,x);if(!T||!(T.k>0))return "";const E=sumF(mealItems(m,x));
-  return `<div class="mt4">${["p","k","f","c"].map(k=>{const [l,c,ic]=MTI[k],e=E[k],t=T[k],fr=t>0?Math.min(1,e/t):0;return `<div style="--c:${c}"><i><svg viewBox="0 0 24 24">${ic}</svg></i><span><small>${l}${k==="k"?"":" · ג׳"}</small><b>${ri(e)}<em>/${ri(t)}</em></b><u><s style="width:${ri(fr*100)}%"></s></u></span></div>`}).join("")}</div>`}
+  return `<div class="mt4">${["p","k","f","c"].map(k=>{const [l,c,ic]=MTI[k],e=E[k],t=T[k],fr=t>0?Math.min(1,e/t):0;return `<div style="--c:${c}"><i><svg viewBox="0 0 24 24">${ic}</svg></i><span><small>${EN_()?{k:"Calories",p:"Protein (g)",c:"Carbs (g)",f:"Fat (g)"}[k]:l+(k==="k"?"":" · ג׳")}</small><b>${ri(e)}<em>/${ri(t)}</em></b><u><s style="width:${ri(fr*100)}%"></s></u></span></div>`}).join("")}</div>`}
 function oxUpd(key,fn){const [g,i,j]=key.split("-").map(Number),m=meals()[sheetMeal];updDay(sel,d=>{const y=d.meals[m.id]||{};y.ix=Object.assign({},y.ix||{});const st=Object.assign({},y.ix[g+"-"+i]||{});fn(st,j,m.groups[g].items[i]);
   if(st.no&&!st.no.length)delete st.no;if(st.sw&&!Object.keys(st.sw).length)delete st.sw;if(Object.keys(st).length)y.ix[g+"-"+i]=st;else delete y.ix[g+"-"+i];if(!Object.keys(y.ix).length)delete y.ix;d.meals[m.id]=y})}
 function oxRedraw(){const sh=$("sheet"),t=sh.scrollTop;drawSheet();sh.scrollTop=t}
@@ -2182,7 +2183,7 @@ $("sheet").addEventListener("click",ev=>{const n=ev.target.closest("[data-oxn]")
   if(s){const k=s.dataset.oxs;OXW=OXW&&OXW.k===k?null:{k,q:""};oxRedraw();return}
   if(r){oxUpd(r.dataset.oxr,(st,j)=>{if(st.sw)delete st.sw[j]});OXW=null;oxRedraw();return}
   if(w){const [key,name]=w.dataset.oxw.split("|"),F=oxPool().find(z=>z.n===name);if(!F)return;
-    oxUpd(key,(st,j,it)=>{const a=oxOf(it)[j],v=oxEquiv({per:a.per,g:a.g,grp:a.grp},F);if(!v)return;st.sw=Object.assign({},st.sw||{},{[j]:v});st.no=(st.no||[]).filter(q=>q!==j)});OXW=null;oxRedraw();toast("הוחלף בכמות שקולה")}},true);
+    oxUpd(key,(st,j,it)=>{const a=oxOf(it)[j],v=oxEquiv({per:a.per,g:a.g,grp:a.grp},F);if(!v)return;st.sw=Object.assign({},st.sw||{},{[j]:v});st.no=(st.no||[]).filter(q=>q!==j)});OXW=null;oxRedraw();toast(OXL("הוחלף בכמות שקולה","Swapped for an equal amount"))}},true);
 $("sheet").addEventListener("input",ev=>{const q=ev.target.closest("[data-oxq]");if(!q||!OXW)return;OXW.q=q.value;const [g,i,j]=q.dataset.oxq.split("-").map(Number),m=meals()[sheetMeal],x=getDay(sel).meals[m.id]||{},z=oxItems(x,g,i,m.groups[g].items[i])[j];
   const base={per:z.a.per,g:z.a.g,grp:z.a.grp},pool=oxPool().filter(F=>F.n!==z.n),s=OXW.q.trim();let list=s?pool.filter(F=>F.n.includes(s)):pool.filter(F=>F.grp===(z.a.grp||grpOf(z.a.n,z.a.per)));
   list=list.map(F=>oxEquiv(base,F)).filter(Boolean).slice(0,s?12:10);$("oxList").innerHTML=oxListHTML(q.dataset.oxq,list,z)});
