@@ -920,6 +920,41 @@ html[dir=ltr] #bfRs{direction:rtl}
 #pMedia .mph img{position:static;width:38%;max-width:170px;height:auto;opacity:.18;object-fit:contain}
 #player.v2 .work>.big{flex:none}
 .xtimer+.big{margin-top:-4px}
+/* menu tab */
+.mzs,.mzm0{background:var(--s1);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.mzs>summary,.mzm0>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.mzs>summary::-webkit-details-marker,.mzm0>summary::-webkit-details-marker,.mzo>summary::-webkit-details-marker{display:none}
+.mzs>summary b{flex:1;font-size:16px}
+.mzs ul{margin:0;padding:0 34px 14px 16px;display:flex;flex-direction:column;gap:6px;font-size:14.5px;line-height:1.45;color:#d5deeb}
+.mzc{flex:none;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:-5px;transition:transform .2s}
+details[open]>summary .mzc{transform:rotate(-135deg);margin-top:5px}
+.mzh{display:flex;flex-direction:column;gap:2px;margin:6px 2px -2px}
+.mzh b{font-family:var(--disp);font-size:26px;font-weight:700;line-height:1}
+.mzh small{font-size:13px;color:var(--muted)}
+.mzt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mzt b{font-size:18px}
+.mzt small{color:var(--muted);font-size:12.5px}
+.mzr,.mzk{flex:none;display:flex;flex-direction:column;align-items:center;line-height:1.05}
+.mzr b,.mzk b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;direction:ltr}
+.mzr small,.mzk small{color:var(--muted);font-size:11px}
+.mzr{background:var(--s2);border-radius:12px;padding:6px 10px}
+.mzl{display:flex;flex-direction:column;gap:6px;padding:0 10px 12px}
+.mzg{color:var(--food);font-size:12.5px;font-weight:700;padding:8px 6px 2px}
+.mzo{background:var(--s2);border-radius:14px}
+.mzo>summary,.mzx{list-style:none;display:flex;align-items:center;gap:12px;padding:11px 12px;cursor:pointer}
+.mzn{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mzn b{font-size:15px;font-weight:700}
+.mzn small{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mzo[open] .mzn small{display:none}
+.mzk{min-width:46px}
+.mzb{padding:0 12px 12px;display:flex;flex-direction:column;gap:2px}
+.mzb p{margin:0;color:#d5deeb;font-size:14px;line-height:1.5}
+.mzi{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.mzi small{color:var(--muted);font-size:13px;white-space:nowrap}
+.mzm{display:flex;gap:6px;margin-top:8px}
+.mzm span{flex:1;background:var(--s1);border-radius:10px;padding:6px;text-align:center;font-size:11.5px;color:var(--muted)}
+.mzm b{display:block;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.mzno{background:var(--s2);border-radius:14px;padding:10px 12px;font-size:13.5px;line-height:1.45;color:#d5deeb}
 .mt4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 6px}
 .mt4>div{display:flex;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--line);border-radius:14px;padding:10px}
 .mt4 i{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 20%,transparent);flex:none}
@@ -2521,6 +2556,18 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
     next()};wireNav()}
 
 /* ===== MENU ===== */
+/* menu tab: meals fold open one at a time, each option is one clean row that opens to its ingredients */
+const mzSec=(h,lines)=>`<details class="mzs"><summary><b>${esc(h)}</b><i class="mzc"></i></summary><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;
+function mzOpt(it){if(!it)return "";const n=it[2]&&it[2].k>0&&!isM(it)?it[2]:null,ox=oxOf(it),sub=ox?ox.map(a=>a.n).join(" · "):(it[1]||"");
+  return `<details class="mzo"><summary><span class="mzn"><b>${esc(it[0])}</b>${sub?`<small>${esc(sub)}</small>`:""}</span>${n?`<span class="mzk"><b>${ri(n.k)}</b><small>${OXL("קק״ל","kcal")}</small></span>`:""}</summary>
+    <div class="mzb">${ox?ox.map(a=>`<div class="mzi"><span>${esc(a.n)}</span><small>${EN_()?ri(a.g)+" g":esc(a.qt||ri(a.g)+" ג׳")}</small></div>`).join(""):`<p>${esc(it[1]||"")}</p>`}
+    ${n?`<div class="mzm"><span><b>${ri(n.p)}</b>${OXL("חלבון","protein")}</span><span><b>${ri(n.c)}</b>${OXL("פחמימה","carbs")}</span><span><b>${ri(n.f)}</b>${OXL("שומן","fat")}</span></div>`:""}</div></details>`}
+function mzMeal(m,mi){const its=(m.groups||[]).flatMap(g=>g.items||[]),ks=its.filter(it=>it[2]&&it[2].k>0&&!isM(it)).map(it=>Math.round(it[2].k)),lo=Math.min(...ks),hi=Math.max(...ks),cnt=its.length;
+  const rng=ks.length?(lo===hi?`${lo}`:`${lo}–${hi}`):"";
+  return `<details class="mzm0"${mi===0?" open":""}><summary><span class="mzt"><b>${esc(m.t)}</b><small>${m.k?esc(m.k)+" · ":""}${OXL(cnt+" אפשרויות",cnt+" options")}</small></span>${rng?`<span class="mzr"><b>${rng}</b><small>${OXL("קק״ל","kcal")}</small></span>`:""}<i class="mzc"></i></summary>
+    <div class="mzl">${(m.groups||[]).map(g=>`${g.h?`<div class="mzg">${esc(g.h)}</div>`:""}${(g.items||[]).map(mzOpt).join("")}`).join("")}
+    ${isMixMeal(m)&&recList().length?`<div class="mzg">${OXL("המתכונים שלי","My recipes")}</div>${recList().map(([,r])=>`<div class="mzo mzx"><span class="mzn"><b>${esc(r.name)}</b><small>${EN_()?"about "+mixGrams(r,m)+" g":"כ-"+mixGrams(r,m)+" ג׳"}</small></span><span class="mzk"><b>${ri(nut(recPer100(r),mixGrams(r,m)).k)}</b><small>${OXL("קק״ל","kcal")}</small></span></div>`).join("")}`:""}
+    ${m.note?`<div class="mzno">${esc(m.note)}</div>`:""}</div></details>`}
 function renderMenu(){const mn=prof.menu;
   if(!mn){$("v-menu").innerHTML=`<div class="sh"><h2>התפריט</h2></div><div class="card"><div class="empty">בתכנית שלך אין כרגע תפריט</div></div>`;return}
   const li=a=>a.map(([t,d])=>`<li>${esc(t)}${d?` <small>· ${esc(d)}</small>`:""}</li>`).join("");
@@ -2528,9 +2575,10 @@ function renderMenu(){const mn=prof.menu;
   ${isPaused()?`<div class="card pausebn"><b>החשבון שלך בהשהיה</b><span>אפשר לצפות בתפריט. לחידוש הליווי המלא, דברו עם טל.</span></div>`:""}
   ${meals().some(isMixMeal)&&!isPaused()?`<button class="card recbtn" type="button" id="menuRec"><b>מפענח מתכונים</b><small>כותבים מתכון במילים, מקבלים קלוריות, חלבון וכמה לאכול בצהריים ובערב</small></button>`:""}
   ${(mn.goals||[]).length?`<div class="goal">${mn.goals.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join("")}</div>`:""}
-  ${(mn.intro||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
-  ${mn.meals.map(m=>`<div class="msec"><h3>${esc(m.t)}</h3><span class="k">${esc(m.k||"")}</span>${(m.groups||[]).map(g=>`${g.h?`<h4>${esc(g.h)}</h4>`:""}<ul>${li(g.items)}</ul>`).join("")}${isMixMeal(m)&&recList().length?`<h4>המתכונים שלי</h4><ul>${recList().map(([,r])=>`<li>${esc(r.name)} <small>· כ-${mixGrams(r,m)} ג׳ · ${ri(nut(recPer100(r),mixGrams(r,m)).k)} קק״ל</small></li>`).join("")}</ul>`:""}${m.note?`<h4>שימו לב</h4><ul><li>${esc(m.note)}</li></ul>`:""}</div>`).join("")}
-  ${(mn.rules||[]).map(([h,lines])=>`<div class="msec"><h3>${esc(h)}</h3><ul>${lines.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}`;
+  ${(mn.intro||[]).map(([h,lines])=>mzSec(h,lines)).join("")}
+  <div class="mzh"><b>${OXL("הארוחות","Meals")}</b><small>${OXL("לוחצים על ארוחה כדי לראות את האפשרויות","Tap a meal to see its options")}</small></div>
+  ${mn.meals.map((m,mi)=>mzMeal(m,mi)).join("")}
+  ${(mn.rules||[]).map(([h,lines])=>mzSec(h,lines)).join("")}`;
   const mr=$("menuRec");if(mr)mr.onclick=()=>{const i=meals().findIndex(isMixMeal);sheetMeal=i;SV={type:"rec",rec:{name:"",items:[],cooked:""}};drawFood();$("scrim").classList.add("open");$("sheet").classList.add("open");$("sheet").scrollTop=0}}
 
 /* ===== MEASURES ===== */
