@@ -921,6 +921,17 @@ html[dir=ltr] #bfRs{direction:rtl}
 #player.v2 .work>.big{flex:none}
 .xtimer+.big{margin-top:-4px}
 /* menu tab */
+.dcl{display:flex;flex-direction:column;gap:10px}
+.dclh{display:flex;justify-content:space-between;align-items:baseline}
+.dclh b{font-size:17px}.dclh small{color:var(--muted)}
+.dclg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dclg div{background:var(--s2);border-radius:14px;padding:10px 12px}
+.dclg small{display:block;color:var(--muted);font-size:12px}
+.dclg b{font-size:20px;font-variant-numeric:tabular-nums}.dclg em{font-style:normal;color:var(--muted);font-size:14px;font-weight:600}
+.dclm small{color:var(--muted);font-size:12.5px}
+.dclm div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.dclm button{background:var(--s2);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600}
+.dcln{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
 .xab{display:flex;flex-direction:column;gap:10px;margin-top:8px;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px}
 .xab:has(> .xrun){background:none;border:0;padding:0}
 .xab .xrun{width:100%}
@@ -1984,8 +1995,19 @@ function renderToday(){setTimeout(sweepOther,1200);const day=getDay(sel),rq=reqM
   ${meals().length?`<div class="sh"><h2>ארוחות</h2><span>לחיצה לבחירה</span></div>
   ${meals().map((m,i)=>{const Lb=mealLabel(day,m),done=mealDone(day,m),pic=photos[sel+"-"+m.id];
     return `<button class="meal ${done?"done":""}" type="button" data-meal="${i}">${pic?`<img class="th" src="${pic}" alt="">`:`<span class="ic"><svg viewBox="0 0 24 24">${IC[m.icon||"food"]}</svg></span>`}<span class="tx"><b>${esc(m.t)}</b>${Lb?`<em class="${Lb.other?"other":""}">${Lb.other?"אכלתי: ":""}${esc(Lb.t)}${(()=>{const y=(day.meals||{})[m.id];return y&&y.xa&&y.x&&y.xa.t===String(y.x).trim()&&y.xa.k>0?` · כ-${ri(y.xa.k)} קק״ל`:""})()}</em>`:`<small>${esc(m.k||"")}</small>`}</span><span class="st">${CHK}</span></button>`}).join("")}`:""}
+  ${meals().length?dayClose(day,rq):""}
   ${hs.length?`<div class="sh"><h2>${esc(prof.habitsTitle||"הרגלים")}</h2><span>${fmt(sel)}</span></div><div class="card">${hs.map(x=>habitHTML(x,day)).join("")}</div>`:""}
   <div class="card"><b>הערה לטל</b><textarea id="note" rows="3" placeholder="איך היה היום? משהו שטל צריך לדעת">${esc(day.note)}</textarea></div>`}`}
+/* close the day: the count against the target, what is missing, and how much of it is an estimate */
+function dayClose(day,rq){const late=sel<TODAY||new Date().getHours()>=19;if(!late&&!day.closed)return "";
+  const t=dayTot(day),kt=prof.menu&&prof.menu.kcal,pt=prof.menu&&prof.menu.protein,miss=rq.filter(m=>!mealDone(day,m)),q=dayQual(day);
+  return `<div class="card dcl"><div class="dclh"><b>${day.closed?"✓ היום נסגר":"סגירת היום"}</b><small>${fmt(sel)}</small></div>
+  <div class="dclg"><div><small>קלוריות</small><b>${ri(t.k).toLocaleString("he-IL")}${kt?`<em> / ${kt.toLocaleString("he-IL")}</em>`:""}</b></div><div><small>חלבון · ג׳</small><b>${ri(t.p)}${pt?`<em> / ${pt}</em>`:""}</b></div></div>
+  ${miss.length&&!day.closed?`<div class="dclm"><small>עוד לא סומן · מה שלא מסומן לא נספר</small><div>${miss.map(m=>`<button type="button" data-meal="${meals().indexOf(m)}">${esc(m.t)}</button>`).join("")}</div></div>`:""}
+  ${q.photoOnly?`<p class="dcln">${q.photoOnly===1?"ארוחה אחת עם תמונה עוד לא חושבה":`${q.photoOnly} ארוחות עם תמונה עוד לא חושבו`} · פותחים אותה ולוחצים "לחשב לפי התמונה"</p>`:""}
+  ${q.est>0?`<p class="dcln">${q.exact}% מהספירה לפי התפריט · השאר הערכה מטקסט או תמונה</p>`:""}
+  ${day.closed?"":`<button type="button" class="cta" data-dclose="1">סגירת היום</button>`}</div>`}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-dclose]");if(!b)return;updDay(sel,d=>{d.closed=true});toast("היום נסגר. תודה!");render()});
 function habitHTML(x,day){const v=day.h[x.id];
   if(x.type==="toggle")return `<button class="tog" type="button" data-h="${x.id}" aria-pressed="${!!v}"><span class="bx">${CHK}</span><span>${esc(x.t)}${x.d?`<small>${esc(x.d)}</small>`:""}</span></button>`;
   if(x.type==="cups"){const n=v||0;return `<div class="row" style="justify-content:space-between"><b>${esc(x.t)}</b><b style="color:var(--mes)">${x.liters?Lit(n)+" ליטר":n+" "+(x.unit||"")}</b></div>
@@ -2078,25 +2100,26 @@ const mLine=(it,s)=>{const t=mNut(it,s),u=mUnit(it,s);return `${u[1]===1?"":ri(m
 const mSel=(gi,ii,it,x)=>{const s=mOf(x,gi,ii,it),us=unitsFor(it[2].fn||it[0]);
   return `<div class="qrow mrow"><input type="number" inputmode="decimal" step="0.25" min="0" data-ma="${gi}-${ii}" value="${s.a}" aria-label="כמה"><select data-mu="${gi}-${ii}" aria-label="איך מודדים">${us.map(z=>`<option value="${z[0]}"${z[0]===mUnit(it,s)[0]?" selected":""}>${z[0]}</option>`).join("")}</select><small data-mt="${gi}-${ii}">${mLine(it,s)}</small></div>`};
 const qSel=(gi,ii,it,x)=>{if(isM(it))return mSel(gi,ii,it,x);const v=qOf(x,gi,ii),n=it[2];return `<div class="qrow"><span>כמות</span><select data-q="${gi}-${ii}" aria-label="כמות">${QS.map(([q,t])=>`<option value="${q}"${q===v?" selected":""}>${t}</option>`).join("")}</select>${n&&v!==1?`<small>כ-${ri(n.k*v)} קק״ל · ${ri(n.p*v)} ג׳ חלבון</small>`:""}</div>`};
-function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];const xa=x.xa&&x.x&&x.xa.t===String(x.x).trim()?x.xa:null,v2=xa&&xa.v===2;if(xa&&(v2?xa.mode!=="note":xa.k>0))o.push(xa);if(v2&&xa.mode==="full")return o;Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it)){o.push(mNut(it,mOf(x,g,i,it)));return}const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
+function mealItems(m,x){if(!x)return [];const o=[...(x.food||[])];const xa=x.xa&&x.xa.t===String(x.x||"").trim()&&(x.xa.t||x.xa.ph)?x.xa:null,v2=xa&&xa.v===2;if(xa&&(v2?xa.mode!=="note":xa.k>0))o.push(xa);if(v2&&xa.mode==="full")return o;Object.entries(x.sel||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(it&&it[2]){if(isM(it)){o.push(mNut(it,mOf(x,g,i,it)));return}const f=qOf(x,g,i);o.push(f===1?it[2]:{k:it[2].k*f,p:it[2].p*f,c:it[2].c*f,f:it[2].f*f})}}));return o}
 /* free-text "I ate something else": estimate nutrition so it counts in the day total */
 const XA_BUSY=new Set();
 function xaPicked(m,x){const o=[];Object.entries((x&&x.sel)||{}).forEach(([g,v])=>selIdx(v).forEach(i=>{const it=m.groups&&m.groups[g]&&m.groups[g].items[i];if(!it)return;let n=null,q=1;
   if(isM(it))n=mNut(it,mOf(x,g,i,it));else if(it[2]){q=qOf(x,g,i);n={k:it[2].k*q,p:it[2].p*q,c:it[2].c*q,f:it[2].f*q}}o.push(Object.assign({t:it[0],d:it[1]||"",q},n?{k:ri(n.k),p:ri(n.p),c:ri(n.c),f:ri(n.f)}:{}))}));return o}
 const xaSig=(m,x)=>xaPicked(m,x).map(o=>o.t+"×"+o.q).join("|");
-const xaOk=(m,y,t)=>!!(y&&y.xa&&y.xa.v===2&&y.xa.t===t&&y.xa.pk===xaSig(m,y));
+const xaPh=(k,mid,y)=>!(y&&y.ph)?0:photos[k+"-"+mid]?photos[k+"-"+mid].length:-1;
+const xaOk=(m,y,t,k=sel)=>{if(!(y&&y.xa&&y.xa.v===2&&y.xa.t===t&&y.xa.pk===xaSig(m,y)))return false;const ph=xaPh(k,m.id,y);return ph===-1?(y.xa.ph||0)>0:(y.xa.ph||0)===ph};
 let XAA={};
 async function analyzeOther(k,mid,ans){const key=k+"|"+mid;if(XA_BUSY.has(key))return;const m=meals().find(z=>z.id===mid);if(!m||!window.pgAI||!pgAI.mealCheck)return;
-  const y=((days[k]||{}).meals||{})[mid];const t=y&&String(y.x||"").trim();if(!t||(!ans&&xaOk(m,y,t)))return;const pk=xaSig(m,y),here=()=>sheetMeal!==null&&meals()[sheetMeal]===m&&sel===k;
+  const y=((days[k]||{}).meals||{})[mid];const t=y?String(y.x||"").trim():"",ph=xaPh(k,mid,y);if((!t&&!ph)||ph===-1||(!ans&&xaOk(m,y,t,k)))return;const pk=xaSig(m,y),here=()=>sheetMeal!==null&&meals()[sheetMeal]===m&&sel===k;
   XA_BUSY.add(key);if(here())xaDraw();
-  try{const r=await pgAI.mealCheck({meal:m.t,text:t,picked:xaPicked(m,y),answers:ans||[]});
-    const cur=((days[k]||{}).meals||{})[mid];if(!r||!cur||String(cur.x||"").trim()!==t)return;
-    updDay(k,d=>{const z=d.meals[mid]||{};z.xa={t,v:2,pk,mode:r.mode,k:r.k,p:r.p,c:r.c,f:r.f,items:r.items||[],ask:r.ask||[],ans:ans||[],say:r.say||"",ok:false};d.meals[mid]=z})}
+  try{const body={meal:m.t,text:t,picked:xaPicked(m,y),answers:ans||[]};if(ph>0)body.img=photos[k+"-"+mid];let r=await pgAI.mealCheck(body);if(!r){await new Promise(z=>setTimeout(z,1500));r=await pgAI.mealCheck(body)}
+    const cur=((days[k]||{}).meals||{})[mid];if(!r){if(here())toast(OXL("לא הצלחנו לחשב כרגע, אפשר לנסות שוב","Couldn't count it right now, try again"));return}if(!cur||String(cur.x||"").trim()!==t||xaPh(k,mid,cur)!==ph)return;
+    updDay(k,d=>{const z=d.meals[mid]||{};z.xa={t,v:2,pk,ph,mode:r.mode,k:r.k,p:r.p,c:r.c,f:r.f,items:r.items||[],ask:r.ask||[],ans:ans||[],say:r.say||"",ok:false};d.meals[mid]=z})}
   catch(e){}finally{XA_BUSY.delete(key);if(here())xaDraw();else if(!typing())render()}}
 /* the box under "I ate something else": short questions with tap answers, then what was counted, then confirm */
-function xaBox(m,x){const t=String((x&&x.x)||"").trim();if(!t)return `<div id="xaBox"></div>`;const a=xaOk(m,x,t)?x.xa:null;
+function xaBox(m,x){const t=String((x&&x.x)||"").trim(),ph=xaPh(sel,m.id,x);if(!t&&ph<=0)return `<div id="xaBox"></div>`;const a=xaOk(m,x,t)?x.xa:null;
   if(XA_BUSY.has(sel+"|"+m.id))return `<div id="xaBox" class="xab"><div class="xaw"><i class="xsp"></i>${OXL("מחשב את מה שכתבת…","Working it out…")}</div></div>`;
-  if(!a)return `<div id="xaBox" class="xab"><button type="button" class="ghost xrun" data-xa="run">${OXL("לחשב את מה שכתבתי","Count what I wrote")}</button></div>`;
+  if(!a)return `<div id="xaBox" class="xab"><button type="button" class="ghost xrun" data-xa="run">${t?OXL("לחשב את מה שכתבתי","Count what I wrote"):OXL("לחשב לפי התמונה","Count it from the photo")}</button></div>`;
   const sg=v=>{const r=ri(v);return r>0?"+"+r:r<0?"−"+(-r):"0"};
   const head=a.mode==="note"?OXL("נשמר כהערה · לא משנה את הספירה","Saved as a note · the count stays the same"):a.mode==="full"?OXL(`${xaPicked(m,x).length?"נספר במקום האפשרות":"נספר לארוחה הזו"}: ${ri(a.k)} קק״ל · ${ri(a.p)} ג׳ חלבון`,`Counted for this meal: ${ri(a.k)} kcal · ${ri(a.p)} g protein`):OXL(`שינוי מהאפשרות: ${sg(a.k)} קק״ל · ${sg(a.p)} ג׳ חלבון`,`Change from the option: ${sg(a.k)} kcal · ${sg(a.p)} g protein`);
   const its=(a.items||[]).map(i=>`<li><span>${i.rm?"−":"+"} ${esc(i.n)}</span><small>${ri(i.g)} ${OXL("ג׳","g")}</small></li>`).join("");
@@ -2110,11 +2133,16 @@ $("sheet").addEventListener("click",ev=>{const b=ev.target.closest("[data-xa],[d
   if(b.dataset.xaq){const [qi,oi]=b.dataset.xaq.split("|").map(Number);XAA[qi]=oi;const q=(a&&a.ask)||[];
     if(q.length&&q.every((_,i)=>XAA[i]!=null)){const ans=q.map((z,i)=>({q:z.q,a:z.o[XAA[i]]}));XAA={};analyzeOther(sel,m.id,ans)}else xaDraw();return}
   const v=b.dataset.xa;XAA={};
-  if(v==="run")analyzeOther(sel,m.id,(a&&a.t===String(x.x||"").trim()&&a.ans&&a.ans.length)?a.ans:null);
+  if(v==="run")analyzeOther(sel,m.id,(a&&a.t===String(x.x||"").trim()&&a.ans&&a.ans.length)?a.ans:[]);
   else if(v==="food")analyzeOther(sel,m.id,[{q:"האם מה שכתבתי הוא אוכל שאכלתי בארוחה?",a:"כן, לספור אותו"}]);
   else if(v==="ok"){updDay(sel,d=>{const z=d.meals[m.id];if(z&&z.xa)z.xa=Object.assign({},z.xa,{ok:true})});xaDraw()}
   else if(v==="note"){updDay(sel,d=>{const z=d.meals[m.id];if(z&&z.xa)z.xa=Object.assign({},z.xa,{mode:"note",k:0,p:0,c:0,f:0,items:[],ask:[],ok:true})});xaDraw()}},true);
-function sweepOther(){if(preview||typing()||!prof)return;for(let i=0;i<7;i++){const k=addDays(TODAY,-i),d=days[k];if(!d||!d.meals)continue;Object.entries(d.meals).forEach(([mid,y])=>{const t=y&&String(y.x||"").trim();if(t&&!(y.xa&&y.xa.t===t))analyzeOther(k,mid)})}}
+let SWEEP=false;
+async function sweepOther(){if(SWEEP||preview||typing()||!prof)return;SWEEP=true;let n=0;try{for(let i=0;i<7&&n<8;i++){const k=addDays(TODAY,-i),d=days[k];if(!d||!d.meals)continue;
+  for(const [mid,y] of Object.entries(d.meals)){const m=meals().find(z=>z.id===mid),t=y?String(y.x||"").trim():"";if(!m||!y||(!t&&xaPh(k,mid,y)<=0)||xaOk(m,y,t,k))continue;if(++n>8)break;await analyzeOther(k,mid)}}}finally{SWEEP=false}}
+function dayQual(d,ms){let tot=0,est=0,photoOnly=0;(ms||meals()).forEach(m=>{const x=(d.meals||{})[m.id];if(!x)return;const it=mealItems(m,x);it.forEach(z=>{const v=Math.abs(+z.k||0);tot+=v;if(z===x.xa)est+=v});
+  const sl=x.sel&&Object.keys(x.sel).length,t=String(x.x||"").trim();if(x.ph&&!sl&&!(x.food||[]).length&&!(x.xa&&x.xa.v===2&&x.xa.ph&&x.xa.t===t))photoOnly++});
+  return {exact:tot>0?Math.round((1-est/tot)*100):100,est,photoOnly}}
 const dayTot=(d,ms)=>sumF((ms||meals()).flatMap(m=>mealItems(m,(d.meals||{})[m.id])));
 const macroLine=t=>`${ri(t.k).toLocaleString("he-IL")} קק״ל · ${ri(t.p)} ג׳ חלבון · ${ri(t.c)} ג׳ פחמימה · ${ri(t.f)} ג׳ שומן`;
 function recPer100(r){const t=sumF(r.items||[]),w=+r.cooked||(r.items||[]).reduce((s,x)=>s+(+x.g||0),0)||1;return [t.k*100/w,t.p*100/w,t.c*100/w,t.f*100/w]}
@@ -2277,7 +2305,7 @@ async function shrink(file){const url=URL.createObjectURL(file);
   URL.revokeObjectURL(url);return out}
 async function handlePhoto(f,mid){if(!f)return;toast("מעלה את הצילום…");
   try{const img=await shrink(f),k=sel+"-"+mid;photos[k]=img;updDay(sel,x=>{const y=x.meals[mid]||{};y.ph=true;x.meals[mid]=y});
-    saveDoc(tp("photos",k),{d:sel,m:mid,img});drawSheet()}catch(e){toast("לא הצלחתי לקרוא את התמונה")}}
+    saveDoc(tp("photos",k),{d:sel,m:mid,img});drawSheet();analyzeOther(sel,mid)}catch(e){toast("לא הצלחתי לקרוא את התמונה")}}
 
 /* ===== WORKOUT ===== */
 function lastLog(wid,before){const ks=Object.keys(wlog).filter(k=>k.startsWith(wid+"_")&&k.slice(wid.length+1)<before).sort();return ks.length?wlog[ks[ks.length-1]]:null}
@@ -2785,7 +2813,7 @@ function renderCoachDetail(id){const c=C[id],a=analyze(id),p=a.p,wk=weekStart(TO
     if((!d||!hasData(c.days[k]))&&!wl.length)return `<tr><td>${fmt(k)}</td><td colspan="4" style="color:var(--dim)">לא דווח</td></tr>`;
     const mc=d&&a.ms.length?mealsCount(d,a.ms):0,col=mc===a.ms.length?"var(--ok)":mc>=a.ms.length/2?"var(--warn)":"var(--bad)";
     const hsum=d?a.hs.map(h=>{const v=d.h[h.id];if(v==null||v===""||v===false||(Array.isArray(v)&&!v.length)||v===0)return "";return `${h.short||h.t}: ${hv(h,v)}`}).filter(Boolean).join(" · "):"";
-    return `<tr><td>${fmt(k)}</td><td>${a.ms.length?`<span class="dot" style="background:${col}"></span> ${mc}/${a.ms.length}`:"—"}${(()=>{const tt=d?dayTot(d,(p.menu&&p.menu.meals)||[]):null;return tt&&tt.k>0?`<br><small>${ri(tt.k)} קק״ל · ${ri(tt.p)} ח׳</small>`:""})()}</td><td>${wl.map(l=>l.done?`✓ ${FEEL[l.feel]||""}`:"חלקי").join(", ")||"—"}</td><td style="white-space:normal;min-width:180px;text-align:right">${esc(hsum)||"—"}</td><td>${d&&d.note&&d.note.trim()?"✎":""}</td></tr>`}).join("");
+    return `<tr><td>${fmt(k)}</td><td>${a.ms.length?`<span class="dot" style="background:${col}"></span> ${mc}/${a.ms.length}`:"—"}${(()=>{const tt=d?dayTot(d,(p.menu&&p.menu.meals)||[]):null;const q=d?dayQual(d,(p.menu&&p.menu.meals)||[]):null;return (tt&&tt.k>0?`<br><small>${ri(tt.k)} קק״ל · ${ri(tt.p)} ח׳${q&&q.est>0?` · ${q.exact}% מהתפריט`:""}</small>`:"")+(q&&q.photoOnly?`<br><small style="color:var(--warn)">${q.photoOnly} תמונות בלי מספר</small>`:"")+(d&&d.closed?`<br><small style="color:var(--ok)">✓ נסגר</small>`:"")})()}</td><td>${wl.map(l=>l.done?`✓ ${FEEL[l.feel]||""}`:"חלקי").join(", ")||"—"}</td><td style="white-space:normal;min-width:180px;text-align:right">${esc(hsum)||"—"}</td><td>${d&&d.note&&d.note.trim()?"✎":""}</td></tr>`}).join("");
   const feed=[];[...Array(14)].map((_,i)=>addDays(TODAY,-i)).forEach(k=>{const d=D(k);if(!d)return;
     a.ms.concat(((p.menu&&p.menu.meals)||[]).filter(m=>m.optional)).forEach(m=>{const x=d.meals[m.id];if(x&&x.x&&x.x.trim())feed.push(`<div><em>${fmt(k)} · ${esc(m.t)} · משהו אחר</em>${esc(x.x)}</div>`)});
     if(d.note&&d.note.trim())feed.push(`<div><em>${fmt(k)} · הערה</em>${esc(d.note)}</div>`)});
