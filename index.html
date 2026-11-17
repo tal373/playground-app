@@ -2136,9 +2136,9 @@ const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
 const mss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+pad(s%60)};
 const secOf=(m,s)=>(+m)*60+(+s);
 function restOf(b){const F=b.format||"";let m=F.match(/Rest\s*(\d+):(\d{2})/i);if(m)return secOf(m[1],m[2]);m=F.match(/מנוחה\s*(\d+)\s*שנ/);if(m)return +m[1];m=F.match(/מנוחה\s*(\d+):(\d{2})/);if(m)return secOf(m[1],m[2]);return Math.max(0,+b.rest||0)}
-function holdOf(it){const r=String(it.reps||"");if(/סבב|צעד|חזר|נשימ|כיוון|\+|\/|\|/.test(r))return null;let m=r.match(/^\s*(\d+)\s*(?:[-–]\s*\d+\s*)?שנ/),sec=m?+m[1]:null;if(sec==null){m=r.match(/^\s*(\d+):(\d{2})/);if(m)sec=secOf(m[1],m[2])}
+function holdOf(it){const r0=String(it.reps||""),pm=r0.match(/^\s*(\d+(?:\s*[-–]\s*\d+)?\s*שנ[׳']?|\d+:\d{2})\s*\+\s*(.+)$/),r=pm?pm[1]:r0;if(/סבב|צעד|חזר|נשימ|כיוון|\+|\/|\|/.test(r))return null;let m=r.match(/^\s*(\d+)\s*(?:[-–]\s*\d+\s*)?שנ/),sec=m?+m[1]:null;if(sec==null){m=r.match(/^\s*(\d+):(\d{2})/);if(m)sec=secOf(m[1],m[2])}
   if(sec==null){m=r.match(/^\s*(\d+)?\s*דק/);if(m)sec=60*(+(m[1]||1))}
-  if(!sec||sec>300)return null;const t=r.match(/[×x]\s*(\d+)/);return {sec,sides:/לכל צד|לצד|לכל רגל|לרגל|\(Each\)|\beach\b/i.test(r),times:t?+t[1]:1}}
+  if(!sec||sec>300)return null;const t=r.match(/[×x]\s*(\d+)/);return {sec,sides:/לכל צד|לצד|לכל רגל|לרגל|\(Each\)|\beach\b/i.test(r0),times:t?+t[1]:1,after:pm?pm[2].trim():""}}
 const fmtRounds=F=>{const m=F.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*(?:Rounds?|סבבים)/i);return m?+m[1]:/סבב אחד/.test(F)?1:0};
 function blockPlan(b,bi,idx){const F=b.format||"",fr=fmtRounds(F)||1,its=idx.map(ii=>{const it=b.items[ii];return {ii,it:it.sets?it:Object.assign({},it,{sets:fr})}}),R=restOf(b),seg=[],nS=Math.max(1,...its.map(x=>x.it.sets||0));
   const mk=(x,s,o)=>Object.assign({bi,ii:x.ii,s,b,it:x.it},o||{});let m;
@@ -2210,7 +2210,7 @@ function nextCard(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"
   return `<div class="pnx">${th?`<img src="${th}" alt="">`:""}<div><small>הבא בתור${n.bi!==PL.segs[PL.i].bi?" · "+esc(n.b.name):""}</small><b>${esc(n.it.n)}${n.side?" · "+n.side:""}</b><small>${esc(repTxt(n.it.reps||""))}${pv!=null?` · בפעם הקודמת ${pv} ק״ג`:""}</small></div></div>`}
 function nextLabel(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft");if(!n)return "סוף האימון";if(n.kind==="amrap"||n.kind==="ft")return "הבא: "+n.b.name;return `הבא: ${n.it.n}${n.side?" · "+n.side:""}${n.bi!==PL.segs[PL.i].bi?" · "+n.b.name:""}`}
 function clock(sec,onEnd,draw,up){const t0=Date.now();let last=-1,paused=0,pAt=0;const st={get left(){return sec-((pAt||Date.now())-t0-paused)/1000},pause(){if(pAt){paused+=Date.now()-pAt;pAt=0}else pAt=Date.now()},get paused(){return !!pAt},add(s){sec+=s}};
-  const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0)beep(660)}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
+  const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0){beep(660);if(!up&&sec>=5)say(String(c))}}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
 function ring(id,lbl,big){return `<div class="rring"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="${id}B" cx="100" cy="100" r="90" style="stroke-dasharray:${RRC}"/></svg><div class="in"><b id="${id}S">${big||""}</b>${lbl?`<small>${lbl}</small>`:""}</div></div>`}
 function drawRing(id,v,frac){const s=$(id+"S"),b=$(id+"B");if(s)s.textContent=v;if(b)b.style.strokeDashoffset=RRC*(1-Math.max(0,Math.min(1,frac)))}
 const vidFrame=id=>`<div class="pframe"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="video"></iframe></div>`;
@@ -2220,7 +2220,7 @@ const repTxt=r=>{r=String(r||"");return r+(/^[\d\s\-–]+$/.test(r)?" חזרות
 function navHTML(){return `<div class="pnav"><button type="button" id="pPrev" ${PL.i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`}
 function wireNav(){$("pPrev").onclick=()=>{clearInterval(timer);if(PL.i>0){PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}};$("pNext").onclick=()=>next()}
 function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";{const ex=segs.filter(x=>x.it),k=segs.slice(0,i+1).filter(x=>x.it).length;if($("pCt"))$("pCt").textContent=ex.length?`${Math.max(1,k)}/${ex.length}`:""}$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
-  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();if(g.sec>=8)say("מנוחה");const full=g.sec;const c=clock(g.sec,()=>{say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
+  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();say(g.sec>=8?"מנוחה, "+Math.round(g.sec)+" שניות":"מנוחה");const full=g.sec;const c=clock(g.sec,()=>{const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="hold")say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
     $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
   if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
     PL.am=0;PL.rl=[];clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
@@ -2241,10 +2241,16 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
   const wireKg=()=>W.querySelectorAll("[data-kgd]").forEach(b=>b.onclick=()=>{const i=$("pKg"),v=parseFloat(i.value)||0,st=v>=20?2.5:1;i.value=Math.max(0,Math.round((v+st*(+b.dataset.kgd))*10)/10)});
   if(g.kind==="work"){say(g.side||"עבודה");W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
-  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
-    const run=()=>{const kg=$("pKg")?$("pKg").value:undefined;$("pH").innerHTML=ring("pR",(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:""));$("pDone").hidden=true;
-      clock(h.sec,()=>{if(h.sides&&!side){side=1;beep(990,.2);run();return}if(--rpt>0){side=0;beep(990,.2);run();return}markSet(g,kg);next()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
-    $("pDone").onclick=run;wireKg();wireNav();return}
+  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times,kgV;const pv0=PL.segs[PL.i-1],aft=/^\d+$/.test(h.after)&&/\+/.test(g.it.n)?h.after+" "+g.it.n.split("+").pop().trim():h.after;
+    W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`${kgBox?`<div class="meter">${kgBox}</div>`:""}<div id="pH"></div><button class="big" type="button" id="pDone">מתחילים עכשיו</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+    const lbl=()=>(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:"");
+    const prep=(sec,txt,then)=>{const b=$("pDone");b.hidden=false;b.textContent="מתחילים עכשיו";b.onclick=then;$("pH").innerHTML=ring("pR",txt);clock(sec,then,(v)=>drawRing("pR",Math.ceil(v),v/sec))};
+    const fin=()=>{markSet(g,kgV);next()};
+    const run=()=>{if(kgV===undefined)kgV=$("pKg")?$("pKg").value:undefined;$("pDone").hidden=true;say(h.sides?(side?"צד ימין, מתחילים":"צד שמאל, מתחילים"):"מתחילים");$("pH").innerHTML=ring("pR",lbl());
+      clock(h.sec,()=>{if(h.sides&&!side){side=1;say("מחליפים צד");prep(5,"מחליפים צד",run);return}if(--rpt>0){side=0;say("מתכוננים");prep(5,"מתכוננים",run);return}
+        if(aft){say("עכשיו "+aft);$("pH").innerHTML=`<div class="meter one"><div><small>עכשיו</small><b>${esc(aft)}</b></div></div>`;const b=$("pDone");b.hidden=false;b.textContent="סיימתי";b.onclick=fin;return}
+        const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="rest")say("סיום");fin()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
+    wireKg();wireNav();if(pv0&&(pv0.kind==="ready"||pv0.kind==="rest"))run();else{say("מתכוננים");prep(5,"מתכוננים",run)}return}
   /* rep */
   const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
   const r0=(String(g.it.reps||"").match(/^\s*(\d+)/)||[])[1],numR=/^[\d\s\-–\/]+$/.test(String(g.it.reps||""))&&!/\//.test(String(g.it.reps||"")),ef0=s.e||0;
