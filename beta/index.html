@@ -2567,7 +2567,7 @@ function mzOpt(it){if(!it)return "";const n=it[2]&&it[2].k>0&&!isM(it)?it[2]:nul
     ${n?`<div class="mzm"><span><b>${ri(n.p)}</b>${OXL("חלבון","protein")}</span><span><b>${ri(n.c)}</b>${OXL("פחמימה","carbs")}</span><span><b>${ri(n.f)}</b>${OXL("שומן","fat")}</span></div>`:""}</div></details>`}
 function mzMeal(m,mi){const its=(m.groups||[]).flatMap(g=>g.items||[]),ks=its.filter(it=>it[2]&&it[2].k>0&&!isM(it)).map(it=>Math.round(it[2].k)),lo=Math.min(...ks),hi=Math.max(...ks),cnt=its.length;
   const rng=ks.length?(lo===hi?`${lo}`:`${lo}–${hi}`):"";
-  return `<details class="mzm0"${mi===0?" open":""}><summary><span class="mzt"><b>${esc(m.t)}</b><small>${m.k?esc(m.k)+" · ":""}${OXL(cnt+" אפשרויות",cnt+" options")}</small></span>${rng?`<span class="mzr"><b>${rng}</b><small>${OXL("קק״ל","kcal")}</small></span>`:""}<i class="mzc"></i></summary>
+  return `<details class="mzm0"${mi===0?" open":""}><summary><span class="mzt"><b>${esc(m.t)}</b><small>${m.k?esc(m.k)+" · ":""}${OXL(cnt+" אפשרויות",cnt+" options")}</small></span><i class="mzc"></i></summary>
     <div class="mzl">${(m.groups||[]).map(g=>`${g.h?`<div class="mzg">${esc(g.h)}</div>`:""}${(g.items||[]).map(mzOpt).join("")}`).join("")}
     ${isMixMeal(m)&&recList().length?`<div class="mzg">${OXL("המתכונים שלי","My recipes")}</div>${recList().map(([,r])=>`<div class="mzo mzx"><span class="mzn"><b>${esc(r.name)}</b><small>${EN_()?"about "+mixGrams(r,m)+" g":"כ-"+mixGrams(r,m)+" ג׳"}</small></span><span class="mzk"><b>${ri(nut(recPer100(r),mixGrams(r,m)).k)}</b><small>${OXL("קק״ל","kcal")}</small></span></div>`).join("")}`:""}
     ${m.note?`<div class="mzno">${esc(m.note)}</div>`:""}</div></details>`}
