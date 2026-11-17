@@ -1074,6 +1074,8 @@ const PAT=[
   R("רצף נוכחי: (.+) 🔥",m=>"Current streak: "+DD(m[1])+" 🔥"),
   R("השיעור הבא שלך: (.+?) · (\\S*) (.*)\\. התרגילים שלו יעלו כאן יום לפני\\.",m=>"Your next class: "+tr(m[1])+" · "+m[2]+" "+m[3]+". Its exercises will be posted here the day before."),
   R("עוד שיעורים בסטודיו היום ומחר · (\\d+)",m=>"More studio classes today and tomorrow · "+m[1]),
+  R("(\\d+)(/\\d+)? השבוע · (\\d+) החודש",m=>m[1]+(m[2]||"")+" this week · "+m[3]+" this month"),
+  R("(\\d+) עם משקלים",m=>m[1]+" with weights"),
   R("(\\d+) אימונים רשומים",m=>m[1]+(m[1]==="1"?" workout logged":" workouts logged")),
   R("נשארו (\\d+) ארוחות לסמן היום",m=>m[1]+" meals left to log today"),
   R("(.*\\S) (\\d[\\d.,]*)",m=>{const h=tr(m[1]);return h!==m[1]?h+" "+m[2]:null})
@@ -1417,7 +1419,7 @@ async function loadMe(force){if((isOwner||isCoach)&&!memPv)return;if(MEMst===1||
   if(window.pgMember){const pk=(()=>{try{return localStorage.pgK||""}catch(e){return ""}})();const lk=await pgMember.link(pk||undefined);MEMS=(lk&&lk.state)||"none";if(pk&&lk&&lk.state==="in"){try{localStorage.removeItem("pgK")}catch(e){}}const [a,b,rc]=await Promise.all([pgMember.me(),pgMember.preview(),pgMember.recent()]);MEM=a;CPV=b||[];SRC2=rc||[];if(!SLK){const lv=liveCls();if(lv&&!lv.mine)slOpen(lv.key)}}
   try{const s=await db.collection(`t/${uid}/leads`).get();LEADM={};s.docs.forEach(d=>LEADM[d.id]=d.data())}catch(e){}
   try{const s=await db.collection(`t/${uid}/bm`).get();BM={};s.docs.forEach(d=>BM[d.id]=d.data())}catch(e){}
-  MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(tab==="smy"&&!typing())render()}else render()}
+  MEMst=2;if(prof){const nb=NB("smy");if(nb)nb.hidden=!(MEM&&MEMS==="in");if(["smy","today","workout"].includes(tab)&&!typing())render()}else render()}
 let MSEC=null,LXU="kg",LXO=null,HMO=null;
 const SECS=[["class","האימון הבא","--mes","M4 6h16M4 12h16M4 18h10"],["log","רישום האימון","--ok","M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"],
   ["prog","ההתקדמות שלי","--wk","M3 20h18M6 16l4-5 3 3 5-7"],["hist","האימונים שלי","--warn","M4 5h16v16H4zM4 9h16M9 3v4M15 3v4"]];
@@ -1738,14 +1740,15 @@ async function wireRemind(){const b=$("remBtn"),st=$("remSt"),h=$("remHint");if(
 
 /* ===== TODAY ===== */
 const RC=2*Math.PI*44;
-const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||(x.date>=addDays(TODAY,-7)&&!(x.until&&x.until<TODAY))||x.id===woSel).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
+const stuId=id=>/^\d{4}-\d\d-\d\d-(powerlab|method|flex|kids|small)$/.test(id),stuReg=x=>(SRC2||[]).some(r=>r.date===x.date&&String(r.key||"").endsWith("-"+x.id.slice(11)));
+const woList=()=>Object.keys(W).map(id=>({id,...W[id]})).filter(x=>x.fixed||!x.date||(x.date>=addDays(TODAY,-7)&&!(x.until&&x.until<TODAY))||x.id===woSel).filter(x=>!stuId(x.id)||x.id===woSel||stuReg(x)).sort((a,b)=>(b.fixed?1:0)-(a.fixed?1:0)||(b.date||"").localeCompare(a.date||"")||a.id.localeCompare(b.id));
 const logId=(wid,date)=>`${wid}_${date}`;
 const fixedList=()=>woList().filter(x=>x.fixed);
 /* fixed workouts alternate: the next one is the one done least recently (never done first) */
 function nextFixed(){const f=fixedList();if(f.length<2)return f[0]||null;const last=id=>Object.keys(wlog).filter(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done).map(k=>k.slice(id.length+1)).sort().pop()||"";return f.slice().sort((a,b)=>last(a.id).localeCompare(last(b.id)))[0]}
 const datedList=()=>woList().filter(x=>!x.fixed&&x.date).sort((a,b)=>a.date.localeCompare(b.date));
 const woDone=id=>Object.keys(wlog).some(k=>k.startsWith(id+"_")&&wlog[k]&&wlog[k].done);
-function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l[0]||null}
+function todayWorkout(){const l=woList();return nextFixed()||l.find(x=>x.date===TODAY)||l.find(x=>!stuId(x.id))||null}
 let TSEC=null;
 function profTiles(rq,mc,wo,wl,dayT){const on=t=>{const b=NB(t);return b&&!b.hidden},Ls=wList(weigh),lw=Ls[Ls.length-1],T=[];
   if(on("workout")&&woList().length)T.push(["workout","ליווי אישי","--mes","M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12",wo?(wl&&wl.done?"בוצע היום ✓":wo.title||"האימון של היום"):"היום יום מנוחה"]);
@@ -2133,9 +2136,9 @@ const RRC=2*Math.PI*90;$("rBar").style.strokeDasharray=RRC;
 const mss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+pad(s%60)};
 const secOf=(m,s)=>(+m)*60+(+s);
 function restOf(b){const F=b.format||"";let m=F.match(/Rest\s*(\d+):(\d{2})/i);if(m)return secOf(m[1],m[2]);m=F.match(/מנוחה\s*(\d+)\s*שנ/);if(m)return +m[1];m=F.match(/מנוחה\s*(\d+):(\d{2})/);if(m)return secOf(m[1],m[2]);return Math.max(0,+b.rest||0)}
-function holdOf(it){const r=String(it.reps||"");if(/סבב|צעד|חזר|נשימ|כיוון|\+|\/|\|/.test(r))return null;let m=r.match(/^\s*(\d+)\s*(?:[-–]\s*\d+\s*)?שנ/),sec=m?+m[1]:null;if(sec==null){m=r.match(/^\s*(\d+):(\d{2})/);if(m)sec=secOf(m[1],m[2])}
+function holdOf(it){const r0=String(it.reps||""),pm=r0.match(/^\s*(\d+(?:\s*[-–]\s*\d+)?\s*שנ[׳']?|\d+:\d{2})\s*\+\s*(.+)$/),r=pm?pm[1]:r0;if(/סבב|צעד|חזר|נשימ|כיוון|\+|\/|\|/.test(r))return null;let m=r.match(/^\s*(\d+)\s*(?:[-–]\s*\d+\s*)?שנ/),sec=m?+m[1]:null;if(sec==null){m=r.match(/^\s*(\d+):(\d{2})/);if(m)sec=secOf(m[1],m[2])}
   if(sec==null){m=r.match(/^\s*(\d+)?\s*דק/);if(m)sec=60*(+(m[1]||1))}
-  if(!sec||sec>300)return null;const t=r.match(/[×x]\s*(\d+)/);return {sec,sides:/לכל צד|לצד|לכל רגל|לרגל|\(Each\)|\beach\b/i.test(r),times:t?+t[1]:1}}
+  if(!sec||sec>300)return null;const t=r.match(/[×x]\s*(\d+)/);return {sec,sides:/לכל צד|לצד|לכל רגל|לרגל|\(Each\)|\beach\b/i.test(r0),times:t?+t[1]:1,after:pm?pm[2].trim():""}}
 const fmtRounds=F=>{const m=F.match(/(\d+)(?:\s*[-–]\s*\d+)?\s*(?:Rounds?|סבבים)/i);return m?+m[1]:/סבב אחד/.test(F)?1:0};
 function blockPlan(b,bi,idx){const F=b.format||"",fr=fmtRounds(F)||1,its=idx.map(ii=>{const it=b.items[ii];return {ii,it:it.sets?it:Object.assign({},it,{sets:fr})}}),R=restOf(b),seg=[],nS=Math.max(1,...its.map(x=>x.it.sets||0));
   const mk=(x,s,o)=>Object.assign({bi,ii:x.ii,s,b,it:x.it},o||{});let m;
@@ -2207,7 +2210,7 @@ function nextCard(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"
   return `<div class="pnx">${th?`<img src="${th}" alt="">`:""}<div><small>הבא בתור${n.bi!==PL.segs[PL.i].bi?" · "+esc(n.b.name):""}</small><b>${esc(n.it.n)}${n.side?" · "+n.side:""}</b><small>${esc(repTxt(n.it.reps||""))}${pv!=null?` · בפעם הקודמת ${pv} ק״ג`:""}</small></div></div>`}
 function nextLabel(){const n=PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft");if(!n)return "סוף האימון";if(n.kind==="amrap"||n.kind==="ft")return "הבא: "+n.b.name;return `הבא: ${n.it.n}${n.side?" · "+n.side:""}${n.bi!==PL.segs[PL.i].bi?" · "+n.b.name:""}`}
 function clock(sec,onEnd,draw,up){const t0=Date.now();let last=-1,paused=0,pAt=0;const st={get left(){return sec-((pAt||Date.now())-t0-paused)/1000},pause(){if(pAt){paused+=Date.now()-pAt;pAt=0}else pAt=Date.now()},get paused(){return !!pAt},add(s){sec+=s}};
-  const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0)beep(660)}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
+  const f=()=>{const L=st.left,el=sec-L,v=up?el:L,c=Math.ceil(L);draw(v,L);if(c!==last){last=c;if(c<=3&&c>0){beep(660);if(!up&&sec>=5)say(String(c))}}if(L<=0){clearInterval(timer);buzz();onEnd()}};clearInterval(timer);timer=setInterval(f,200);f();return st}
 function ring(id,lbl,big){return `<div class="rring"><svg viewBox="0 0 200 200"><circle class="tr" cx="100" cy="100" r="90"/><circle class="br" id="${id}B" cx="100" cy="100" r="90" style="stroke-dasharray:${RRC}"/></svg><div class="in"><b id="${id}S">${big||""}</b>${lbl?`<small>${lbl}</small>`:""}</div></div>`}
 function drawRing(id,v,frac){const s=$(id+"S"),b=$(id+"B");if(s)s.textContent=v;if(b)b.style.strokeDashoffset=RRC*(1-Math.max(0,Math.min(1,frac)))}
 const vidFrame=id=>`<div class="pframe"><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen title="video"></iframe></div>`;
@@ -2217,7 +2220,7 @@ const repTxt=r=>{r=String(r||"");return r+(/^[\d\s\-–]+$/.test(r)?" חזרות
 function navHTML(){return `<div class="pnav"><button type="button" id="pPrev" ${PL.i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`}
 function wireNav(){$("pPrev").onclick=()=>{clearInterval(timer);if(PL.i>0){PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}};$("pNext").onclick=()=>next()}
 function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";{const ex=segs.filter(x=>x.it),k=segs.slice(0,i+1).filter(x=>x.it).length;if($("pCt"))$("pCt").textContent=ex.length?`${Math.max(1,k)}/${ex.length}`:""}$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
-  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();if(g.sec>=8)say("מנוחה");const full=g.sec;const c=clock(g.sec,()=>{say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
+  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();say(g.sec>=8?"מנוחה, "+Math.round(g.sec)+" שניות":"מנוחה");const full=g.sec;const c=clock(g.sec,()=>{const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="hold")say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
     $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
   if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
     PL.am=0;PL.rl=[];clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
@@ -2238,10 +2241,16 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
   const wireKg=()=>W.querySelectorAll("[data-kgd]").forEach(b=>b.onclick=()=>{const i=$("pKg"),v=parseFloat(i.value)||0,st=v>=20?2.5:1;i.value=Math.max(0,Math.round((v+st*(+b.dataset.kgd))*10)/10)});
   if(g.kind==="work"){say(g.side||"עבודה");W.innerHTML=stageHTML(g)+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
     const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
-  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times;W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`<div id="pH"><div class="meter${kgBox?"":" one"}">${kgBox}<div><small>החזקה</small><b>${h.sec} שנ׳${h.sides?" · כל צד":""}</b></div></div></div><button class="big" type="button" id="pDone">התחל טיימר</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
-    const run=()=>{const kg=$("pKg")?$("pKg").value:undefined;$("pH").innerHTML=ring("pR",(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:""));$("pDone").hidden=true;
-      clock(h.sec,()=>{if(h.sides&&!side){side=1;beep(990,.2);run();return}if(--rpt>0){side=0;beep(990,.2);run();return}markSet(g,kg);next()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
-    $("pDone").onclick=run;wireKg();wireNav();return}
+  if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times,kgV;const pv0=PL.segs[PL.i-1],aft=/^\d+$/.test(h.after)&&/\+/.test(g.it.n)?h.after+" "+g.it.n.split("+").pop().trim():h.after;
+    W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`${kgBox?`<div class="meter">${kgBox}</div>`:""}<div id="pH"></div><button class="big" type="button" id="pDone">מתחילים עכשיו</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+    const lbl=()=>(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:"");
+    const prep=(sec,txt,then)=>{const b=$("pDone");b.hidden=false;b.textContent="מתחילים עכשיו";b.onclick=then;$("pH").innerHTML=ring("pR",txt);clock(sec,then,(v)=>drawRing("pR",Math.ceil(v),v/sec))};
+    const fin=()=>{markSet(g,kgV);next()};
+    const run=()=>{if(kgV===undefined)kgV=$("pKg")?$("pKg").value:undefined;$("pDone").hidden=true;say(h.sides?(side?"צד ימין, מתחילים":"צד שמאל, מתחילים"):"מתחילים");$("pH").innerHTML=ring("pR",lbl());
+      clock(h.sec,()=>{if(h.sides&&!side){side=1;say("מחליפים צד");prep(5,"מחליפים צד",run);return}if(--rpt>0){side=0;say("מתכוננים");prep(5,"מתכוננים",run);return}
+        if(aft){say("עכשיו "+aft);$("pH").innerHTML=`<div class="meter one"><div><small>עכשיו</small><b>${esc(aft)}</b></div></div>`;const b=$("pDone");b.hidden=false;b.textContent="סיימתי";b.onclick=fin;return}
+        const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="rest")say("סיום");fin()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec))};
+    wireKg();wireNav();if(pv0&&(pv0.kind==="ready"||pv0.kind==="rest"))run();else{say("מתכוננים");prep(5,"מתכוננים",run)}return}
   /* rep */
   const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
   const r0=(String(g.it.reps||"").match(/^\s*(\d+)/)||[])[1],numR=/^[\d\s\-–\/]+$/.test(String(g.it.reps||""))&&!/\//.test(String(g.it.reps||"")),ef0=s.e||0;
@@ -2607,8 +2616,8 @@ function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).f
   names.forEach(n=>{if(DR.people.some(p=>lowN(p.name)===lowN(n)))return;const hit=Object.entries(RO).find(([,r])=>lowN(r.name)===lowN(n));if(hit&&DR.people.some(p=>p.id===hit[0]))return;
     DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
   DR.rAt=rrc.at||"1"}
-const RP=new URLSearchParams(location.search).get("rep");
-function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
+let repHold=false;const RP=new URLSearchParams(location.search).get("rep");
+function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];repHold=true;pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
 function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
@@ -2622,7 +2631,7 @@ async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&D
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
     fill(MYR,Object.fromEntries(mr.docs.map(d=>[d.id,d.data()])));
     if(isOwner&&db.reports){const rs=await db.reports(addDays(TODAY,-30));fill(REPS,Object.fromEntries(rs.map(r=>[r.id,r.data])))}
-    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime;DRS=d.DRS||{}}}
+    if(!DR){const d=draftLoad();if(d&&d.DR&&d.rDate>=addDays(TODAY,-2)){if(repHold)DRS=d.DRS||{};else{DR=d.DR;rDate=d.rDate;rType=d.rType;rTime=d.rTime;DRS=d.DRS||{}}}}
     stLoaded=true;stAt=Date.now()}catch(e){setSave("שגיאה בטעינה","err")}
   stLoading=false;if(["class","studio","coaches","prog","brief"].includes(tab))render()}
 
@@ -3288,18 +3297,18 @@ $("v-prog").addEventListener("click",ev=>{const d=ev.target.closest("[data-pgsd]
 const NB=t=>document.querySelector(`.nb[data-tab="${t}"]`);
 function fill(store,src){Object.keys(store).forEach(k=>delete store[k]);Object.assign(store,JSON.parse(JSON.stringify(src||{})))}
 let pvMemSave=null,pvStLoading=false;
-async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS};MEM=null;MEMS="none";pvStLoading=true;
+async function pvStudio(id){const c=C[id];pvMemSave={MEM,MEMst,CPV,MEMS,SRC2};MEM=null;MEMS="none";SRC2=[];pvStLoading=true;
   try{if(!CL){const s2=await db.collection("cl").get();CL={};s2.docs.forEach(d=>CL[d.id]=d.data())}
     const em=lowN(c&&c.t&&c.t.email);let aid=Object.keys(CL).find(k=>em&&lowN(CL[k].email)===em);
     if(!aid){const mm=await db.doc(`m/${id}`).get();if(mm.exists)aid=String((mm.data()||{}).aid||"")}
-    if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
+    if(aid&&window.pgMember){const v=await pgMember.view(aid);if(v&&preview===id)SRC2=v.recent||[];if(v&&v.inc===true&&v.active!==false&&preview===id){MEM=v;MEMS="in";CPV=await pgMember.preview();MEMst=2}}}catch(e){}
   pvStLoading=false;if(preview===id){applyPause();if(!typing())render()}}
 async function enterPreview(id){const c=C[id];if(!c||!c.prof)return;if(window.pgPreviewLang){let l;try{const t=await db.doc(`t/${id}`).get();if(t.exists)l=(t.data()||{}).lang}catch(e){}pgPreviewLang(l)}preview=id;uid=id;prof=c.prof;pvStudio(id);
   fill(W,c.wo);fill(MSG,c.msgs);fill(body,c.body||{});fill(days,c.days);fill(weigh,c.weigh);fill(weekly,c.weekly);fill(wlog,c.wlog);fill(photos,{});
   liveU.forEach(f=>{try{f()}catch(e){}});liveU=c.pend?[]:subscribeAll();
   ["today","workout","menu","measure"].forEach(t=>NB(t).hidden=false);NB("coach").hidden=true;NB("claude").hidden=true;NB("class").hidden=true;NB("brief").hidden=true;NB("prog").hidden=true;
   const b=$("pvbar");b.querySelector("b").textContent=c.pend?`שיקוף · ${nameOf(id)} · לפני הרשמה`:`שיקוף חי · ${nameOf(id)}`;b.hidden=false;sel=TODAY;woSel=null;go("today")}
-function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(window.pgPreviewEnd)pgPreviewEnd();if(pvMemSave){({MEM,MEMst,CPV,MEMS}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
+function exitPreview(){if(window.pgLang==="en"&&(isOwner||isCoach)){location.reload();return}if(window.pgPreviewEnd)pgPreviewEnd();if(pvMemSave){({MEM,MEMst,CPV,MEMS,SRC2}=pvMemSave);pvMemSave=null}NB("smy").hidden=true;if(isCoach){NB("class").hidden=false;NB("brief").hidden=false;NB("prog").hidden=false}liveU.forEach(f=>{try{f()}catch(e){}});liveU=[];if(preview&&C[preview]&&C[preview].pend)delete C[preview];preview=null;uid=ownerUid;prof=null;[W,MSG,days,weigh,weekly,wlog,photos,body].forEach(s=>fill(s,{}));
   $("pvbar").hidden=true;["today","workout","menu","measure"].forEach(t=>NB(t).hidden=true);NB("coach").hidden=false;const bk=pvFrom||"coach";pvFrom=null;go(bk)}
 $("pvbar").querySelector("button").onclick=()=>memPv?exitMemberView():coachPv?exitCoachView():exitPreview();
 
