@@ -833,6 +833,93 @@ html[dir=ltr] #bfRs{direction:rtl}
 .otd-n{background:var(--hot);color:#fff;border-radius:99px;padding:0 10px;font-size:13px;font-weight:700}.otd-s ul{margin:6px 0 2px;padding-inline-start:18px;display:grid;gap:5px;font-size:14px}.otd-s small{color:var(--muted)}
 .nxt{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--ok)}.nxt small{display:block;color:var(--muted);font-size:12px}.nxt b{font-size:16px}.nxt .cta{flex:none;width:auto;padding:10px 18px;margin:0}.nxt.done{border-color:transparent;opacity:.85}
 .b2-rest>summary{cursor:pointer;padding:10px 0;color:var(--muted);font-size:14px}.mrest>summary{cursor:pointer;font-weight:700;padding:4px 0}.mrest .mcls{margin-top:10px}
+
+/* guided player v2 */
+#player.v2 .pin{position:relative;padding-top:0;gap:0}
+#player.v2 .ptop{position:absolute;z-index:6;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 26px;background:linear-gradient(#081325e0,#08132500)}
+#player.v2 .ptop .seg{display:none}
+#player.v2 .ptop .x{flex:none;width:38px;height:38px;border-radius:50%;background:#00000080;display:grid;place-items:center}
+.xsegs{flex:1;display:flex;gap:4px}
+.xsegs span{height:4px;border-radius:2px;background:#ffffff38;overflow:hidden;min-width:6px;display:flex}
+.xsegs i{display:block;height:100%;width:0;background:#fff;transition:width .4s}
+#player.v2 .pmeta{gap:8px;color:#dfe6f1}
+#player.v2 .pmeta button{background:#00000080}
+#player.v2.nomedia .pin{padding-top:calc(66px + env(safe-area-inset-top,0px))}
+#pMedia{position:relative;flex:none;margin:0 -18px 0;height:clamp(230px,42vh,430px);background:#000;overflow:hidden}
+#pMedia[hidden]{display:none}
+#pMedia img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+#pMedia iframe{position:absolute;top:0;left:50%;height:100%;width:calc(clamp(230px,42vh,430px) * 1.78);transform:translateX(-50%);border:0;pointer-events:none}
+#pMedia::after{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(#08132500,var(--bg));pointer-events:none}
+#pMedia .mlb{position:absolute;z-index:2;bottom:18px;right:18px;background:#fff;color:#081325;font-weight:800;font-size:12px;border-radius:999px;padding:5px 11px}
+#pMedia .mlb[hidden]{display:none}
+#pMedia .mfull{position:absolute;z-index:2;bottom:18px;left:18px;background:#00000099;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:5px 11px;text-decoration:none}
+#player.v2 .work{gap:14px;padding-top:4px}
+.xh{display:flex;flex-direction:column;gap:6px;position:relative;z-index:2;margin-top:-6px}
+.xey{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;font-weight:600}
+.xey b{background:#fff;color:#081325;border-radius:8px;padding:2px 7px;font-size:12px;font-weight:800;direction:ltr}
+.xn{margin:0;font-family:var(--disp);font-weight:700;font-size:40px;line-height:.95;letter-spacing:.01em;direction:ltr;text-align:right}
+.xn.rtl{direction:rtl}
+.xside{font-weight:800;font-size:17px}
+.xchip{align-self:flex-start;background:var(--s2);border-radius:999px;padding:6px 14px;font-weight:800;font-size:17px;margin-top:4px}
+.xnote{display:flex;gap:10px;align-items:flex-start;background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:12px}
+.xnote i{flex:none;width:30px;height:30px;border-radius:50%;background:#fff;color:#081325;font-style:normal;font-weight:800;display:grid;place-items:center;font-size:14px}
+.xnote p{margin:0;font-size:14.5px;line-height:1.45;color:#dfe6f1}
+.xsets{display:flex;flex-direction:column;gap:6px}
+.xs{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;background:var(--s1);color:var(--muted);font-size:14px}
+.xs .xi{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--s2);font-weight:800;font-size:13px;color:var(--ink)}
+.xs.cur{background:var(--s2);color:var(--ink);box-shadow:inset 0 0 0 1.5px #ffffff59}
+.xs.cur .xi{background:#fff;color:#081325}
+.xs.ok .xi{background:var(--ok);color:#081325}
+.xs .xv{font-size:13px;font-variant-numeric:tabular-nums}
+.xin{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.xin>div{background:var(--s1);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.xin small,.xfeel small{color:var(--muted);font-size:12.5px;font-weight:600}
+.xin .stp2{display:flex;direction:ltr;align-items:center;gap:6px}
+.xin .stp2 button{width:40px;height:44px;border-radius:12px;background:var(--s2);font-size:22px;font-weight:700;flex:none;color:var(--ink)}
+.xin input{width:100%;min-width:0;font-size:24px;font-weight:800;text-align:center;padding:8px;background:var(--s2);border:1px solid var(--line);border-radius:12px;color:var(--ink)}
+.xfeel{display:flex;flex-direction:column;gap:8px}
+.xtimer{display:flex;justify-content:center;padding:4px 0}
+.xtimer .rring{width:min(56vw,210px)}
+.xafter{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px;background:var(--s1);border-radius:18px;width:100%}
+.xafter small{color:var(--muted)}
+.xafter b{font-size:26px;font-weight:800;direction:ltr}
+.xfoot{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:6px}
+.xrest{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:6px;width:100%}
+.xk{color:var(--muted);font-size:13px;font-weight:700}
+.xbig{font-family:var(--disp);font-size:118px;line-height:.85;font-weight:700;font-variant-numeric:tabular-nums}
+.xbar{width:min(80%,320px);height:6px;border-radius:3px;background:var(--s2);overflow:hidden;display:flex}
+.xbar i{display:block;height:100%;background:#fff;width:100%;transition:width .25s linear}
+.xnext{display:flex;flex-direction:column;gap:3px;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:12px 16px;width:min(100%,420px);text-align:right}
+.xnext small{color:var(--muted);font-size:12px}
+.xnext b{font-size:19px;direction:ltr;text-align:right}
+.xnext span{color:var(--muted);font-size:13px}
+#player.v2 .rest{justify-content:flex-start}
+.xintro{display:flex;flex-direction:column;gap:14px}
+.xintro h1{margin:0;font-family:var(--disp);font-size:46px;line-height:.95;font-weight:700}
+.xstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.xstat div{background:var(--s1);border-radius:16px;padding:10px;text-align:center}
+.xstat b{display:block;font-family:var(--disp);font-size:34px;line-height:1}
+.xstat small{color:var(--muted);font-size:12px}
+.xblocks{display:flex;flex-direction:column;gap:10px}
+.xbl{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.xblh{display:flex;align-items:center;gap:8px}
+.xblh b{background:#fff;color:#081325;border-radius:8px;padding:1px 7px;font-size:12px}
+.xblh span{font-weight:800}
+.xblh small{color:var(--muted);font-size:12px;margin-inline-start:auto}
+.xbi{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:10px}
+.xbi img,.xbi .xph{width:52px;height:38px;object-fit:cover;border-radius:8px;background:var(--s2);display:block}
+.xbn{direction:ltr;text-align:right;font-weight:700;font-size:14px}
+.xbi small{color:var(--muted);font-size:12px;white-space:nowrap}
+.xfmt{color:var(--muted);font-size:14px}
+.xlist{display:flex;flex-direction:column;gap:6px}
+.xlist div{display:flex;justify-content:space-between;gap:10px;background:var(--s1);border-radius:12px;padding:9px 12px}
+.xlist span{direction:ltr;font-weight:700}
+.xlist small{color:var(--muted)}
+#player.v2 .pzbox{margin:0}
+#pMedia .mph{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 70% 20%,#4a7fc455,transparent 60%),var(--s1)}
+#pMedia .mph img{position:static;width:38%;max-width:170px;height:auto;opacity:.18;object-fit:contain}
+#player.v2 .work>.big{flex:none}
+.xtimer+.big{margin-top:-4px}
 </style></head><body>
 <div class="app">
   <div class="brand"><img src="pg-logo.png" alt="Playground Studio"><div class="bt"><b>PLAYGROUND</b><small id="bsub">ליווי אישי · טל ליפשטט</small></div><span class="save" id="save">מתחבר…</span><button type="button" class="lang" data-lang data-noi18n>EN</button></div>
@@ -2175,13 +2262,18 @@ function blockPlan(b,bi,idx){const F=b.format||"",fr=fmtRounds(F)||1,its=idx.map
 function openPlayer(w){const lg0=getLog(w.id,TODAY),segs=[];(w.blocks||[]).forEach((b,bi)=>{const idx=activeIdx(b,bi,lg0);if(idx.length)segs.push(...blockPlan(b,bi,idx))});
   if(!segs.length)return;const ok=g=>!!((lg0.sets[g.bi+"-"+g.ii]||[])[g.s]||{}).ok;let i=segs.findIndex(g=>g.it&&!ok(g));
   if(i<0)i=0;else{const bi=segs[i].bi,f=segs.findIndex(g=>g.bi===bi);if(segs.slice(f,i).some(g=>g.kind==="ready"||g.kind==="amrap"||g.kind==="ft")||segs[f].kind==="ready")i=f}
-  PL={w,segs,i,t0:Date.now(),vid:false};try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}say("מתחילים");
-  const top=document.querySelector("#player .ptop");if(top&&!$("pMeta")){const d=document.createElement("div");d.className="pmeta";d.id="pMeta";d.innerHTML=`<span>זמן <b id="pEl">0:00</b></span><span id="pCt"></span><button type="button" id="pSnd"></button>`;top.appendChild(d)}
+  if(i===0)segs.unshift({kind:"intro",bi:segs[0].bi,b:segs[0].b});
+  PL={w,segs,i,t0:Date.now(),vid:false};try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}
+  try{if(SND&&window.speechSynthesis){const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}}catch(e){}
+  const pin=document.querySelector("#player .pin");if(pin&&!$("pMedia")){const m=document.createElement("div");m.id="pMedia";m.hidden=true;pin.insertBefore(m,$("pWork"))}
+  const top=document.querySelector("#player .ptop");if(top&&!$("pSegs")){const sg=document.createElement("div");sg.id="pSegs";sg.className="xsegs";top.querySelector(".seg").after(sg)}
+  if($("pSegs"))delete $("pSegs").dataset.on;if($("pMedia")){$("pMedia").dataset.id="";$("pMedia").innerHTML=""}
+  if(top&&!$("pMeta")){const d=document.createElement("div");d.className="pmeta";d.id="pMeta";d.innerHTML=`<span>זמן <b id="pEl">0:00</b></span><span id="pCt"></span><button type="button" id="pSnd"></button>`;top.appendChild(d)}
   const sb=()=>{$("pSnd").textContent=SND?"🔊 קול":"🔇 קול"};sb();$("pSnd").onclick=()=>{SND=!SND;try{localStorage.setItem("pgSnd",SND?"1":"0")}catch(e){}if(!SND&&window.speechSynthesis)speechSynthesis.cancel();sb()};
   clearInterval(elT);elT=setInterval(()=>{if(PL&&$("pEl"))$("pEl").textContent=mss((Date.now()-PL.t0)/1000)},1000);
-  $("player").classList.add("open");show();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
+  $("player").classList.add("open","v2");show();try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(PL&&document.visibilityState==="visible"){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>lock=l,()=>{})}catch(e){}}});
-function closePlayer(){$("player").classList.remove("open");clearInterval(timer);clearInterval(elT);try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}try{lock&&lock.release()}catch(e){}PL=null;render()}
+function closePlayer(){$("player").classList.remove("open");{const m=$("pMedia");if(m){m.innerHTML="";m.dataset.id=""}}clearInterval(timer);clearInterval(elT);try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}try{lock&&lock.release()}catch(e){}PL=null;render()}
 $("pClose").onclick=()=>{if(PL&&PL.i>0&&!PL.fin){if(!PL.cq||Date.now()-PL.cq>3000){PL.cq=Date.now();toast("לחיצה נוספת יוצאת · מה שעשית נשמר");return}}closePlayer()};
 (()=>{let x0=null,y0=null;const W=$("pWork");W.addEventListener("touchstart",e=>{if(e.target.closest("input,textarea,iframe,.pef"))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
   W.addEventListener("touchend",e=>{if(x0==null||!PL||PL.fin)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)<70||Math.abs(dy)>50)return;const g=PL.segs[PL.i];if(g.kind==="amrap"||g.kind==="ft")return;
@@ -2191,7 +2283,7 @@ let AC=null;function beep(f,d){if(!SND)return;try{AC=AC||new (window.AudioContex
 function buzz(){try{navigator.vibrate&&navigator.vibrate([120,60,120])}catch(e){}beep(990,.25)}
 function markSet(g,kg,ex){setLog(PL.w.id,TODAY,l=>{const k=g.bi+"-"+g.ii,a=(l.sets[k]||[]).slice();a[g.s]=Object.assign({},a[g.s]||{},{ok:true},kg!==undefined?{kg:kg===""?null:+kg}:{},ex||{});l.sets[k]=a})}
 function next(){clearInterval(timer);if(!PL)return;if(PL.i>=PL.segs.length-1){showFinish();return}PL.i++;show()}
-function showFinish(){clearInterval(timer);PL.fin=true;say("כל הכבוד, סיימת");buzz();const {w,segs}=PL,lg=getLog(w.id,TODAY),el=(Date.now()-PL.t0)/1000;$("pBar").style.width="100%";$("pRest").hidden=true;$("pWork").hidden=false;
+function showFinish(){clearInterval(timer);PL.fin=true;setMedia(null);say("כל הכבוד, סיימת");buzz();const {w,segs}=PL,lg=getLog(w.id,TODAY),el=(Date.now()-PL.t0)/1000;$("pBar").style.width="100%";$("pRest").hidden=true;$("pWork").hidden=false;
   const plan=segs.filter(g=>g.it||g.kind==="amrap"||g.kind==="ft");let tot=0,done=0,vol=0;const keys=new Set();
   segs.forEach(g=>{if(g.it&&!g.noMark){tot++;keys.add(g.bi+"-"+g.ii);const o=((lg.sets[g.bi+"-"+g.ii]||[])[g.s])||{};if(o.ok)done++}});
   Object.entries(lg.sets||{}).forEach(([k,a])=>{const [bi,ii]=k.split("-").map(Number),it=((w.blocks[bi]||{}).items||[])[ii]||{},t=String(it.reps||"").match(/^\s*(\d+)(?:\s*\/\s*(\d+))?/),tr=t?(+t[1])*(t[2]?2:1):0;(a||[]).forEach(o=>{if(o&&o.ok&&o.kg){const r=parseFloat(String(o.r||"").replace(",","."));vol+=o.kg*(isFinite(r)&&r>0?r:tr)}})});
@@ -2220,11 +2312,67 @@ function stageHTML(g,extra){const u=((g.it.v||[])[0]||{}).u,id=ytId(u),th=ytTh(u
 const repTxt=r=>{r=String(r||"");return r+(/^[\d\s\-–]+$/.test(r)?" חזרות":"")};
 function navHTML(){return `<div class="pnav"><button type="button" id="pPrev" ${PL.i===0?"disabled":""}>→ הקודם</button><button type="button" id="pNext">דלג ←</button></div>`}
 function wireNav(){$("pPrev").onclick=()=>{clearInterval(timer);if(PL.i>0){PL.i--;while(PL.i>0&&PL.segs[PL.i].kind==="rest")PL.i--;show()}};$("pNext").onclick=()=>next()}
-function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";{const ex=segs.filter(x=>x.it),k=segs.slice(0,i+1).filter(x=>x.it).length;if($("pCt"))$("pCt").textContent=ex.length?`${Math.max(1,k)}/${ex.length}`:""}$("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");
-  if(g.kind==="rest"){$("pWork").hidden=true;$("pRest").hidden=false;$("rNext").innerHTML=nextCard();say(g.sec>=8?"מנוחה, "+Math.round(g.sec)+" שניות":"מנוחה");const full=g.sec;const c=clock(g.sec,()=>{const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="hold")say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBar").style.strokeDashoffset=RRC*(1-Math.max(0,v)/full)});
-    $("rPlus").onclick=()=>c.add(15);$("rSkip").onclick=()=>next();return}
-  if(g.kind==="ready"){W.innerHTML=`<div class="stage"><small>מתכוננים</small><h2 style="direction:rtl">${esc(g.b.name)}</h2><p>${esc(g.b.format||"")}</p><p>${(g.b.items||[]).map(x=>esc(x.n)).join(" · ")}</p></div>${ring("pR","מתחילים בעוד")}<button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}`;
-    PL.am=0;PL.rl=[];say("מתכוננים, "+String(g.b.name||"").split("·")[0].trim());clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
+/* ===== guided player v2: coach style (video, sets, coach notes, voice) ===== */
+const HEB=/[\u0590-\u05FF]/;
+function sayQ(parts,keep){if(!SND||!window.speechSynthesis)return;try{if(!keep)speechSynthesis.cancel();parts.filter(Boolean).forEach(p=>{const t=String(p).replace(/\([^)]*\)/g," ").replace(/--?>/g," ").replace(/\s+/g," ").trim();if(!t)return;const u=new SpeechSynthesisUtterance(t),en=window.pgLang==="en"||!HEB.test(t);u.lang=en?"en-US":"he-IL";u.rate=en?.98:1.04;speechSynthesis.speak(u)})}catch(e){}}
+const xName=n=>String(n||"").replace(/^\s*Super Set\s*:\s*/i,"").trim();
+const bName=b=>String((b&&b.name)||"").split("·")[0].trim();
+function repSay(r){r=String(r||"").trim();if(!r)return "";let m;const h=r.split("|")[0].trim();
+  if((m=h.match(/^(\d+)\s*\/\s*(\d+)/)))return m[1]===m[2]?`${m[1]} לכל צד`:`${m[1]} ו-${m[2]}`;
+  if((m=h.match(/^(\d+)\s*[-–]\s*(\d+)\s*(?:Reps)?$/i)))return `${m[1]} עד ${m[2]} חזרות`;
+  if((m=h.match(/^(\d+)\s*(?:Reps)?$/i)))return `${m[1]} חזרות`;
+  return HEB.test(h)?h.split("·")[0].trim():""}
+function labOf(g){if(!PL.lab){const L={};let n=0;PL.segs.forEach(x=>{if(x.it&&L[x.bi]==null)L[x.bi]=String.fromCharCode(65+n++)});PL.lab=L}
+  const l=PL.lab[g.bi];if(l==null)return "";const its=(g.b.items||[]).length;return its>1?l+((g.b.items||[]).indexOf(g.it)>=0?(g.b.items.indexOf(g.it)+1):(g.ii+1)):l}
+function setMedia(id,label){const m=$("pMedia");if(!m)return;const P=$("player");
+  if(!id&&!label){m.hidden=true;m.dataset.id="";P.classList.add("nomedia");return}
+  if(!id){P.classList.remove("nomedia");m.hidden=false;if(m.dataset.id!=="ph"){m.dataset.id="ph";m.innerHTML=`<div class="mph"><img src="pg-logo.png" alt=""></div><span class="mlb"></span>`}const lb=m.querySelector(".mlb");lb.textContent=label===" "?"":label;lb.hidden=label===" ";return}
+  P.classList.remove("nomedia");m.hidden=false;
+  if(m.dataset.id!==id){m.dataset.id=id;m.innerHTML=`<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt=""><iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1&fs=0&iv_load_policy=3" allow="autoplay; encrypted-media" title="video" tabindex="-1"></iframe><span class="mlb"></span><a class="mfull" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=${id}">▶ סרטון מלא</a>`}
+  const lb=m.querySelector(".mlb");lb.textContent=label&&label!==" "?label:"";lb.hidden=!label||label===" "}
+const vidOf=it=>ytId((((it&&it.v)||[])[0]||{}).u);
+function progDraw(){const sg=$("pSegs");if(!sg)return;const {segs,i}=PL;if(!sg.dataset.on){const bl=[];segs.forEach(g=>{if(!bl.length||bl[bl.length-1].bi!==g.bi)bl.push({bi:g.bi,n:0});bl[bl.length-1].n++});PL.bl=bl;sg.innerHTML=bl.map(b=>`<span style="flex:${b.n}"><i></i></span>`).join("");sg.dataset.on="1"}
+  let at=0;PL.bl.forEach((b,k)=>{const f=Math.max(0,Math.min(1,(i-at)/b.n));sg.children[k].firstChild.style.width=(f*100)+"%";sg.children[k].classList.toggle("now",i>=at&&i<at+b.n);at+=b.n})}
+function headHTML(g,extra){const lab=labOf(g),ss=/^\s*Super Set/i.test(g.it.n);
+  return `<div class="xh"><div class="xey">${lab?`<b>${lab}</b>`:""}<span>${esc(bName(g.b))}${g.tag?" · "+esc(g.tag):""}${ss?" · סופרסט":""}</span></div><h2 class="xn">${esc(xName(g.it.n))}</h2>${g.side?`<div class="xside">${g.side}</div>`:""}${extra||""}</div>`}
+const noteHTML=(it,force)=>it&&it.d?`<div class="xnote${force?"":" sm"}"><i>ט</i><p>${esc(it.d)}</p></div>`:"";
+function setsHTML(g,lg){const key=g.bi+"-"+g.ii,list=PL.segs.filter(x=>x.it&&x.bi===g.bi&&x.ii===g.ii&&!x.noMark),n=list.length;if(n<2)return "";
+  const arr=lg.sets[key]||[],pr=lastLog(PL.w.id,TODAY),pa=(pr&&pr.sets&&pr.sets[key])||[];let h=`<div class="xsets">`;
+  for(let s=0;s<n;s++){const o=arr[s]||{},p=pa[s]||{},cur=s===g.s,v=o.ok?[o.kg!=null&&o.kg!==""?o.kg+" ק״ג":"",o.r?o.r+" חז׳":""].filter(Boolean).join(" · ")||"בוצע":(p.kg?`קודם ${p.kg} ק״ג`:"");
+    h+=`<div class="xs${cur?" cur":""}${o.ok?" ok":""}"><span class="xi">${o.ok?"✓":s+1}</span><span class="xt">${/^סבב/.test(g.tag||"")?"סבב":"סט"} ${s+1}</span><span class="xv">${esc(v)}</span></div>`}
+  return h+`</div>`}
+function nextOf(){return PL.segs.slice(PL.i+1).find(g=>g.it||g.kind==="amrap"||g.kind==="ft")}
+function estMin(){let t=0;PL.segs.forEach(g=>{t+=g.kind==="rest"?g.sec:g.kind==="work"?g.sec:g.kind==="hold"?(()=>{const h=holdOf(g.it)||{sec:30};return h.sec*(h.sides?2:1)*(h.times||1)+10})():g.kind==="amrap"?g.sec:g.kind==="ft"?(g.cap||600)*.8:g.kind==="ready"?10:g.it?40:0});return Math.max(5,Math.round(t/60/5)*5)}
+
+function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").style.width=(i/segs.length*100)+"%";progDraw();
+  {const nb=(PL.bl||[]).length,k=(()=>{let at=0;for(let j=0;j<(PL.bl||[]).length;j++){at+=PL.bl[j].n;if(i<at)return j+1}return nb})();if($("pCt"))$("pCt").textContent=nb>1?`חלק ${k}/${nb}`:""}
+  $("pRest").hidden=true;$("pWork").hidden=false;const W=$("pWork");W.scrollTop=0;const P=$("player");P.classList.add("v2");
+  const first=PL.spk!==i;PL.spk=i;
+
+  if(g.kind==="intro"){setMedia(null);const bl=[];(w.blocks||[]).forEach((b,bi)=>{if(segs.some(x=>x.bi===bi&&x.it))bl.push([b,bi])});const nEx=new Set(segs.filter(x=>x.it).map(x=>x.bi+"-"+x.ii)).size;
+    W.innerHTML=`<div class="xintro"><small class="xk">האימון של היום · ${esc(prof&&prof.name?String(prof.name).split(" ")[0]:"")}</small><h1>${esc(w.title||"")}</h1>
+      <div class="xstat"><div><b>~${estMin()}</b><small>דקות</small></div><div><b>${nEx}</b><small>תרגילים</small></div><div><b>${bl.length}</b><small>חלקים</small></div></div>
+      ${w.note?`<div class="xnote"><i>ט</i><p>${esc(w.note)}</p></div>`:""}
+      <div class="xblocks">${bl.map(([b,bi],k)=>`<div class="xbl"><div class="xblh"><b>${String.fromCharCode(65+k)}</b><span>${esc(bName(b))}</span><small>${esc(String(b.format||"").split(/[.·]/)[0])}</small></div>${(b.items||[]).map(it=>{const v=vidOf(it);return `<div class="xbi">${v?`<img src="https://i.ytimg.com/vi/${v}/default.jpg" alt="">`:`<span class="xph"></span>`}<span class="xbn">${esc(xName(it.n))}</span><small>${esc(it.reps||"")}</small></div>`}).join("")}</div>`).join("")}</div>
+      </div><div class="xfoot"><button class="big" type="button" id="pGo">מתחילים</button></div>`;
+    $("pGo").onclick=()=>{try{AC&&AC.resume&&AC.resume()}catch(e){}sayQ(["יאללה, מתחילים"]);next()};return}
+
+  if(g.kind==="rest"){const nx=nextOf();$("pWork").hidden=true;$("pRest").hidden=false;setMedia(nx&&nx.it?vidOf(nx.it):null,nx&&nx.it?"הבא בתור":"");
+    const pr=nx&&nx.it?lastLog(w.id,TODAY):null,pv=nx&&nx.it&&pr&&pr.sets&&pr.sets[nx.bi+"-"+nx.ii]&&pr.sets[nx.bi+"-"+nx.ii][nx.s]?pr.sets[nx.bi+"-"+nx.ii][nx.s].kg:null;
+    $("pRest").innerHTML=`<div class="xrest"><small class="xk">מנוחה</small><div class="xbig" id="rSec">${Math.ceil(g.sec)}</div><div class="xbar"><i id="rBarL"></i></div>
+      ${nx?`<div class="xnext"><small>הבא בתור${nx.tag?" · "+esc(nx.tag):""}${nx.bi!==g.bi&&nx.b?" · "+esc(bName(nx.b)):""}</small><b>${nx.it?esc(xName(nx.it.n)):esc(bName(nx.b))}${nx.side?" · "+nx.side:""}</b>${nx.it?`<span>${esc(repTxt(nx.it.reps||""))}${pv!=null?` · בפעם הקודמת ${pv} ק״ג`:""}</span>`:""}</div>`:`<div class="xnext"><b>סוף האימון</b></div>`}
+      <div class="rb"><button type="button" id="rPlus">+15 שנ׳</button><button type="button" id="rSkip">דלג</button></div></div>`;
+    const nm=nx&&nx.it?xName(nx.it.n):"";sayQ([g.sec>=8?`מנוחה, ${Math.round(g.sec)} שניות.`:"מנוחה.",nm?"הבא:":"",nm,nx&&nx.it?repSay(nx.it.reps):""]);
+    let said10=false;const tot=g.sec;let T=tot;const c=clock(g.sec,()=>{const n2=PL.segs[PL.i+1];if(!n2||n2.kind!=="hold")say("קדימה");next()},(v)=>{$("rSec").textContent=Math.max(0,Math.ceil(v));$("rBarL").style.width=(Math.max(0,v)/T*100)+"%";if(!said10&&v<=10.2&&v>9&&T>=25){said10=true;say("עוד 10 שניות")}});
+    $("rPlus").onclick=()=>{c.add(15);T+=15};$("rSkip").onclick=()=>next();return}
+
+  if(g.kind==="ready"){const its=(g.b.items||[]),fv=vidOf(its[0]),bn=(PL.bl||[]).findIndex(b=>b.bi===g.bi)+1;setMedia(fv,"מתכוננים");labOf({bi:g.bi,b:g.b,it:its[0]||{},ii:0});
+    W.innerHTML=`<div class="xh"><div class="xey"><b>${(PL.lab||{})[g.bi]||String.fromCharCode(64+Math.max(1,bn))}</b><span>חלק ${bn} מתוך ${(PL.bl||[]).length}</span></div><h2 class="xn rtl">${esc(bName(g.b))}</h2><div class="xfmt">${esc(g.b.format||"")}</div></div>
+      <div class="xlist">${its.map(it=>`<div><span>${esc(xName(it.n))}</span><small>${esc(it.reps||"")}</small></div>`).join("")}</div>
+      <div class="xtimer">${ring("pR","מתחילים בעוד")}</div><div class="xfoot"><button class="big" type="button" id="pGo">מתחילים עכשיו</button>${navHTML()}</div>`;
+    labOf(g);PL.am=0;PL.rl=[];sayQ([`חלק ${bn}.`,bName(g.b)+".",String(g.b.format||"").match(/EMOM|AMRAP|For Time|Every|\d+\s*\/\s*\d+/i)?String(g.b.format).split(/[·|]/)[0]:""]);clock(10,next,(v)=>drawRing("pR",Math.ceil(v),v/10));$("pGo").onclick=()=>next();wireNav();return}
+
+  if(g.kind==="score"||g.kind==="amrap"||g.kind==="ft")setMedia(null);
   if(g.kind==="score"){const sc=(getLog(w.id,TODAY).score||{})[g.bi]||PL.auto||(PL.am?`${PL.am} ${window.pgLang==="en"?"rounds":"סבבים"} + `:"")||(g.q.includes("הארוך")&&PL.rl&&PL.rl.length?mss(Math.max(...PL.rl)):"");PL.auto="";W.innerHTML=`<div class="stage"><small>${esc(g.b.name)}</small><h2 style="direction:rtl">התוצאה שלך</h2><p>${esc(g.q)}</p></div>
     <div class="meter" style="grid-template-columns:1fr"><div><small>תוצאה</small><input id="pSc" type="text" dir="ltr" value="${esc(sc)}" placeholder="${g.q.includes("זמן")?"12:30":"5 + 8"}"></div></div><button class="big" type="button" id="pDone">שמירה והמשך</button>${navHTML()}`;
     $("pDone").onclick=()=>{const v=$("pSc").value.trim();if(v)setLog(w.id,TODAY,l=>{l.score=Object.assign({},l.score||{},{[g.bi]:v})});next()};wireNav();return}
@@ -2238,32 +2386,39 @@ function show(){clearInterval(timer);const {w,segs,i}=PL,g=segs[i];$("pBar").sty
     clock(g.cap||36000,()=>fin(true),(v)=>{$("pCS").textContent=mss(v)},true);$("pDone").onclick=()=>{beep(880);k++;if(k>=n)fin(false);else draw()};wireNav();return}
   /* exercise screens: rep / hold / work */
   const key=g.bi+"-"+g.ii,lg=getLog(w.id,TODAY),s=(lg.sets[key]||[])[g.s]||{},prev=lastLog(w.id,TODAY),pv=prev&&prev.sets&&prev.sets[key]&&prev.sets[key][g.s]?prev.sets[key][g.s].kg:null;
-  const kgBox=g.it.nokg?"":`<div><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><div class="stp2"><button type="button" data-kgd="-1" aria-label="פחות">−</button><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"><button type="button" data-kgd="1" aria-label="יותר">+</button></div></div>`;
+  setMedia(vidOf(g.it)," ");const showNote=g.s===0;
+  const kgBox=g.it.nokg?"":`<div class="xkg"><small>משקל (ק״ג)${pv!=null?` · קודם ${pv}`:""}</small><div class="stp2"><button type="button" data-kgd="-1" aria-label="פחות">−</button><input id="pKg" type="number" inputmode="decimal" step="0.5" value="${s.kg??(pv??"")}" aria-label="משקל"><button type="button" data-kgd="1" aria-label="יותר">+</button></div></div>`;
   const wireKg=()=>W.querySelectorAll("[data-kgd]").forEach(b=>b.onclick=()=>{const i=$("pKg"),v=parseFloat(i.value)||0,st=v>=20?2.5:1;i.value=Math.max(0,Math.round((v+st*(+b.dataset.kgd))*10)/10)});
-  if(g.kind==="work"){say(g.side||"עבודה");W.innerHTML=stageHTML(g,g.it.reps&&!holdOf(g.it)?`<div class="pchip">${esc(repTxt(g.it.reps))}</div>`:"")+ring("pR","עבודה")+`<button class="big ghostb" type="button" id="pPause">עצירה</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+  const sayEx=(extra)=>{if(!first)return;const nm=xName(g.it.n);sayQ([g.s>0?`סט ${g.s+1}.`:"",nm,repSay(g.it.reps),...(extra||[]),showNote&&g.it.d&&g.it.d.length<160?g.it.d:""])};
+
+  if(g.kind==="work"){const rc=g.it.reps&&!holdOf(g.it)?`<div class="xchip">${esc(repTxt(g.it.reps))}</div>`:"";
+    W.innerHTML=headHTML(g,rc)+`<div class="xtimer">${ring("pR",g.side||"עבודה")}</div><button class="big ghostb" type="button" id="pPause">עצירה</button>`+(showNote?noteHTML(g.it):"")+`<div class="xfoot">${prof.painScale?painBox(key,lg):""}${navHTML()}</div>`;
+    if(first)sayQ([g.side?g.side+", ":"",xName(g.it.n),"מתחילים"]);
     const c=clock(g.sec,()=>{if(!g.noMark)markSet(g);next()},(v)=>drawRing("pR",Math.ceil(v),v/g.sec));$("pPause").onclick=()=>{c.pause();$("pPause").textContent=c.paused?"המשך":"עצירה"};wireNav();return}
+
   if(g.kind==="hold"){const h=holdOf(g.it);let side=0,rpt=h.times,kgV;const pv0=PL.segs[PL.i-1],aft=/^\d+$/.test(h.after)&&/\+/.test(g.it.n)?h.after+" "+g.it.n.split("+").pop().trim():h.after;
-    W.innerHTML=stageHTML(g,`<div class="pchip">${esc(g.it.reps||"")}</div>`)+`${kgBox?`<div class="meter">${kgBox}</div>`:""}<div id="pH"></div><button class="big" type="button" id="pDone">מתחילים עכשיו</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;
+    W.innerHTML=headHTML(g,`<div class="xchip">${esc(g.it.reps||"")}</div>`)+(kgBox?`<div class="xin">${kgBox}</div>`:"")+`<div class="xtimer" id="pH"></div><button class="big" type="button" id="pDone">מתחילים עכשיו</button>`+(showNote?noteHTML(g.it):"")+setsHTML(g,lg)+`<div class="xfoot">${prof.painScale?painBox(key,lg):""}${navHTML()}</div>`;
     const lbl=()=>(h.sides?(side?"צד ימין":"צד שמאל"):"החזקה")+(h.times>1?` · ${h.times-rpt+1}/${h.times}`:"");
     const prep=(sec,txt,then)=>{const b=$("pDone");b.hidden=false;b.textContent="מתחילים עכשיו";b.onclick=then;$("pH").innerHTML=ring("pR",txt);clock(sec,then,(v)=>drawRing("pR",Math.ceil(v),v/sec))};
     const fin=()=>{markSet(g,kgV);next()};
-    const run=()=>{if(kgV===undefined)kgV=$("pKg")?$("pKg").value:undefined;say(h.sides?(side?"צד ימין, מתחילים":"צד שמאל, מתחילים"):"מתחילים");$("pH").innerHTML=ring("pR",lbl());
+    const run=()=>{if(kgV===undefined)kgV=$("pKg")?$("pKg").value:undefined;say(h.sides?(side?"צד ימין, מתחילים":"צד שמאל, מתחילים"):"מתחילים");$("pH").innerHTML=ring("pR",lbl());let half=false,ten=false;
       const c=clock(h.sec,()=>{if(h.sides&&!side){side=1;say("מחליפים צד");prep(5,"מחליפים צד",run);return}if(--rpt>0){side=0;say("מתכוננים");prep(5,"מתכוננים",run);return}
-        if(aft){say("עכשיו "+aft);$("pH").innerHTML=`<div class="meter one"><div><small>עכשיו</small><b>${esc(aft)}</b></div></div>`;const b=$("pDone");b.hidden=false;b.textContent="סיימתי";b.onclick=fin;return}
-        const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="rest")say("סיום");fin()},(v)=>drawRing("pR",Math.ceil(v),v/h.sec));
+        if(aft){say("עכשיו "+aft);$("pH").innerHTML=`<div class="xafter"><small>עכשיו</small><b>${esc(aft)}</b></div>`;const b=$("pDone");b.hidden=false;b.textContent="סיימתי";b.onclick=fin;return}
+        const nx=PL.segs[PL.i+1];if(!nx||nx.kind!=="rest")say("סיום");fin()},(v)=>{drawRing("pR",Math.ceil(v),v/h.sec);if(!half&&h.sec>=20&&v<=h.sec/2&&v>h.sec/2-1){half=true;if(h.sec>=40)say("חצי")}if(!ten&&h.sec>=30&&v<=10.2&&v>9){ten=true;say("עוד 10 שניות")}});
       const pb=$("pDone");pb.hidden=false;pb.textContent="עצירה";pb.onclick=()=>{c.pause();pb.textContent=c.paused?"המשך":"עצירה"}};
-    wireKg();wireNav();if(pv0&&(pv0.kind==="ready"||pv0.kind==="rest"))run();else{say("מתכוננים");prep(5,"מתכוננים",run)}return}
+    wireKg();wireNav();if(pv0&&(pv0.kind==="ready"||pv0.kind==="rest"))run();else{if(first)sayEx();else say("מתכוננים");prep(first&&g.s===0?8:5,"מתכוננים",run)}return}
+
   /* rep */
   const winHTML=g.win?`<div class="pclk"><b id="pCS"></b><small>נשאר בחלון</small></div>`:"";
-  const r0=(String(g.it.reps||"").match(/^\s*(\d+)/)||[])[1],numR=/^[\d\s\-–\/]+$/.test(String(g.it.reps||""))&&!/\//.test(String(g.it.reps||""))&&!(g.it.nokg&&!restOf(g.b)),ef0=s.e||0;
-  W.innerHTML=stageHTML(g)+`<div class="meter${kgBox?"":" one"}"><div><small>${g.tag&&g.tag.startsWith("סט")?"סט":"חזרות"}</small><b>${esc(repTxt(g.it.reps)||"—")}</b><small>${esc(g.tag||"")}</small></div>${kgBox}</div>
-    ${numR?`<div class="meter one"><div class="rp2"><small>חזרות שעשית</small><input id="pRp" type="text" inputmode="numeric" value="${esc(s.r??r0??"")}" aria-label="חזרות"></div></div>`:""}
-    ${g.it.nokg&&!numR?"":`<div><small style="color:var(--muted)">איך הרגיש?</small><div class="pef" id="pEf">${[[6,"קל"],[8,"בדיוק"],[10,"קשה"]].map(([v,l])=>`<button type="button" data-ef="${v}" aria-pressed="${ef0===v}">${l}</button>`).join("")}</div></div>`}
-    ${winHTML}<button class="big" type="button" id="pDone">סיימתי</button>${prof.painScale?painBox(key,lg):""}${navHTML()}`;wireKg();
+  const r0=(String(g.it.reps||"").match(/^\s*(\d+)/)||[])[1],numR=/^[\d\s\-–\/]+$/.test(String(g.it.reps||""))&&!/\//.test(String(g.it.reps||""))&&!(g.it.nokg&&!restOf(g.b)),ef0=s.e||0,lite=g.it.nokg&&!numR;
+  W.innerHTML=headHTML(g,`<div class="xchip">${esc(repTxt(g.it.reps)||"—")}</div>`)+(showNote?noteHTML(g.it):"")+setsHTML(g,lg)
+    +((kgBox||numR)?`<div class="xin">${kgBox}${numR?`<div class="xrp"><small>חזרות שעשית</small><input id="pRp" type="text" inputmode="numeric" value="${esc(s.r??r0??"")}" aria-label="חזרות"></div>`:""}</div>`:"")
+    +(lite?"":`<div class="xfeel"><small>איך היה הסט?</small><div class="pef" id="pEf">${[[6,"קל"],[8,"בדיוק"],[10,"קשה"]].map(([v,l])=>`<button type="button" data-ef="${v}" aria-pressed="${ef0===v}">${l}</button>`).join("")}</div></div>`)
+    +`${winHTML}<div class="xfoot"><button class="big" type="button" id="pDone">${!/^סבב/.test(g.tag||"")&&PL.segs.filter(x=>x.it&&x.bi===g.bi&&x.ii===g.ii).length>1?"סיום סט":"סיימתי"}</button>${prof.painScale?painBox(key,lg):""}${navHTML()}</div>`;wireKg();sayEx();
   let ef=ef0;if($("pEf"))$("pEf").onclick=e=>{const b=e.target.closest("[data-ef]");if(!b)return;ef=+b.dataset.ef;[...$("pEf").children].forEach(x=>x.setAttribute("aria-pressed",x===b))};
   const extra=()=>{const o={};if($("pRp")&&$("pRp").value.trim())o.r=$("pRp").value.trim();if(ef)o.e=ef;return o};
   if(g.win){if(g.winStart||!PL.wt)PL.wt=Date.now();const wt=PL.wt,left=g.win-(Date.now()-wt)/1000;clock(left,()=>{let j=PL.i+1;while(j<PL.segs.length&&PL.segs[j].bi===g.bi&&PL.segs[j].win&&!PL.segs[j].winStart)j++;PL.i=j-1;next()},(v)=>{$("pCS").textContent=mss(Math.ceil(v))})}
-  $("pDone").onclick=()=>{markSet(g,$("pKg")?$("pKg").value:undefined,extra());
+  $("pDone").onclick=()=>{beep(880);markSet(g,$("pKg")?$("pKg").value:undefined,extra());
     if(g.win&&g.winEnd){const rem=Math.round(g.win-(Date.now()-PL.wt)/1000);PL.rl=(PL.rl||[]).concat(g.win-rem);clearInterval(timer);if(rem>0&&PL.i<PL.segs.length-1){PL.segs.splice(PL.i+1,0,{kind:"rest",bi:g.bi,b:g.b,sec:rem,tmp:true})}}
     next()};wireNav()}
 
