@@ -841,7 +841,7 @@ function briefTab(c){const B=BRIEF[c.id]||(BRIEF[c.id]={notes:c.bnotes||"",ai:c.
 
 /* ===================== picker + blocks modal ===================== */
 const BODY=[["spine","עמוד שדרה וטורסו"],["shoulder","כתפיים ושכמות"],["hips","ירכיים ואגן"],["post","המסטרינג ושרשרת אחורית"],["ankle","קרסול וכף רגל"],["wrist","שורש כף יד"],["flow","זרימה וכל הגוף"],["core","הפעלת ליבה"],["other","אחר"]];
-function bodyPart(e){const n=e.n.toLowerCase();
+function bodyPart(e){const n=e.n.toLowerCase();if(/halo/.test(n))return "shoulder";if(/air squat|prisoner squat|squat to stand|overhead squat|^mb squat$/.test(n))return "hips";if(/push pull legs|plank 2 ankle|plank to ankle|inchworm to plank|plank to cobra|plank → cobra/.test(n))return "flow";if(/downward dog/.test(n))return "flow";if(/spinal twist|bw windmill/.test(n))return "spine";if(/leg swing/.test(n))return "hips";if(/hang/.test(n))return "shoulder";
   if(/wrist|6 pose/.test(n))return"wrist";
   if(/ankle|calf|knee over toe|tibialis|foot/.test(n))return"ankle";
   if(/\blat\b|pec|shoulder|elbow|angels|arm sweep|pull over|t raise|scapula|pull a ?part|dislocat|face pull|circumduction|wall slide|swimmer|dead hang|bar hang|active hang|y raise|t \+ y|arm circle|straight arm/.test(n))return"shoulder";
@@ -852,20 +852,39 @@ function bodyPart(e){const n=e.n.toLowerCase();
   if(/bird dog|mountain climber/.test(n))return"core";
   if(e.p==="CO")return"core";
   return"other"}
-const STRP=["HP","VP","HR","VR","HG","SQ","LG","CD","AR"];
+
+const KHIDE=new Set(["bar","bb","bb incline","bend","bw","dbl db","deficit","elevated","floor","free","rings","strict","tuck","single leg → full","trx assisted"]);
+const KOVR={s:["DB Goblet Split Squat","DB Lateral Raise","DBL DB Cyclist Squat","Goblet Cossack Squat","Isometric Cossack Squat","Single Arm Pull Down","Single Leg Dead Lift","Weighted Isometric Lunge Stance","Def Single Leg Glute Bridge","Kickstand Good Morning","Suitcase RDL","TRX ecc Pull Ups","Pulley Row","Alt Gorilla Row","Static / Farmers Iso Lunge Hold","Reverse Lunge","Box Step Down","DBL KB SLDL","KB SLDL","Empty BB DL","Filly Press L+R","Half Kneeling KB Knee Drive","Knelling Push Ups","Low Push Ups Hold","KB Counterbalance","Leg Extension","Leg Ext","Mini Bend Hip Abduction","Floor Seated Single Arm Cable Pull","DB T + Y Raise","Incline Bench Y Raise","KB Single Leg DL","DBL KB SDL","Low Step-Up","Step Down","DB Curl to Press","Hammer Curl to Press","Triceps Pushdown","TRX Single Arm Row","Dumbbell Three Point Row","DBL DB Incline Press (One Arm Top Hold)","Half Kneeling KB Bottoms Up Press","Heel Elevated Farmers Squat","KB Cossack Squat","Seated DB Good Morning","Seated Good Morning (Plate)","Single Arm Cable Pull Over","TRX Assisted Curtsy Lunge","Band Straight Arm Pull Down","Face Pull","TRX / Swiss Ball Glute Bridge + Leg Extension","Assisted Reverse Nordic Curls"],
+  c:["Standing Bicycle","TRX Body Saw","Bear Stance DB Pull Through","Bear Stance KB Pull Through","KB Around The World","Knees 2 Chest","Trx Pike","Hollow Swings"],
+  b:["Dead Hang","Scapula Push Ups (plank)","Scapula Dips","Downward Dog","Pelvic Spinal Twist","Quadruped Spinal Twist","BW Windmill","Plank To Cobra","Plank → Cobra","Plank 2 Ankle","Plank to Ankle","ATG Split Squat Hold","Inchworm To Plank","Leg Swings Front","Leg Swings Side","SL RDL Reach","Wall Jefferson Curls","Active Hang","Chest to Ring Hang","Push Pull Legs Sequence"],
+  m:["Box Jump Burpee","Ball Slam","Push Press","Box Jump / Thruster","Box Squat Jump","Thruster (BB)"]};
+const KMAP={};Object.entries(KOVR).forEach(([k,a])=>a.forEach(n=>KMAP[n.toLowerCase()]=k));
+const STRP=["HP","VP","HR","VR","HG","SQ","LG","AR"];
+function kat(e){if(e.k)return e.k;const n=e.n.toLowerCase();if(KHIDE.has(n)||/^single leg .{1,3} full$/.test(n))return "";if(KMAP[n])return KMAP[n];
+  if(e.p==="CD")return "m";if(e.p==="CO")return "c";if(e.p==="AR")return "s";if(["MB","ML","SH"].includes(e.p))return "b";
+  if(STRP.includes(e.p)){if(/snatch|clean|thruster|swing|slam|jump|g2oh|push press|wall ball|burpee|devil|j\.lunge|j\.squat/.test(n))return "m";
+    if(e.sec.includes("s"))return "s";if(e.sec.includes("m"))return "m";return "b"}
+  return e.sec[0]||"s"}
+const CORE=[["plank","פלאנק ויציבות",/plank|hold|bear|bird dog|dead bug|pallof|drag|tap|copenhagen|carry|farmers|suitcase|walk/],["flex","כפיפות והולו",/bicycle|sit up|sit-up|v-up|x-up|hollow|crunch|toes|knee|roll|tuck|pike|l-sit|jack ?knife|leg raise/],["rot","סיבוב וצד",/russian|twist|side|wind|oblique|rotation|chop|halo|around|atw|horn/],["post","גב ושרשרת אחורית",/nordic|superman|back ext|good morning|jefferson|bridge|rdl|hyper/]];
+const METG=[["oly","הרמות ונפיצות",/snatch|clean|g2oh|thruster|push press|swing|slam|wall ball|devil/],["cd","קפיצות וקונדישנינג",/jump|burpee|rope|up down|wall walk|climber|run|row cal|bike/],["legs","רגליים",/squat|lunge|step|rdl|dead ?lift|good morning/],["upper","פלג גוף עליון",/push|press|row|pull|dip|chin/]];
+const GN={other:"אחר",acc:"עזר ובידוד",...PAT};BODY.forEach(([k,t])=>GN["b_"+k]=t);CORE.forEach(([k,t])=>GN["c_"+k]=t);METG.forEach(([k,t])=>GN["m_"+k]=t);
+function grpOf(sec,e){const n=e.n.toLowerCase();if(sec==="b")return "b_"+bodyPart(e);if(sec==="c"){const g=coreG(e);return g==="other"?"other":"c_"+g}
+  if(sec==="m"){for(const [k,,r] of METG)if(r.test(n))return "m_"+k;return "other"}
+  if(sec==="s")return STRP.includes(e.p)?e.p:"acc";return e.p}
+function grpName(g){return GN[g]||g}
+function grpOrder(sec){return sec==="b"?BODY.map(x=>"b_"+x[0]):sec==="c"?CORE.map(x=>"c_"+x[0]).concat("other"):sec==="m"?METG.map(x=>"m_"+x[0]).concat("other"):["HP","VP","HR","VR","HG","SQ","LG","AR","acc","other"]}
+function coreG(e){const n=e.n.toLowerCase();for(const [k,,r] of CORE)if(r.test(n))return k;return "other"}
 const PATORD=["HP","VP","HR","VR","HG","SQ","LG","CO","CD","AR","SH","MB","ML","OT"];
 function renderModal(){const host=$("modalHost");if(!PICK){host.innerHTML="";return}
   if(PICK.type==="blocks")return renderBlocks();
   const c=OC();const b=c.blocks[PICK.bi];const U=usage(c);const sec=PICK.sec;const q=(PICK.q||"").toLowerCase();const mob=sec==="b";
-  const gOf=e=>mob?bodyPart(e):e.p;const gName=g=>mob?(BODY.find(x=>x[0]===g)||[,"אחר"])[1]:(PAT[g]||g);
-  let list=EX.filter(e=>(!sec||e.sec.includes(sec))&&(!q||e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q))));
-  if(mob&&!q)list=list.filter(e=>!STRP.includes(e.p));
+  const gOf=e=>grpOf(sec,e),gName=grpName,order=grpOrder(sec);
+  let list=q?EX.filter(e=>kat(e)!==""&&(e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q)))):EX.filter(e=>sec?kat(e)===sec:kat(e)!=="");
   if(PICK.grp)list=list.filter(e=>gOf(e)===PICK.grp);
   const byName=(x,z)=>x.e.n.localeCompare(z.e.n,"en",{sensitivity:"base"});
   const rows=list.map(e=>({e,b:badges(e,U,sec||"s"),s:score(e,U,sec||"s",c)}));
   const rec=q?[]:rows.filter(r=>r.e.h>=3&&!r.b.some(x=>x.l!=="info")).sort((a,z)=>a.s-z.s).slice(0,6).sort(byName);
-  const order=mob?BODY.map(x=>x[0]):PATORD;
-  const groups=[...new Set(EX.filter(e=>(!sec||e.sec.includes(sec))&&!(mob&&STRP.includes(e.p))).map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
+  const groups=[...new Set(EX.filter(e=>sec?kat(e)===sec:kat(e)!=="").map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
   const row=r=>`<div class="pr ${r.b.some(x=>x.l==="bad")?"dim":""}" data-pick="${r.e.id}" tabindex="0" role="button"><div class="nm">${esc(r.e.n)}</div><div class="pmeta">${r.e.h?`<span class="tg fav">אצלך ×${r.e.h}</span>`:""}${r.b.filter(x=>x.l!=="info").map(x=>`<span class="tg ${x.l}">${esc(x.t)}</span>`).join("")}${r.e.v?`<a class="vid" href="${YT(r.e.v)}" target="_blank" rel="noopener" data-stop="1" title="סרטון">${ico("play")}</a>`:""}</div></div>`;
   let body="";
   if(q){body=rows.sort(byName).slice(0,200).map(row).join("")}
@@ -875,7 +894,7 @@ function renderModal(){const host=$("modalHost");if(!PICK){host.innerHTML="";ret
   host.innerHTML=`<div class="modal" data-a="mclose"><div class="mp" role="dialog" aria-label="בחירת תרגיל"><div class="mh"><div class="r"><b>${CLS[c.cls]} · ${DAYS[wd(c.date)]} · ${esc(BK[b.k].label(b.n))}</b><span class="grow"></span><button class="btn sm" data-a="mclose" type="button">סגירה</button></div>
     <div class="r"><input type="search" id="pq" placeholder="חיפוש תרגיל" value="${esc(PICK.q||"")}" autocomplete="off"></div>
     <div class="flt">${[["b","מוביליטי"],["c","קור"],["s","כוח"],["m","מטקון"],["","הכל"]].map(([k,t])=>`<button data-ps="${k}" aria-pressed="${sec===k}" type="button">${t}</button>`).join("")}</div>
-    <div class="flt"><button data-pg="" aria-pressed="${!PICK.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-pg="${g}" aria-pressed="${PICK.grp===g}" type="button">${mob?"":`<i style="background:${pcol(g)}"></i>`}${esc(gName(g))}</button>`).join("")}</div></div>
+    <div class="flt"><button data-pg="" aria-pressed="${!PICK.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-pg="${g}" aria-pressed="${PICK.grp===g}" type="button">${PAT[g]?`<i style="background:${pcol(g)}"></i>`:""}${esc(gName(g))}</button>`).join("")}</div></div>
     <div class="ml">${body||'<div class="empty-note">לא נמצא. אפשר להוסיף אותו במאגר.</div>'}</div></div></div>`;
   const inp=$("pq");if(inp&&PICK.focus!==false){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}
 }
@@ -888,19 +907,19 @@ function renderBlocks(){const c=OC();const bi=PICK.bi;const b=c.blocks[bi];const
 let LB={sec:"b",q:"",pat:"",grp:"",ed:null,rv:false};
 function saveEx(){DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)))}
 function renderLib(){const q=LB.q.toLowerCase();const nrv=EX.filter(e=>e.rv).length;const sec=LB.sec||"s";const mob=sec==="b";
-  const gOf=e=>mob?bodyPart(e):e.p;const gName=g=>mob?(BODY.find(x=>x[0]===g)||[,"אחר"])[1]:(PAT[g]||g);const order=mob?BODY.map(x=>x[0]):PATORD;
-  let list=LB.rv?EX.filter(e=>e.rv):EX.filter(e=>e.sec.includes(sec)&&!(mob&&!q&&STRP.includes(e.p)));
+  const gOf=e=>grpOf(sec,e),gName=grpName,order=grpOrder(sec);
+  let list=LB.rv?EX.filter(e=>e.rv):EX.filter(e=>kat(e)===sec);
   if(q)list=EX.filter(e=>e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q)));
-  const groups=[...new Set(EX.filter(e=>e.sec.includes(sec)&&!(mob&&STRP.includes(e.p))).map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
+  const groups=[...new Set(EX.filter(e=>kat(e)===sec).map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
   if(LB.grp&&!q&&!LB.rv)list=list.filter(e=>gOf(e)===LB.grp);
   const byName=(x,z)=>x.n.localeCompare(z.n,"en",{sensitivity:"base"});
   const row=e=>`<div class="lrow"><span class="nm">${esc(e.n)}</span><span class="meta">${e.rv?`<span class="rvw">${esc(e.rv)}</span><button class="btn sm" data-a="rvok" data-id="${e.id}" type="button">מאשר</button>`:""}${e.h?`<span class="tg fav">אצלך ×${e.h}</span>`:""}${e.v?`<a class="vid" href="${YT(e.v)}" target="_blank" rel="noopener" title="סרטון">${ico("play")}</a>`:`<span class="novid" title="אין סרטון">—</span>`}<button class="btn sm ghost" data-a="edex" data-id="${e.id}" type="button">עריכה</button></span></div>`;
-  let h=`<div class="wk-head"><div><div class="h1">מאגר התרגילים</div><div class="sub">${EX.length} תרגילים · ${EX.filter(e=>e.v).length} עם סרטון · ${EX.filter(e=>e.h).length} מהתכניות שלך</div></div><span class="grow"></span>
+  let h=`<div class="wk-head"><div><div class="h1">מאגר התרגילים</div><div class="sub">${EX.filter(e=>kat(e)).length} תרגילים · ${EX.filter(e=>e.v).length} עם סרטון · ${EX.filter(e=>e.h).length} מהתכניות שלך</div></div><span class="grow"></span>
     ${nrv?`<button class="btn${LB.rv?" pri":""}" data-a="rvtog" type="button">לבדיקה · ${nrv}</button>`:""}<button class="btn pri" data-a="newex" type="button">+ תרגיל חדש</button>
     <details class="more"><summary class="btn">הגדרות בדיקה</summary><div class="menu"><label class="chk"><input type="checkbox" id="setAx"${SET.axial?" checked":""}> 3 ימים בין עומס צירי</label><label class="chk"><input type="checkbox" id="setKH"${SET.kneeHip?" checked":""}> ברך + ירך בכל שיעור</label></div></details></div>
    ${LB.rv?`<div class="rvnote"><b>${nrv} תרגילים שהתיוג שלהם לא בטוח.</b> לכל אחד כתוב למה. "מאשר" משאיר כמו שהוא, "עריכה" לתיקון. <button class="btn sm" data-a="rvall" type="button">אישור כולם</button></div>`:""}
    <div class="libbar"><div class="flt big">${[["b","מוביליטי ותנועה"],["c","קור"],["s","כוח"],["m","מטקון"]].map(([k,t])=>`<button data-ls="${k}" aria-pressed="${!LB.rv&&sec===k}" type="button">${t}</button>`).join("")}</div><input type="search" id="lq" placeholder="חיפוש בכל המאגר" value="${esc(LB.q)}"></div>
-   ${!LB.rv&&!q?`<div class="flt" style="margin-bottom:16px"><button data-lg="" aria-pressed="${!LB.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-lg="${g}" aria-pressed="${LB.grp===g}" type="button">${mob?"":`<i style="background:${pcol(g)}"></i>`}${esc(gName(g))}</button>`).join("")}</div>`:""}`;
+   ${!LB.rv&&!q?`<div class="flt" style="margin-bottom:16px"><button data-lg="" aria-pressed="${!LB.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-lg="${g}" aria-pressed="${LB.grp===g}" type="button">${PAT[g]?`<i style="background:${pcol(g)}"></i>`:""}${esc(gName(g))}</button>`).join("")}</div>`:""}`;
   if(LB.ed)h+=editor(LB.ed==="new"?{id:"",n:"",sec:sec,p:"MB",t:"M",f:"",eq:[],fam:"",v:"",h:0}:EXI[LB.ed]);
   let body="";
   if(q||LB.rv)body=list.sort(byName).map(row).join("");
@@ -908,7 +927,8 @@ function renderLib(){const q=LB.q.toLowerCase();const nrv=EX.filter(e=>e.rv).len
   h+=`<div class="lib">${body||'<div class="empty-note">לא נמצא</div>'}</div>`;
   $("app").innerHTML=h}
 function editor(e){return`<form class="ed" id="exForm" data-id="${esc(e.id)}"><div class="g2"><label style="flex:1">שם <input type="text" name="n" value="${esc(e.n)}" required style="flex:1;direction:ltr"></label><label>סרטון <input type="text" name="v" value="${esc(e.v)}" style="direction:ltr;width:200px" placeholder="קישור יוטיוב"></label></div>
-  <div class="g2"><b>סקשנים:</b>${Object.entries(SECN).map(([k,t])=>`<label><input type="checkbox" name="sec" value="${k}"${e.sec.includes(k)?" checked":""}>${t}</label>`).join("")}</div>
+  <div class="g2"><label><b>קטגוריה</b> <select name="k">${Object.entries(SECN).map(([k,t])=>`<option value="${k}"${kat(e)===k?" selected":""}>${t}</option>`).join("")}</select></label></div>
+  <div class="g2"><b>איפה הופיע בתכניות:</b>${Object.entries(SECN).map(([k,t])=>`<label><input type="checkbox" name="sec" value="${k}"${e.sec.includes(k)?" checked":""}>${t}</label>`).join("")}</div>
   <div class="g2"><label>דפוס <select name="p">${Object.entries(PAT).map(([k,t])=>`<option value="${k}"${e.p===k?" selected":""}>${t}</option>`).join("")}</select></label><label>מעמד <select name="t">${["S","M","V"].map(t=>`<option${e.t===t?" selected":""}>${t}</option>`).join("")}</select></label><label>משפחה <input type="text" name="fam" value="${esc(e.fam)}" style="width:120px;direction:ltr"></label></div>
   <div class="g2"><b>תגיות:</b>${Object.entries(FLAG).map(([k,t])=>`<label><input type="checkbox" name="f" value="${k}"${e.f.includes(k)?" checked":""}>${t}</label>`).join("")}</div>
   <div class="g2"><b>ציוד:</b>${Object.entries(EQN).map(([k,t])=>`<label><input type="checkbox" name="eq" value="${k}"${e.eq.includes(k)?" checked":""}>${t}</label>`).join("")}</div>
@@ -1027,7 +1047,7 @@ document.addEventListener("click",async ev=>{
     case"heat":HEAT=!HEAT;return renderAll();
     case"drive":{t.disabled=true;t.textContent="מעדכן…";try{await driveSync()}catch(e){toast("Drive: "+((e&&(e.message||e.code))||"שגיאה"))}t.disabled=false;return renderAll()}
     case"rvok":{const e=EXI[t.dataset.id];if(!e)return;if(t.dataset.t)e.t=t.dataset.t;delete e.rv;saveEx();return renderLib()}
-    case"rvall":{EX.filter(e=>e.rv&&(!LB.sec||e.sec.includes(LB.sec))).forEach(e=>delete e.rv);saveEx();toast("אושר");return renderLib()}
+    case"rvall":{EX.filter(e=>e.rv).forEach(e=>delete e.rv);saveEx();toast("אושר");return renderLib()}
     case"edex":LB.ed=t.dataset.id;return renderLib();
     case"edcancel":LB.ed=null;return renderLib();
     case"undo":return undo();
@@ -1041,7 +1061,7 @@ $("undo").onclick=undo;
 document.addEventListener("submit",ev=>{
   if(ev.target.id==="aiForm"){ev.preventDefault();const v=$("aiIn").value.trim();if(v)askAI(v);return}
   if(ev.target.id==="exForm"){ev.preventDefault();const f=new FormData(ev.target);const id=ev.target.dataset.id;let v=String(f.get("v")||"").trim();const m=v.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/);if(m)v=m[1];
-    const o={n:String(f.get("n")).trim(),sec:f.getAll("sec").join("")||"s",p:f.get("p"),t:f.get("t"),f:f.getAll("f").join(""),eq:f.getAll("eq").length?f.getAll("eq"):["BW"],fam:String(f.get("fam")||"").trim(),v};
+    const o={n:String(f.get("n")).trim(),sec:f.getAll("sec").join("")||"s",p:f.get("p"),t:f.get("t"),f:f.getAll("f").join(""),eq:f.getAll("eq").length?f.getAll("eq"):["BW"],fam:String(f.get("fam")||"").trim(),v,k:f.get("k")||""};
     if(!o.n)return;if(id){Object.assign(EXI[id],o);delete EXI[id].rv}else EX.push({id:o.n.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-"+Date.now().toString(36),al:[],h:0,...o});
     indexEx();LB.ed=null;DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)));renderLib()}
 });
