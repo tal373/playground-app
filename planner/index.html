@@ -10,7 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-
+<title>בונה התכניות של פלייגראונד</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -379,6 +379,34 @@ a.vid svg.i{width:14px;height:14px;flex-basis:14px}
 .gate .gerr{margin:0;color:var(--bad);font-size:13px;min-height:18px}
 .gate .btn{justify-content:center;padding:11px}
 [hidden]{display:none!important}
+
+.pr{grid-template-columns:minmax(0,1fr) auto;padding:8px 10px}
+.pr .nm{text-align:left;font-size:14px}
+.pmeta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.pmeta a.vid{width:24px;height:24px;display:inline-grid;place-items:center}
+.ml .grp{position:sticky;top:0;background:var(--paper);z-index:1;font-size:13px;font-weight:600;color:var(--ink);padding:14px 10px 6px;border-bottom:1px solid var(--line2);margin-bottom:4px;display:flex;gap:8px;align-items:baseline}
+.ml .grp span{font-weight:400;color:var(--ink3);font-size:12px}
+.ml .grp.rec{color:var(--acc-ink)}
+.ml .pr{direction:ltr}
+.ml .pmeta{direction:rtl}
+
+.libbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.libbar input{flex:1;min-width:220px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--paper)}
+.flt.big button{padding:7px 14px;font-size:14px}
+.lib{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.lgrp{position:sticky;top:0;z-index:1;background:var(--paper2);padding:10px 20px;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line2);display:flex;gap:8px;align-items:baseline}
+.lgrp span{font-weight:400;color:var(--ink3);font-size:12px}
+.lrow{display:flex;align-items:center;gap:12px;padding:8px 20px;border-bottom:1px solid var(--line2);direction:ltr;min-height:44px}
+.lrow:hover{background:var(--paper2)}
+.lrow .nm{flex:1;font-size:14px;font-weight:500;min-width:0}
+.lrow .meta{display:flex;align-items:center;gap:8px;direction:rtl}
+.lrow .meta .btn.ghost{opacity:0;transition:opacity .15s var(--ease)}
+.lrow:hover .meta .btn.ghost,.lrow:focus-within .meta .btn.ghost{opacity:1}
+@media (hover:none){.lrow .meta .btn.ghost{opacity:1}}
+.lrow .rvw{margin:0;max-width:260px}
+.novid{color:var(--line);width:24px;text-align:center}
+.lrow a.vid{width:24px;height:24px;display:inline-grid;place-items:center}
+.menu .chk{display:flex!important;gap:8px;align-items:center;font-size:13.5px;color:var(--ink)}
 </style>
 
 <header class="bar">
@@ -495,7 +523,7 @@ function thisSunday(){const t=new Date();const s=new Date(Date.UTC(t.getFullYear
 /* ===================== state ===================== */
 let EX=[],EXI={},VID={},NKEY={},MC=[],W={},WK=null,SUN=null,CYC=null,SET={axial:true,kneeHip:true,v:2},HB=null,HEAT=false;
 const nkey=n=>String(n||"").toLowerCase().replace(/\(var\)|\(each\)|\(total\)/g,"").replace(/knelling/g,"kneeling").replace(/[^a-z0-9א-ת ]+/g," ").replace(/s\b/g,"").replace(/\s+/g," ").trim();
-function indexEx(){EXI={};VID={};NKEY={};EX.forEach(e=>{EXI[e.id]=e;if(e.v&&!VID[e.v])VID[e.v]=e.id;NKEY[nkey(e.n)]=e.id;(e.al||[]).forEach(a=>{const k=nkey(a);if(!NKEY[k])NKEY[k]=e.id})})}
+function indexEx(){EXI={};VID={};NKEY={};EX.forEach(e=>(e.old||[]).forEach(o=>EXI[o]=e));EX.forEach(e=>{EXI[e.id]=e;if(e.v&&!VID[e.v])VID[e.v]=e.id;NKEY[nkey(e.n)]=e.id;(e.al||[]).forEach(a=>{const k=nkey(a);if(!NKEY[k])NKEY[k]=e.id})})}
 function findEx(name){const k=nkey(name);if(NKEY[k])return EXI[NKEY[k]];const c=EX.filter(e=>nkey(e.n).includes(k)||k.includes(nkey(e.n)));c.sort((a,b)=>Math.abs(a.n.length-name.length)-Math.abs(b.n.length-name.length));return c[0]||null}
 function itemEx(it){const ids=[];(it.v||[]).forEach(v=>{const vid=(v.u||"").split("v=")[1];const id=NKEY[nkey(v.t)]||(vid&&VID[vid]);if(id&&!ids.includes(id))ids.push(id)});
   if(!ids.length)String(it.n||"").replace(/^(Super Set : |Buy In : |Buy Out : )/,"").split(/ --> | \+ /).forEach(part=>{const nm=part.replace(/^[\d:\/\-]+(\s(Alt|Max))?\s/,"").replace(/\(Var\)[\s\S]*$/,"").replace(/\([^)]*\)/g,"").trim();const id=NKEY[nkey(nm)];if(id&&!ids.includes(id))ids.push(id)});
@@ -812,19 +840,43 @@ function briefTab(c){const B=BRIEF[c.id]||(BRIEF[c.id]={notes:c.bnotes||"",ai:c.
   return h}
 
 /* ===================== picker + blocks modal ===================== */
+const BODY=[["spine","עמוד שדרה וטורסו"],["shoulder","כתפיים ושכמות"],["hips","ירכיים ואגן"],["post","המסטרינג ושרשרת אחורית"],["ankle","קרסול וכף רגל"],["wrist","שורש כף יד"],["flow","זרימה וכל הגוף"],["core","הפעלת ליבה"],["other","אחר"]];
+function bodyPart(e){const n=e.n.toLowerCase();
+  if(/wrist|6 pose/.test(n))return"wrist";
+  if(/ankle|calf|knee over toe|tibialis|foot/.test(n))return"ankle";
+  if(/\blat\b|pec|shoulder|elbow|angels|arm sweep|pull over|t raise|scapula|pull a ?part|dislocat|face pull|circumduction|wall slide|swimmer|dead hang|bar hang|active hang|y raise|t \+ y|arm circle|straight arm/.test(n))return"shoulder";
+  if(/inch ?worm|greatest|spiderman|bear|elephant|downward dog|down dog|walk to split|crawl|flow|table top|burpee|p\.t\.a|up dog/.test(n))return"flow";
+  if(/jefferson|good morning|\bgm\b|hamstring|toe touch|pike|back ext|nerve glide/.test(n))return"post";
+  if(/hip|90\/90|pigeon|frog|adductor|groiner|couch|lizard|cossack|squat hold|deep squat|glute|clam|butterfly|straddle|pancake|lunge|split|airplane|\bcars?\b|leg swing|bridge|inner thigh|side step|knees to squat|monster walk|windshield|weight shift/.test(n))return"hips";
+  if(/cat c(ow|amel)|thread the needle|t-?spine|thoracic|rotation|spinal|twist|child pose|cobra|prayer|open book|side bend|windmill|roll up|bootstrap|superman|scorpion/.test(n))return"spine";
+  if(/bird dog|mountain climber/.test(n))return"core";
+  if(e.p==="CO")return"core";
+  return"other"}
+const STRP=["HP","VP","HR","VR","HG","SQ","LG","CD","AR"];
+const PATORD=["HP","VP","HR","VR","HG","SQ","LG","CO","CD","AR","SH","MB","ML","OT"];
 function renderModal(){const host=$("modalHost");if(!PICK){host.innerHTML="";return}
   if(PICK.type==="blocks")return renderBlocks();
-  const c=OC();const b=c.blocks[PICK.bi];const U=usage(c);const sec=PICK.sec;const q=(PICK.q||"").toLowerCase();
-  let list=EX.filter(e=>(!sec||e.sec.includes(sec))&&(!PICK.pat||e.p===PICK.pat)&&(!q||e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q))));
-  const rows=list.map(e=>({e,b:badges(e,U,sec||"s"),s:score(e,U,sec||"s",c)})).sort((a,z)=>a.s-z.s);
-  const fav=rows.filter(r=>r.e.h>=3&&!r.b.some(x=>x.l==="bad")).slice(0,8);const favIds=new Set(fav.map(r=>r.e.id));
-  const pats=[...new Set(EX.filter(e=>!sec||e.sec.includes(sec)).map(e=>e.p))];
-  const row=r=>`<div class="pr ${r.b.some(x=>x.l==="bad")?"dim":""}" data-pick="${r.e.id}" tabindex="0" role="button"><div><div class="nm">${esc(r.e.n)}</div><div class="tgs"><span class="tg ${r.e.t}">${r.e.t}</span><span class="tg"><i style="background:${pcol(r.e.p)}"></i>${PAT[r.e.p]||r.e.p}</span>${r.e.h?`<span class="tg fav">אצלך ×${r.e.h}</span>`:""}${[...r.e.f].map(f=>`<span class="tg">${FLAG[f]}</span>`).join("")}${r.b.map(x=>`<span class="tg ${x.l}">${esc(x.t)}</span>`).join("")}</div></div><div>${r.e.v?`<a class="vid" href="${YT(r.e.v)}" target="_blank" rel="noopener" data-stop="1">${ico("play")}סרטון</a>`:'<span class="sub" style="font-size:11.5px">בלי סרטון</span>'}</div></div>`;
+  const c=OC();const b=c.blocks[PICK.bi];const U=usage(c);const sec=PICK.sec;const q=(PICK.q||"").toLowerCase();const mob=sec==="b";
+  const gOf=e=>mob?bodyPart(e):e.p;const gName=g=>mob?(BODY.find(x=>x[0]===g)||[,"אחר"])[1]:(PAT[g]||g);
+  let list=EX.filter(e=>(!sec||e.sec.includes(sec))&&(!q||e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q))));
+  if(mob&&!q)list=list.filter(e=>!STRP.includes(e.p));
+  if(PICK.grp)list=list.filter(e=>gOf(e)===PICK.grp);
+  const byName=(x,z)=>x.e.n.localeCompare(z.e.n,"en",{sensitivity:"base"});
+  const rows=list.map(e=>({e,b:badges(e,U,sec||"s"),s:score(e,U,sec||"s",c)}));
+  const rec=q?[]:rows.filter(r=>r.e.h>=3&&!r.b.some(x=>x.l!=="info")).sort((a,z)=>a.s-z.s).slice(0,6).sort(byName);
+  const order=mob?BODY.map(x=>x[0]):PATORD;
+  const groups=[...new Set(EX.filter(e=>(!sec||e.sec.includes(sec))&&!(mob&&STRP.includes(e.p))).map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
+  const row=r=>`<div class="pr ${r.b.some(x=>x.l==="bad")?"dim":""}" data-pick="${r.e.id}" tabindex="0" role="button"><div class="nm">${esc(r.e.n)}</div><div class="pmeta">${r.e.h?`<span class="tg fav">אצלך ×${r.e.h}</span>`:""}${r.b.filter(x=>x.l!=="info").map(x=>`<span class="tg ${x.l}">${esc(x.t)}</span>`).join("")}${r.e.v?`<a class="vid" href="${YT(r.e.v)}" target="_blank" rel="noopener" data-stop="1" title="סרטון">${ico("play")}</a>`:""}</div></div>`;
+  let body="";
+  if(q){body=rows.sort(byName).slice(0,200).map(row).join("")}
+  else{if(rec.length)body+=`<div class="grp rec">מומלץ לשורה הזו</div>${rec.map(row).join("")}`;
+    const by={};rows.forEach(r=>(by[gOf(r.e)]=by[gOf(r.e)]||[]).push(r));
+    order.concat(Object.keys(by).filter(g=>!order.includes(g))).forEach(g=>{if(!by[g])return;body+=`<div class="grp">${esc(gName(g))} <span>${by[g].length}</span></div>${by[g].sort(byName).map(row).join("")}`})}
   host.innerHTML=`<div class="modal" data-a="mclose"><div class="mp" role="dialog" aria-label="בחירת תרגיל"><div class="mh"><div class="r"><b>${CLS[c.cls]} · ${DAYS[wd(c.date)]} · ${esc(BK[b.k].label(b.n))}</b><span class="grow"></span><button class="btn sm" data-a="mclose" type="button">סגירה</button></div>
-    <div class="r"><input type="search" id="pq" placeholder="חיפוש תרגיל…" value="${esc(PICK.q||"")}" autocomplete="off"></div>
+    <div class="r"><input type="search" id="pq" placeholder="חיפוש תרגיל" value="${esc(PICK.q||"")}" autocomplete="off"></div>
     <div class="flt">${[["b","מוביליטי"],["c","קור"],["s","כוח"],["m","מטקון"],["","הכל"]].map(([k,t])=>`<button data-ps="${k}" aria-pressed="${sec===k}" type="button">${t}</button>`).join("")}</div>
-    <div class="flt"><button data-pp="" aria-pressed="${!PICK.pat}" type="button">כל הדפוסים</button>${pats.map(p=>`<button data-pp="${p}" aria-pressed="${PICK.pat===p}" type="button"><i style="background:${pcol(p)}"></i>${PAT[p]||p}</button>`).join("")}</div></div>
-    <div class="ml">${!q&&fav.length?`<div class="grp">הכי מתאים — מהתרגילים שאתה עושה</div>${fav.map(row).join("")}<div class="grp">כל השאר</div>`:""}${rows.filter(r=>q||!favIds.has(r.e.id)).slice(0,180).map(row).join("")||'<div class="empty-note">לא נמצא. אפשר להוסיף אותו במאגר.</div>'}</div></div></div>`;
+    <div class="flt"><button data-pg="" aria-pressed="${!PICK.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-pg="${g}" aria-pressed="${PICK.grp===g}" type="button">${mob?"":`<i style="background:${pcol(g)}"></i>`}${esc(gName(g))}</button>`).join("")}</div></div>
+    <div class="ml">${body||'<div class="empty-note">לא נמצא. אפשר להוסיף אותו במאגר.</div>'}</div></div></div>`;
   const inp=$("pq");if(inp&&PICK.focus!==false){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}
 }
 function renderBlocks(){const c=OC();const bi=PICK.bi;const b=c.blocks[bi];const cand=blockCandidates(c,bi);
@@ -833,16 +885,27 @@ function renderBlocks(){const c=OC();const bi=PICK.bi;const b=c.blocks[bi];const
   PICK.cand=cand}
 
 /* ===================== library + metcons ===================== */
-let LB={sec:"s",q:"",pat:"",ed:null,rv:false};
-function saveEx(){DATA.put("pl/ex",{list:EX,v:Date.now(),m:2}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)))}
-function renderLib(){const q=LB.q.toLowerCase();const nrv=EX.filter(e=>e.rv).length;const list=EX.filter(e=>(!LB.rv||e.rv)&&(!LB.sec||e.sec.includes(LB.sec))&&(!LB.pat||e.p===LB.pat)&&(!q||e.n.toLowerCase().includes(q)));
-  let h=`<div class="tools"><div><div class="h1">מאגר התרגילים</div><div class="sub">${EX.length} תרגילים · ${EX.filter(e=>e.v).length} עם סרטון · ${EX.filter(e=>e.h).length} מהתכניות שלך</div></div><span class="grow"></span>
-    <label class="btn sm"><input type="checkbox" id="setAx"${SET.axial?" checked":""}> 3 ימים בין עומס צירי</label><label class="btn sm"><input type="checkbox" id="setKH"${SET.kneeHip?" checked":""}> ברך + ירך בכל שיעור</label>${nrv?`<button class="btn${LB.rv?" pri":""}" data-a="rvtog" type="button">לבדיקה · ${nrv}</button>`:""}<button class="btn pri" data-a="newex" type="button">+ תרגיל חדש</button></div>
-   ${LB.rv?`<div class="rvnote"><b>${nrv} תרגילים שהתיוג שלהם לא בטוח.</b> לכל אחד כתוב למה. "מאשר" משאיר כמו שהוא, "עריכה" לתיקון. <button class="btn sm" data-a="rvall" type="button">אישור כל המוצגים</button></div>`:""}
-   <div class="tools"><div class="flt">${[["b","מוביליטי ותנועה"],["c","קור"],["s","כוח"],["m","מטקון"],["","הכל"]].map(([k,t])=>`<button data-ls="${k}" aria-pressed="${LB.sec===k}" type="button">${t}</button>`).join("")}</div><input type="search" id="lq" class="btn" style="flex:1;min-width:200px;text-align:right;font-weight:400" placeholder="חיפוש…" value="${esc(LB.q)}"></div>
-   <div class="tools"><div class="flt"><button data-lp="" aria-pressed="${!LB.pat}" type="button">כל הדפוסים</button>${Object.keys(PAT).map(p=>`<button data-lp="${p}" aria-pressed="${LB.pat===p}" type="button"><i style="background:${pcol(p)}"></i>${PAT[p]}</button>`).join("")}</div></div>`;
-  if(LB.ed)h+=editor(LB.ed==="new"?{id:"",n:"",sec:LB.sec||"s",p:"MB",t:"M",f:"",eq:[],fam:"",v:"",h:0}:EXI[LB.ed]);
-  h+=`<div class="lt"><div class="lr h"><span>תרגיל</span><span class="hd">דפוס</span><span class="hd">תגיות</span><span class="hd">ציוד</span><span></span></div>${list.sort((a,z)=>(z.h||0)-(a.h||0)||a.n.localeCompare(z.n)).slice(0,300).map(e=>`<div class="lr"><span><span class="en" style="font-weight:600">${esc(e.n)}</span> <span class="tg ${e.t}">${e.t}</span>${e.h?` <span class="tg fav">×${e.h}</span>`:""}${e.v?` <a class="vid" href="${YT(e.v)}" target="_blank" rel="noopener">${ico("play")}</a>`:""}${e.rv?`<span class="rvw">${esc(e.rv)}</span>`:""}</span><span class="hd"><span class="tg"><i style="background:${pcol(e.p)}"></i>${PAT[e.p]||e.p}</span></span><span class="hd tgs">${[...e.f].map(f=>`<span class="tg">${FLAG[f]}</span>`).join("")}</span><span class="hd sub" style="font-size:12px">${e.eq.map(q=>EQN[q]||q).join(", ")}</span><span>${e.rv?`<button class="btn sm" data-a="rvok" data-id="${e.id}" type="button">מאשר</button>${/ V /.test(e.rv)?`<button class="btn sm" data-a="rvok" data-id="${e.id}" data-t="M" type="button">→ M</button>`:""}`:""}<button class="btn sm" data-a="edex" data-id="${e.id}" type="button">עריכה</button></span></div>`).join("")}</div>${list.length>300?`<p class="sub">מוצגים 300 מתוך ${list.length}. חיפוש מצמצם.</p>`:""}`;
+let LB={sec:"b",q:"",pat:"",grp:"",ed:null,rv:false};
+function saveEx(){DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)))}
+function renderLib(){const q=LB.q.toLowerCase();const nrv=EX.filter(e=>e.rv).length;const sec=LB.sec||"s";const mob=sec==="b";
+  const gOf=e=>mob?bodyPart(e):e.p;const gName=g=>mob?(BODY.find(x=>x[0]===g)||[,"אחר"])[1]:(PAT[g]||g);const order=mob?BODY.map(x=>x[0]):PATORD;
+  let list=LB.rv?EX.filter(e=>e.rv):EX.filter(e=>e.sec.includes(sec)&&!(mob&&!q&&STRP.includes(e.p)));
+  if(q)list=EX.filter(e=>e.n.toLowerCase().includes(q)||(e.al||[]).some(a=>a.toLowerCase().includes(q)));
+  const groups=[...new Set(EX.filter(e=>e.sec.includes(sec)&&!(mob&&STRP.includes(e.p))).map(gOf))].sort((x,z)=>order.indexOf(x)-order.indexOf(z));
+  if(LB.grp&&!q&&!LB.rv)list=list.filter(e=>gOf(e)===LB.grp);
+  const byName=(x,z)=>x.n.localeCompare(z.n,"en",{sensitivity:"base"});
+  const row=e=>`<div class="lrow"><span class="nm">${esc(e.n)}</span><span class="meta">${e.rv?`<span class="rvw">${esc(e.rv)}</span><button class="btn sm" data-a="rvok" data-id="${e.id}" type="button">מאשר</button>`:""}${e.h?`<span class="tg fav">אצלך ×${e.h}</span>`:""}${e.v?`<a class="vid" href="${YT(e.v)}" target="_blank" rel="noopener" title="סרטון">${ico("play")}</a>`:`<span class="novid" title="אין סרטון">—</span>`}<button class="btn sm ghost" data-a="edex" data-id="${e.id}" type="button">עריכה</button></span></div>`;
+  let h=`<div class="wk-head"><div><div class="h1">מאגר התרגילים</div><div class="sub">${EX.length} תרגילים · ${EX.filter(e=>e.v).length} עם סרטון · ${EX.filter(e=>e.h).length} מהתכניות שלך</div></div><span class="grow"></span>
+    ${nrv?`<button class="btn${LB.rv?" pri":""}" data-a="rvtog" type="button">לבדיקה · ${nrv}</button>`:""}<button class="btn pri" data-a="newex" type="button">+ תרגיל חדש</button>
+    <details class="more"><summary class="btn">הגדרות בדיקה</summary><div class="menu"><label class="chk"><input type="checkbox" id="setAx"${SET.axial?" checked":""}> 3 ימים בין עומס צירי</label><label class="chk"><input type="checkbox" id="setKH"${SET.kneeHip?" checked":""}> ברך + ירך בכל שיעור</label></div></details></div>
+   ${LB.rv?`<div class="rvnote"><b>${nrv} תרגילים שהתיוג שלהם לא בטוח.</b> לכל אחד כתוב למה. "מאשר" משאיר כמו שהוא, "עריכה" לתיקון. <button class="btn sm" data-a="rvall" type="button">אישור כולם</button></div>`:""}
+   <div class="libbar"><div class="flt big">${[["b","מוביליטי ותנועה"],["c","קור"],["s","כוח"],["m","מטקון"]].map(([k,t])=>`<button data-ls="${k}" aria-pressed="${!LB.rv&&sec===k}" type="button">${t}</button>`).join("")}</div><input type="search" id="lq" placeholder="חיפוש בכל המאגר" value="${esc(LB.q)}"></div>
+   ${!LB.rv&&!q?`<div class="flt" style="margin-bottom:16px"><button data-lg="" aria-pressed="${!LB.grp}" type="button">${mob?"כל הגוף":"כל הדפוסים"}</button>${groups.map(g=>`<button data-lg="${g}" aria-pressed="${LB.grp===g}" type="button">${mob?"":`<i style="background:${pcol(g)}"></i>`}${esc(gName(g))}</button>`).join("")}</div>`:""}`;
+  if(LB.ed)h+=editor(LB.ed==="new"?{id:"",n:"",sec:sec,p:"MB",t:"M",f:"",eq:[],fam:"",v:"",h:0}:EXI[LB.ed]);
+  let body="";
+  if(q||LB.rv)body=list.sort(byName).map(row).join("");
+  else{const by={};list.forEach(e=>(by[gOf(e)]=by[gOf(e)]||[]).push(e));order.concat(Object.keys(by).filter(g=>!order.includes(g))).forEach(g=>{if(!by[g])return;body+=`<div class="lgrp">${esc(gName(g))} <span>${by[g].length}</span></div>${by[g].sort(byName).map(row).join("")}`})}
+  h+=`<div class="lib">${body||'<div class="empty-note">לא נמצא</div>'}</div>`;
   $("app").innerHTML=h}
 function editor(e){return`<form class="ed" id="exForm" data-id="${esc(e.id)}"><div class="g2"><label style="flex:1">שם <input type="text" name="n" value="${esc(e.n)}" required style="flex:1;direction:ltr"></label><label>סרטון <input type="text" name="v" value="${esc(e.v)}" style="direction:ltr;width:200px" placeholder="קישור יוטיוב"></label></div>
   <div class="g2"><b>סקשנים:</b>${Object.entries(SECN).map(([k,t])=>`<label><input type="checkbox" name="sec" value="${k}"${e.sec.includes(k)?" checked":""}>${t}</label>`).join("")}</div>
@@ -921,14 +984,16 @@ async function aiBrief(c){const B=BRIEF[c.id];if(!SAMPLE){B.err="הבינה המ
 /* ===================== events ===================== */
 document.addEventListener("click",async ev=>{
   if(ev.target.closest("[data-stop]"))return;
-  const t=ev.target.closest("[data-a],[data-pick],[data-ps],[data-pp],[data-ls],[data-lp],[data-mf],[data-blk],[data-sug]");if(!t)return;
+  const t=ev.target.closest("[data-a],[data-pick],[data-ps],[data-pp],[data-pg],[data-lg],[data-ls],[data-lp],[data-mf],[data-blk],[data-sug]");if(!t)return;
   if(t.dataset.a==="mclose"&&ev.target!==t&&t.classList.contains("modal"))return;
   const c=OC();const bi=+t.dataset.b,li=+t.dataset.l;
   if(t.dataset.pick){const id=t.dataset.pick;const {bi,li,xi,flow}=PICK;PICK=null;renderModal();mutate(()=>{const l=c.blocks[bi].lines[li];if(flow)l.ex.push(id);else{l.ex[xi]=id;l.ex=l.ex.filter(Boolean)}l.raw=undefined});return}
   if(t.dataset.blk!=null){const h=PICK.cand[+t.dataset.blk].h;const b=PICK.bi;PICK=null;renderModal();mutate(()=>applyBlock(c,b,h));toast("הבלוק נכנס");return}
-  if(t.dataset.ps!=null){PICK.sec=t.dataset.ps;PICK.pat="";return renderModal()}
+  if(t.dataset.ps!=null){PICK.sec=t.dataset.ps;PICK.pat="";PICK.grp="";return renderModal()}
+  if(t.dataset.pg!=null){PICK.grp=t.dataset.pg;PICK.focus=false;return renderModal()}
   if(t.dataset.pp!=null){PICK.pat=t.dataset.pp;return renderModal()}
-  if(t.dataset.ls!=null){LB.sec=t.dataset.ls;LB.pat="";return renderLib()}
+  if(t.dataset.ls!=null){LB.sec=t.dataset.ls;LB.pat="";LB.grp="";LB.rv=false;return renderLib()}
+  if(t.dataset.lg!=null){LB.grp=t.dataset.lg;return renderLib()}
   if(t.dataset.lp!=null){LB.pat=t.dataset.lp;return renderLib()}
   if(t.dataset.mf!=null){MCF=t.dataset.mf;return renderMC()}
   if(t.dataset.sug){return askAI(t.dataset.sug)}
@@ -978,7 +1043,7 @@ document.addEventListener("submit",ev=>{
   if(ev.target.id==="exForm"){ev.preventDefault();const f=new FormData(ev.target);const id=ev.target.dataset.id;let v=String(f.get("v")||"").trim();const m=v.match(/(?:v=|youtu\.be\/|shorts\/)([\w-]{11})/);if(m)v=m[1];
     const o={n:String(f.get("n")).trim(),sec:f.getAll("sec").join("")||"s",p:f.get("p"),t:f.get("t"),f:f.getAll("f").join(""),eq:f.getAll("eq").length?f.getAll("eq"):["BW"],fam:String(f.get("fam")||"").trim(),v};
     if(!o.n)return;if(id){Object.assign(EXI[id],o);delete EXI[id].rv}else EX.push({id:o.n.toLowerCase().replace(/[^a-z0-9]+/g,"-")+"-"+Date.now().toString(36),al:[],h:0,...o});
-    indexEx();LB.ed=null;DATA.put("pl/ex",{list:EX,v:Date.now(),m:2}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)));renderLib()}
+    indexEx();LB.ed=null;DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).then(()=>toast("המאגר נשמר"),e=>toast(saveErr(e)));renderLib()}
 });
 document.addEventListener("change",ev=>{const t=ev.target;
   if(t.id==="phSel"){const i=Math.floor(days(CYC.start,WK.sun)/7);const j=((i%CYC.phases.length)+CYC.phases.length)%CYC.phases.length;CYC.phases[j]=t.value;CYC.rpe[j]={"נפח":"7-8","העלאת עומס":"8-9","דילואד":"6-7","רילואד":"8-9"}[t.value];DATA.put("pl/cycle",CYC).catch(()=>{});return renderAll()}
@@ -1045,7 +1110,8 @@ async function boot(reconnect){
   else if(!reconnect)await DATA.init().catch(()=>false);conn();
   try{
     const [ex,cyc,set]=await Promise.all([DATA.get("pl/ex"),DATA.get("pl/cycle"),DATA.get("pl/settings")]);
-    EX=(ex&&ex.list)||[];if(!EX.length||((ex&&ex.m)||0)<2){const seed=await (await fetch("seed-ex.json")).json();const sid=new Set(seed.map(e=>e.id));EX=[...seed,...EX.filter(e=>!sid.has(e.id))];if(isLive())DATA.put("pl/ex",{list:EX,v:Date.now(),m:2}).catch(()=>{})}
+    EX=(ex&&ex.list)||[];if(!EX.length||((ex&&ex.m)||0)<3){const seed=await (await fetch("seed-ex.json")).json();const sid=new Set(seed.map(e=>e.id));seed.forEach(e=>(e.old||[]).forEach(o=>sid.add(o)));EX=[...seed,...EX.filter(e=>!sid.has(e.id))];if(isLive())DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).catch(()=>{})}
+    else if(ex.m===2){const MERGE=[["cat-cow",["cat-cow-opex"]],["clam-shell-2",["clamshell"]],["glute-bridge",["glute-bridge-opex"]],["inchworm",["inchworm-opex","inch-worm"]],["pigeon",["pigeon-stretch"]],["pvc-shoulder-dislocate",["pvc-shoulder-dislocation"]]];MERGE.map(([id,old])=>({id,old})).forEach(z=>{const k=EX.find(e=>e.id===z.id);if(!k)return;z.old.forEach(o=>{const i=EX.findIndex(e=>e.id===o);if(i<0)return;const d=EX[i];k.h=(k.h||0)+(d.h||0);k.sec=[...new Set(k.sec+d.sec)].join("");if(!k.v&&d.v)k.v=d.v;k.al=[...new Set([...(k.al||[]),d.n,...(d.al||[])])].filter(a=>a!==k.n);EX.splice(i,1)});k.old=z.old});if(isLive())DATA.put("pl/ex",{list:EX,v:Date.now(),m:3}).catch(()=>{})}
     CYC=cyc||{start:"2026-11-08",phases:["נפח","נפח","העלאת עומס","דילואד"],rpe:["7-8","7-8","8-9","6-7"]};if(set&&set.v===2)SET={...SET,...set};
     indexEx();W=await DATA.listW();harvest();
   }catch(e){$("app").innerHTML=`<div class="loading"><b>לא הצלחתי לטעון</b>${esc(saveErr(e))}</div>`;return}
