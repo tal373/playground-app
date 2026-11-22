@@ -817,17 +817,20 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 2px 8px}.b2-sec span{font-size:20px;font-weight:800}.b2-sec small{color:var(--muted);font-size:12px}.b2-tm{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.b2-tm button{flex:1;min-width:88px;background:#ffffff0d;border:1px solid var(--line);border-radius:14px;color:var(--ink);padding:8px 10px;font:inherit;display:grid;gap:2px}.b2-tm button[aria-pressed=true]{background:var(--ink);color:#07111f}.b2-tm small{font-size:12px;opacity:.75}.b2-wk small{display:block}.b2-kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}.b2-wkf{display:grid;gap:10px;margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:16px;background:#ffffff06;transition:border-color .2s}.b2-wkf.ok{border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
 .b2-wkh{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);letter-spacing:.02em}
 .b2-wx{display:grid;gap:7px;padding-top:10px;border-top:1px solid var(--line)}.b2-wkh+.b2-wx{border-top:0;padding-top:0}
-.b2-wxn{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;font-size:14px}
+.b2-wxn{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;font-size:15px}.b2-wxh{display:grid;gap:2px}.b2-pv{color:var(--muted);font-size:12px}
+.b2-row{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:8px}.b2-row>small{color:var(--muted);font-size:12px}
+.b2-chip.en{direction:ltr;unicode-bidi:isolate}.b2-rpe{min-width:38px;padding:7px 0;text-align:center}.b2-chip.b2-pr[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#0b1220}
+.b2-tagr{padding-top:10px;border-top:1px solid var(--line)}
 .b2-ch2{display:flex;flex-wrap:wrap;gap:6px}
 .b2-chip{border:1px solid var(--line);background:#ffffff08;color:var(--ink);border-radius:99px;padding:7px 13px;font:inherit;font-size:13px;line-height:1;cursor:pointer;transition:background .15s,border-color .15s,transform .1s}
 .b2-chip[aria-pressed=true]{background:var(--mes);border-color:var(--mes);color:#0b1220;font-weight:600}.b2-chip:active{transform:scale(.96)}
-.b2-wx .b2-chip{direction:ltr;unicode-bidi:isolate}
+
 .b2-addn{color:var(--muted);border-style:dashed}
 .b2-stp{display:flex;align-items:center;gap:8px;direction:ltr}
 .b2-stp>button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:#ffffff0d;color:var(--ink);font-size:20px;line-height:1;cursor:pointer}.b2-stp>button:active{transform:scale(.94)}
 .b2-stp label{display:flex;align-items:baseline;gap:4px;background:#ffffff0d;border:1px solid var(--line);border-radius:12px;padding:0 10px;height:40px;align-items:center}
 .b2-stp input{width:56px;background:none;border:0;color:var(--ink);font:inherit;font-size:17px;font-weight:600;text-align:center;padding:0}.b2-stp input::placeholder{color:var(--dim);font-weight:400}.b2-stp input:focus{outline:none}
-.b2-stp label span{color:var(--muted);font-size:12px}.b2-stp small{color:var(--muted);font-size:12px;margin-inline-start:auto}
+.b2-stp label span{color:var(--muted);font-size:12px}.b2-stp label span{min-width:30px}
 .b2-wkf textarea{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:9px 10px;font:inherit;font-size:14px;resize:vertical}.b2-kg label{display:grid;gap:3px}.b2-kg span{font-size:12px;color:var(--muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.b2-tal{width:100%;background:#ffffff0d;border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:9px 10px;font:inherit;font-size:14px;margin:6px 0 10px;resize:vertical}.b2-send{width:100%}.nb[data-tab="class"]{display:none!important}
 .b2-mods{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:4px}.b2-mods li{display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:10px;padding:6px 10px;background:#ffffff0d;border-radius:10px;font-size:14px;line-height:1.45}.b2-mods b{direction:ltr;text-align:right;unicode-bidi:isolate}.b2-rep{margin-inline-start:auto;background:none;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:inherit;font-size:12px}.b2-pn{align-items:center}
 .b2-more{margin-top:8px}.b2-ix{color:var(--muted);font-size:12px}.b2-in+.b2-in{border-top:1px dashed var(--line);padding-top:8px}
@@ -3534,15 +3537,18 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   const prevTxt=q=>q?`<div class="b2-prev">בשיעור ${esc(fmt(q[0].slice(0,10)))}: ${esc(EN(q[1]).filter(NE).map(ETX).join(" | "))}</div>`:"";
   const att=ppl.filter(x=>x.cond||x.m.length||x.prev);
   const sent=MYR[rk];
-  const wkForm=x=>{const w=((x.s.wk||{})[key])||{},kg=w.kg||{},vr=(w.var&&typeof w.var==="object")?w.var:{},tg=w.tags||[],lx=x.s.lx||{},last=x.s.last||{},done=!!w.at;
+  const wkForm=x=>{const w=((x.s.wk||{})[key])||{},EX=w.ex||{},tg=w.tags||[],lx=x.s.lx||{},last=x.s.last||{},done=!!w.at;
+    const stp=(f,v,ph,unit,step)=>`<div class="b2-stp" data-sf="${f}"><button type="button" data-ws="-${step}" aria-label="פחות">−</button><label><input type="text" inputmode="decimal" data-w="${f}" value="${esc(v||"")}" placeholder="${esc(ph||"—")}" aria-label="${unit}"><span>${unit}</span></label><button type="button" data-ws="${step}" aria-label="יותר">+</button></div>`;
     return `<div class="b2-wkf${done?" ok":""}" data-wn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
     <div class="b2-wkh"><span>סוף אימון</span><small class="b2-st">${done?"נשמר ✓":""}</small></div>
-    ${mainEx.map(nm=>{const ops=varsOf0(nm).length?varsOf0(nm):libVars(nm),pv=(lx[nm]&&lx[nm].kg)||last[nm]||"",cv=kg[nm]||"";
-      return `<div class="b2-wx" data-x="${esc(nm)}"><div class="b2-wxn">${esc(exName(nm))}</div>
-      ${ops.length?`<div class="b2-ch2">${ops.map(o=>`<button type="button" class="b2-chip" data-wv="${esc(o)}" aria-pressed="${vr[nm]===o}">${esc(o)}</button>`).join("")}</div>`:""}
-      <div class="b2-stp"><button type="button" data-ws="-1" aria-label="פחות">−</button><label><input type="text" inputmode="decimal" data-w="kg" value="${esc(cv)}" placeholder="${pv?esc(pv):"—"}" aria-label="ק״ג"><span>ק״ג</span></label><button type="button" data-ws="1" aria-label="יותר">+</button>${pv?`<small>קודם ${esc(pv)}</small>`:""}</div></div>`}).join("")}
-    <div class="b2-ch2 b2-tags">${["התקדם","שיא חדש","סקיל חדש","קשה לו","ירד במשקל"].map(t=>`<button type="button" class="b2-chip" data-wt="${esc(t)}" aria-pressed="${tg.includes(t)}">${esc(t)}</button>`).join("")}
-      <button type="button" class="b2-chip b2-addn" data-wnote${w.note?" hidden":""}>+ הערה</button></div>
+    ${mainEx.map(nm=>{const ops=varsOf0(nm).length?varsOf0(nm):libVars(nm),e=EX[nm]||{},L0=lx[nm]||{},sd=L0.d===b.date,L=sd?{}:L0,pk=L.kg||(sd?"":last[nm])||"",pr=L.r||"";
+      return `<div class="b2-wx" data-x="${esc(nm)}"><div class="b2-wxh"><div class="b2-wxn">${esc(exName(nm))}</div>${pk||pr?`<small class="b2-pv">בפעם הקודמת ${[pk?esc(pk)+" ק״ג":"",pr?"× "+esc(pr):""].filter(Boolean).join(" ")}${L.v?" · "+esc(L.v):""}</small>`:""}</div>
+      ${ops.length?`<div class="b2-row"><small>גרסה</small><div class="b2-ch2">${ops.map(o=>`<button type="button" class="b2-chip en" data-wv="${esc(o)}" aria-pressed="${e.v===o}">${esc(o)}</button>`).join("")}</div></div>`:""}
+      <div class="b2-row"><small>משקל</small>${stp("kg",e.kg,pk,"ק״ג",2.5)}</div>
+      <div class="b2-row"><small>חזרות</small>${stp("r",e.r,pr,"חזרות",1)}</div>
+      <div class="b2-row"><small>מאמץ</small><div class="b2-ch2">${[6,7,8,9,10].map(n=>`<button type="button" class="b2-chip b2-rpe" data-we="${n}" aria-pressed="${+e.rpe===n}">${n}</button>`).join("")}<button type="button" class="b2-chip b2-pr" data-wpr aria-pressed="${!!e.pr}">שיא היום</button></div></div></div>`}).join("")}
+    <div class="b2-row b2-tagr"><small>כללי</small><div class="b2-ch2">${["התקדם","סקיל חדש","קשה לו","ירד במשקל"].map(t=>`<button type="button" class="b2-chip" data-wt="${esc(t)}" aria-pressed="${tg.includes(t)}">${esc(t)}</button>`).join("")}
+      <button type="button" class="b2-chip b2-addn" data-wnote${w.note?" hidden":""}>+ הערה</button></div></div>
     <textarea rows="2" data-w="note" placeholder="הערה על המתאמן"${w.note?"":" hidden"}>${esc(w.note||"")}</textarea></div>`};
   const sec=(t,s)=>`<div class="b2-sec"><span>${t}</span>${s?`<small>${s}</small>`:""}</div>`;
   return `<div class="bf">${head}
@@ -3583,10 +3589,11 @@ document.addEventListener("change",async ev=>{const f=ev.target.closest&&ev.targ
   st.textContent="שומר…";try{await db.doc(`s/${sid}`).set(up);RO[sid]=up;st.textContent=e.at?"נשמר ✓":"נמחק"}catch(x){st.textContent="לא נשמר — נסה שוב"}});
 const WKT={};
 async function wkSave(box){if(!box||!db)return;if(typeof coachPv!=="undefined"&&coachPv){toast("מצב שיקוף — לא נשמר");return}
-  const sid=box.dataset.wn,key=box.dataset.bk,st=box.querySelector(".b2-st"),w={},kg={},vr={},tags=[];
-  box.querySelectorAll(".b2-wx").forEach(r=>{const x=r.dataset.x,v=r.querySelector("[data-w=kg]").value.trim(),c=r.querySelector("[data-wv][aria-pressed=true]");if(v)kg[x]=v;if(c)vr[x]=c.dataset.wv});
+  const sid=box.dataset.wn,key=box.dataset.bk,st=box.querySelector(".b2-st"),w={},kg={},vr={},ex={},tags=[];
+  box.querySelectorAll(".b2-wx").forEach(r=>{const x=r.dataset.x,o={},k=r.querySelector("[data-w=kg]").value.trim(),rp=r.querySelector("[data-w=r]").value.trim(),c=r.querySelector("[data-wv][aria-pressed=true]"),e=r.querySelector("[data-we][aria-pressed=true]");
+    if(c){o.v=c.dataset.wv;vr[x]=o.v}if(k){o.kg=k;kg[x]=k}if(rp)o.r=rp;if(e)o.rpe=+e.dataset.we;if(r.querySelector("[data-wpr][aria-pressed=true]"))o.pr=true;if(Object.keys(o).length)ex[x]=o});
   box.querySelectorAll("[data-wt][aria-pressed=true]").forEach(c=>tags.push(c.dataset.wt));const note=(box.querySelector("[data-w=note]").value||"").trim();
-  if(Object.keys(kg).length)w.kg=kg;if(Object.keys(vr).length)w.var=vr;if(tags.length)w.tags=tags;if(note)w.note=note;
+  if(Object.keys(ex).length)w.ex=ex;if(Object.keys(kg).length)w.kg=kg;if(Object.keys(vr).length)w.var=vr;if(tags.length)w.tags=tags;if(note)w.note=note;
   const cur=RO[sid]||{name:box.dataset.bnm,aid:+box.dataset.ba,src:"app",added:TODAY},wk={...(cur.wk||{})};
   if(Object.keys(w).length){w.at=new Date().toISOString();w.by=coachName||(window.pgMember&&pgMember.email&&pgMember.email())||"";wk[key]=w}else delete wk[key];
   const keep=Object.keys(wk).sort().slice(-30),wk2={};keep.forEach(k=>wk2[k]=wk[k]);const up={...cur,wk:wk2};
@@ -3595,8 +3602,10 @@ const wkLater=box=>{const k=box.dataset.wn;clearTimeout(WKT[k]);WKT[k]=setTimeou
 document.addEventListener("click",ev=>{const g=s=>ev.target.closest&&ev.target.closest(s);let el;
   if(el=g("[data-wv]")){const on=el.getAttribute("aria-pressed")!=="true";el.parentElement.querySelectorAll("[data-wv]").forEach(c=>c.setAttribute("aria-pressed",c===el&&on));wkLater(el.closest(".b2-wkf"));return}
   if(el=g("[data-wt]")){el.setAttribute("aria-pressed",el.getAttribute("aria-pressed")!=="true");wkLater(el.closest(".b2-wkf"));return}
-  if(el=g("[data-ws]")){const r=el.closest(".b2-wx"),inp=r.querySelector("[data-w=kg]"),cur=parseFloat(String(inp.value||inp.placeholder).replace(",","."));let v=isNaN(cur)?0:cur;
-    if(inp.value===""&&!isNaN(cur)){}else v=Math.max(0,v+(+el.dataset.ws)*2.5);inp.value=String(Math.round(v*10)/10);wkLater(el.closest(".b2-wkf"));return}
+  if(el=g("[data-we]")){const on=el.getAttribute("aria-pressed")!=="true";el.parentElement.querySelectorAll("[data-we]").forEach(c=>c.setAttribute("aria-pressed",c===el&&on));wkLater(el.closest(".b2-wkf"));return}
+  if(el=g("[data-wpr]")){el.setAttribute("aria-pressed",el.getAttribute("aria-pressed")!=="true");wkLater(el.closest(".b2-wkf"));return}
+  if(el=g("[data-ws]")){const inp=el.closest(".b2-stp").querySelector("input"),cur=parseFloat(String(inp.value||inp.placeholder).replace(",","."));let v=isNaN(cur)?0:cur;
+    if(!(inp.value===""&&!isNaN(cur)))v=Math.max(0,v+(+el.dataset.ws));inp.value=String(Math.round(v*10)/10);wkLater(el.closest(".b2-wkf"));return}
   if(el=g("[data-wnote]")){const box=el.closest(".b2-wkf"),t=box.querySelector("[data-w=note]");t.hidden=false;el.hidden=true;t.focus();return}});
 document.addEventListener("change",ev=>{const f=ev.target.closest&&ev.target.closest("[data-w]"),box=f&&f.closest(".b2-wkf");if(box)wkLater(box)});
 document.addEventListener("click",async ev=>{const btn=ev.target.closest&&ev.target.closest("#b2Send");if(!btn||!db)return;if(typeof coachPv!=="undefined"&&coachPv){toast("מצב שיקוף — לא נשמר");return}
@@ -3604,11 +3613,11 @@ document.addEventListener("click",async ev=>{const btn=ev.target.closest&&ev.tar
   const r=Object.values(RR).find(x=>x.date===b.date&&x.time===time&&slug(x.cls||"")===slug(b.cls||""));if(!r)return;
   btn.disabled=true;btn.textContent="שולח…";
   try{const people=(r.people||[]).map(p=>{const sid="a"+p.aid,es=EN(((RO[sid]||{}).bn||{})[key]).filter(NE),c=es.find(z=>z.lvl||z.where||z.ex)||{},w=(((RO[sid]||{}).wk||{})[key])||{},pn=(c.lvl||c.where||c.ex)?{area:c.where||"",lvl:c.lvl||null,ex:c.ex||"",mod:c.gave||""}:null;
-      return {id:sid,name:p.name,tags:pn?["pain"]:[],pain:pn?[pn.area,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" "):"",pn,kg:w.kg||{},var:(w.var&&typeof w.var==="object")?w.var:{},tags:w.tags||[],lx:{},err:[],fu:false,score:"",note:[...es.map(ETX),...Object.entries((w.var&&typeof w.var==="object")?w.var:{}).map(([x,o])=>exName(x)+": "+o),(w.tags||[]).join(", "),w.note||""].filter(Boolean).join(" | ")}});
+      return {id:sid,name:p.name,tags:pn?["pain"]:[],pain:pn?[pn.area,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" "):"",pn,kg:w.kg||{},var:(w.var&&typeof w.var==="object")?w.var:{},tags:w.tags||[],lx:{},err:[],fu:false,score:"",ex:w.ex||{},note:[...es.map(ETX),...Object.entries(w.ex||{}).map(([x,o])=>[exName(x),o.v,o.kg?(o.kg+" ק״ג"+(o.r?" × "+o.r:"")):(o.r?o.r+" חזרות":""),o.rpe?"RPE "+o.rpe:"",o.pr?"שיא היום":""].filter(Boolean).join(" · ")),(w.tags||[]).join(", "),w.note||""].filter(Boolean).join(" | ")}});
     const tal=String($("b2Tal")?$("b2Tal").value:"").trim(),rep={date:b.date,time,cls,w:null,coach:coachName||r.coach||"",people,absent:[],note:"",tal,at:new Date().toISOString(),src:"brief"};
     await db.doc(path).set(rep);
-    await Promise.all(people.map(async q=>{if(!q.pn&&!Object.keys(q.kg).length&&!q.note)return;const cur=RO[q.id]||{name:q.name,added:TODAY,src:"app"};
-      const up={...cur,seen:b.date,last:{...(cur.last||{}),...q.kg},lx:{...(cur.lx||{})}};Object.entries(q.kg).forEach(([x,v])=>{up.lx[x]={...(up.lx[x]||{}),kg:v,d:b.date}});
+    await Promise.all(people.map(async q=>{if(!q.pn&&!Object.keys(q.kg).length&&!Object.keys(q.ex||{}).length&&!q.note)return;const cur=RO[q.id]||{name:q.name,added:TODAY,src:"app"};
+      const up={...cur,seen:b.date,last:{...(cur.last||{}),...q.kg},lx:{...(cur.lx||{})}};Object.entries(q.ex||{}).forEach(([x,o])=>{up.lx[x]={...(up.lx[x]||{}),...(o.kg?{kg:o.kg}:{}),...(o.r?{r:o.r}:{}),...(o.v?{v:o.v}:{}),...(o.pr?{pr:b.date}:{}),d:b.date}});Object.entries(q.kg).forEach(([x,v])=>{if(!(q.ex||{})[x])up.lx[x]={...(up.lx[x]||{}),kg:v,d:b.date}});
       if(q.pn)up.lastPain={d:b.date,area:q.pn.area,lvl:q.pn.lvl,ex:q.pn.ex,mod:q.pn.mod};RO[q.id]=up;await db.doc(`s/${q.id}`).set(up)}));
     MYR[rk]=rep;delete B2TAL[rk];toast("נשלח לטל ✓");render()}
   catch(e){toast("לא נשלח, נסו שוב");btn.disabled=false;btn.textContent="שלח לטל"}});
