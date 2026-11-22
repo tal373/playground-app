@@ -3533,14 +3533,14 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   const ppl=r?(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},bn=s.bn||{};
       const prev=Object.entries(bn).filter(([k,x])=>k<key&&k>=addDays(r.date,-21)&&EN(x).some(NE)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
       return {p,sid,s,m:L(mods[p.aid]||s.cnote||""),cond:s.inj||(s.preg?PREG[s.preg]:"")||p.injury||"",ents:EN(bn[key]),prev,ld:(LD[sid]||[]).filter(z=>z.date===r.date&&(!z.cls||!r.cls||z.cls===r.cls))}}):[];
-  const mainEx=[];(b.blocks||[]).forEach(x=>{if(/^main/i.test(x.id||""))(x.x||[]).forEach(e=>{const n=exClean(strip(e.n));if(n&&!mainEx.includes(n))mainEx.push(n)})});
+  const mainEx=[],addL=n=>{n=exClean(strip(n||""));if(n&&!mainEx.includes(n)&&mainEx.length<2)mainEx.push(n)};if(Array.isArray(b.lifts)&&b.lifts.length)b.lifts.forEach(addL);else (b.blocks||[]).forEach(x=>{if(/^main/i.test(x.id||"")&&(x.x||[])[0])addL(x.x[0].n)});
   const prevTxt=q=>q?`<div class="b2-prev">בשיעור ${esc(fmt(q[0].slice(0,10)))}: ${esc(EN(q[1]).filter(NE).map(ETX).join(" | "))}</div>`:"";
   const att=ppl.filter(x=>x.cond||x.m.length||x.prev);
   const sent=MYR[rk];
   const wkForm=x=>{const w=((x.s.wk||{})[key])||{},EX=w.ex||{},tg=w.tags||[],lx=x.s.lx||{},last=x.s.last||{},done=!!w.at;
     const stp=(f,v,ph,unit,step)=>`<div class="b2-stp" data-sf="${f}"><button type="button" data-ws="-${step}" aria-label="פחות">−</button><label><input type="text" inputmode="decimal" data-w="${f}" value="${esc(v||"")}" placeholder="${esc(ph||"—")}" aria-label="${unit}"><span>${unit}</span></label><button type="button" data-ws="${step}" aria-label="יותר">+</button></div>`;
     return `<div class="b2-wkf${done?" ok":""}" data-wn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
-    <div class="b2-wkh"><span>סוף אימון · רושמים את הסט הכבד של היום</span><small class="b2-st">${done?"נשמר ✓":""}</small></div>
+    <div class="b2-wkh"><span>מיין ליפט · רושמים את הסט הכבד של היום</span><small class="b2-st">${done?"נשמר ✓":""}</small></div>
     ${mainEx.map(nm=>{const ops=varsOf0(nm).length?varsOf0(nm):libVars(nm),e=EX[nm]||{},L0=lx[nm]||{},sd=L0.d===b.date,L=sd?{}:L0,pk=L.kg||(sd?"":last[nm])||"",pr=L.r||"";
       return `<div class="b2-wx" data-x="${esc(nm)}"><div class="b2-wxh"><div class="b2-wxn">${esc(exName(nm))}</div>${pk||pr?`<small class="b2-pv">שיא בשיעור הקודם: ${[pk?esc(pk)+" ק״ג":"",pr?"× "+esc(pr):""].filter(Boolean).join(" ")}${L.v?" · "+esc(L.v):""}</small>`:""}</div>
       ${ops.length?`<div class="b2-row"><small>גרסה</small><div class="b2-ch2">${ops.map(o=>`<button type="button" class="b2-chip en" data-wv="${esc(o)}" aria-pressed="${e.v===o}">${esc(o)}</button>`).join("")}</div></div>`:""}
