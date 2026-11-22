@@ -818,7 +818,7 @@ html[dir=ltr] #bfRs{direction:rtl}
 .b2-wkh{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);letter-spacing:.02em}
 .b2-wx{display:grid;gap:7px;padding-top:10px;border-top:1px solid var(--line)}.b2-wkh+.b2-wx{border-top:0;padding-top:0}
 .b2-wxn{direction:ltr;text-align:right;unicode-bidi:isolate;font-weight:600;font-size:15px}.b2-wxh{display:grid;gap:2px}.b2-pv{color:var(--muted);font-size:12px}
-.b2-row{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:8px}.b2-row>small{color:var(--muted);font-size:12px}
+.b2-row{display:grid;grid-template-columns:58px 1fr;align-items:center;gap:8px}.b2-row>small{color:var(--muted);font-size:12px;line-height:1.25}
 .b2-chip.en{direction:ltr;unicode-bidi:isolate}.b2-rpe{min-width:38px;padding:7px 0;text-align:center}.b2-chip.b2-pr[aria-pressed=true]{background:var(--ok);border-color:var(--ok);color:#0b1220}
 .b2-tagr{padding-top:10px;border-top:1px solid var(--line)}
 .b2-ch2{display:flex;flex-wrap:wrap;gap:6px}
@@ -3540,13 +3540,13 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   const wkForm=x=>{const w=((x.s.wk||{})[key])||{},EX=w.ex||{},tg=w.tags||[],lx=x.s.lx||{},last=x.s.last||{},done=!!w.at;
     const stp=(f,v,ph,unit,step)=>`<div class="b2-stp" data-sf="${f}"><button type="button" data-ws="-${step}" aria-label="פחות">−</button><label><input type="text" inputmode="decimal" data-w="${f}" value="${esc(v||"")}" placeholder="${esc(ph||"—")}" aria-label="${unit}"><span>${unit}</span></label><button type="button" data-ws="${step}" aria-label="יותר">+</button></div>`;
     return `<div class="b2-wkf${done?" ok":""}" data-wn="${esc(x.sid)}" data-bk="${esc(key)}" data-ba="${esc(x.p.aid)}" data-bnm="${esc(x.p.name||"")}">
-    <div class="b2-wkh"><span>סוף אימון</span><small class="b2-st">${done?"נשמר ✓":""}</small></div>
+    <div class="b2-wkh"><span>סוף אימון · רושמים את הסט הכבד של היום</span><small class="b2-st">${done?"נשמר ✓":""}</small></div>
     ${mainEx.map(nm=>{const ops=varsOf0(nm).length?varsOf0(nm):libVars(nm),e=EX[nm]||{},L0=lx[nm]||{},sd=L0.d===b.date,L=sd?{}:L0,pk=L.kg||(sd?"":last[nm])||"",pr=L.r||"";
-      return `<div class="b2-wx" data-x="${esc(nm)}"><div class="b2-wxh"><div class="b2-wxn">${esc(exName(nm))}</div>${pk||pr?`<small class="b2-pv">בפעם הקודמת ${[pk?esc(pk)+" ק״ג":"",pr?"× "+esc(pr):""].filter(Boolean).join(" ")}${L.v?" · "+esc(L.v):""}</small>`:""}</div>
+      return `<div class="b2-wx" data-x="${esc(nm)}"><div class="b2-wxh"><div class="b2-wxn">${esc(exName(nm))}</div>${pk||pr?`<small class="b2-pv">שיא בשיעור הקודם: ${[pk?esc(pk)+" ק״ג":"",pr?"× "+esc(pr):""].filter(Boolean).join(" ")}${L.v?" · "+esc(L.v):""}</small>`:""}</div>
       ${ops.length?`<div class="b2-row"><small>גרסה</small><div class="b2-ch2">${ops.map(o=>`<button type="button" class="b2-chip en" data-wv="${esc(o)}" aria-pressed="${e.v===o}">${esc(o)}</button>`).join("")}</div></div>`:""}
-      <div class="b2-row"><small>משקל</small>${stp("kg",e.kg,pk,"ק״ג",2.5)}</div>
-      <div class="b2-row"><small>חזרות</small>${stp("r",e.r,pr,"חזרות",1)}</div>
-      <div class="b2-row"><small>מאמץ</small><div class="b2-ch2">${[6,7,8,9,10].map(n=>`<button type="button" class="b2-chip b2-rpe" data-we="${n}" aria-pressed="${+e.rpe===n}">${n}</button>`).join("")}<button type="button" class="b2-chip b2-pr" data-wpr aria-pressed="${!!e.pr}">שיא היום</button></div></div></div>`}).join("")}
+      <div class="b2-row"><small>שיא היום</small>${stp("kg",e.kg,pk,"ק״ג",2.5)}</div>
+      <div class="b2-row"><small>חזרות בשיא</small>${stp("r",e.r,pr,"חזרות",1)}</div>
+      <div class="b2-row"><small>מאמץ</small><div class="b2-ch2">${[6,7,8,9,10].map(n=>`<button type="button" class="b2-chip b2-rpe" data-we="${n}" aria-pressed="${+e.rpe===n}">${n}</button>`).join("")}<button type="button" class="b2-chip b2-pr" data-wpr aria-pressed="${!!e.pr}">שיא אישי חדש</button></div></div></div>`}).join("")}
     <div class="b2-row b2-tagr"><small>כללי</small><div class="b2-ch2">${["התקדם","סקיל חדש","קשה לו","ירד במשקל"].map(t=>`<button type="button" class="b2-chip" data-wt="${esc(t)}" aria-pressed="${tg.includes(t)}">${esc(t)}</button>`).join("")}
       <button type="button" class="b2-chip b2-addn" data-wnote${w.note?" hidden":""}>+ הערה</button></div></div>
     <textarea rows="2" data-w="note" placeholder="הערה על המתאמן"${w.note?"":" hidden"}>${esc(w.note||"")}</textarea></div>`};
@@ -3613,7 +3613,7 @@ document.addEventListener("click",async ev=>{const btn=ev.target.closest&&ev.tar
   const r=Object.values(RR).find(x=>x.date===b.date&&x.time===time&&slug(x.cls||"")===slug(b.cls||""));if(!r)return;
   btn.disabled=true;btn.textContent="שולח…";
   try{const people=(r.people||[]).map(p=>{const sid="a"+p.aid,es=EN(((RO[sid]||{}).bn||{})[key]).filter(NE),c=es.find(z=>z.lvl||z.where||z.ex)||{},w=(((RO[sid]||{}).wk||{})[key])||{},pn=(c.lvl||c.where||c.ex)?{area:c.where||"",lvl:c.lvl||null,ex:c.ex||"",mod:c.gave||""}:null;
-      return {id:sid,name:p.name,tags:pn?["pain"]:[],pain:pn?[pn.area,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" "):"",pn,kg:w.kg||{},var:(w.var&&typeof w.var==="object")?w.var:{},tags:w.tags||[],lx:{},err:[],fu:false,score:"",ex:w.ex||{},note:[...es.map(ETX),...Object.entries(w.ex||{}).map(([x,o])=>[exName(x),o.v,o.kg?(o.kg+" ק״ג"+(o.r?" × "+o.r:"")):(o.r?o.r+" חזרות":""),o.rpe?"RPE "+o.rpe:"",o.pr?"שיא היום":""].filter(Boolean).join(" · ")),(w.tags||[]).join(", "),w.note||""].filter(Boolean).join(" | ")}});
+      return {id:sid,name:p.name,tags:pn?["pain"]:[],pain:pn?[pn.area,pn.lvl?pn.lvl+"/10":"",pn.ex?"ב-"+pn.ex:"",pn.mod?"· "+pn.mod:""].filter(Boolean).join(" "):"",pn,kg:w.kg||{},var:(w.var&&typeof w.var==="object")?w.var:{},tags:w.tags||[],lx:{},err:[],fu:false,score:"",ex:w.ex||{},note:[...es.map(ETX),...Object.entries(w.ex||{}).map(([x,o])=>[exName(x),o.v,o.kg?("שיא היום "+o.kg+" ק״ג"+(o.r?" × "+o.r:"")):(o.r?o.r+" חזרות":""),o.rpe?"RPE "+o.rpe:"",o.pr?"שיא אישי חדש":""].filter(Boolean).join(" · ")),(w.tags||[]).join(", "),w.note||""].filter(Boolean).join(" | ")}});
     const tal=String($("b2Tal")?$("b2Tal").value:"").trim(),rep={date:b.date,time,cls,w:null,coach:coachName||r.coach||"",people,absent:[],note:"",tal,at:new Date().toISOString(),src:"brief"};
     await db.doc(path).set(rep);
     await Promise.all(people.map(async q=>{if(!q.pn&&!Object.keys(q.kg).length&&!Object.keys(q.ex||{}).length&&!q.note)return;const cur=RO[q.id]||{name:q.name,added:TODAY,src:"app"};
