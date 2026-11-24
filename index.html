@@ -3022,7 +3022,7 @@ function mergeRoster(rrc){const names=(rrc.names||[]).map(n=>String(n).trim()).f
     DR.people.push({id:hit?hit[0]:newId(),name:hit?hit[1].name:n,isNew:!hit,r:1,tags:[],pain:"",kg:{},score:"",note:""})});
   DR.rAt=rrc.at||"1"}
 let repHold=false;const RP=new URLSearchParams(location.search).get("rep");
-function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];repHold=true;pickOpen=false;try{history.replaceState(null,"",location.pathname)}catch(e){}go("class");return true}
+function openRep(){const m=String(RP||"").match(/^(\d{4}-\d\d-\d\d)-(\d\d)(\d\d)-(powerlab|method|flex|kids|small)$/);if(!m)return false;rDate=m[1];rTime=m[2]+":"+m[3];rType="x-"+m[4];repHold=true;pickOpen=false;bfSel=m[1]+"-"+m[4];b2T[bfSel]=rTime;try{history.replaceState(null,"",location.pathname)}catch(e){}go("brief");return true}
 function draftLoad(){try{return JSON.parse(localStorage.pgDraft||"null")}catch(e){return null}}
 function draftSave(){const lim=addDays(TODAY,-2);Object.keys(DRS).forEach(k=>{if(k.slice(0,10)<lim)delete DRS[k]});try{localStorage.pgDraft=JSON.stringify({DR,rDate,rType,rTime,DRS})}catch(e){}}
 function draftClear(){try{localStorage.removeItem("pgDraft")}catch(e){}}
@@ -3030,7 +3030,7 @@ function blankDR(){return {cls:rType?typeOf(rType):"Power Lab",people:[],note:""
 
 async function loadStudio(force){if(!db||stLoading)return;if(!force&&stLoaded&&Date.now()-stAt<60000)return;stLoading=true;
   try{const [ro,ws,mr,rr,ld]=await Promise.all([db.collection("s").get(),db.collection("w").where("date",">=",addDays(TODAY,-7)).get(),
-      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]}),db.collection("r").where("date",">=",addDays(TODAY,isOwner?-8:-2)).get().catch(()=>({docs:[]})),db.collection("ld").where("date",">=",addDays(TODAY,-1)).get().catch(()=>({docs:[]}))]);
+      isCoach?db.collection(`c/${uid}/reports`).get():Promise.resolve({docs:[]}),db.collection("r").where("date",">=",addDays(TODAY,-8)).get().catch(()=>({docs:[]})),db.collection("ld").where("date",">=",addDays(TODAY,-1)).get().catch(()=>({docs:[]}))]);
     {const m={};ld.docs.forEach(d=>{const x=d.data()||{};if(!x.sid)return;(x.items||[]).forEach(it=>(m[x.sid]=m[x.sid]||[]).push({...it,date:x.date}))});fill(LD,m)}
     fill(RR,Object.fromEntries(rr.docs.map(d=>[d.id,d.data()])));if(!bfLoaded)loadBriefs();
     fill(RO,Object.fromEntries(ro.docs.map(d=>[d.id,d.data()])));fill(WD,Object.fromEntries(ws.docs.map(d=>[d.id,d.data()])));
@@ -3528,7 +3528,7 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
   const ros=Object.values(RR).filter(r=>r.date===b.date&&slug(r.cls||"")===slug(b.cls||"")).sort((a,c)=>(a.time||"").localeCompare(c.time||""));
   const L=t=>Array.isArray(t)?t:String(t||"").split(/\s+·\s+/).filter(Boolean);
   const bk=bfSel||"";let r=ros.find(x=>x.time===b2T[bk]);
-  if(!r){const now=new Date(),hm=pad(now.getHours())+":"+pad(now.getMinutes());r=(b.date===TODAY&&ros.find(x=>(x.time||"")>=addMin(hm,-75)))||ros[0]}
+  if(!r){const me=ros.filter(x=>coachName&&firstN(x.coach||"")===firstN(coachName)),pool=me.length?me:ros,n=nowMin();r=(b.date===TODAY&&(pool.filter(x=>toMin(x.time||"00:00")<=n+15).pop()||pool[0]))||pool[0]}
   const key=r?`${r.date}-${String(r.time||"").replace(":","")}`:"",rk=r?`${r.date}_${String(r.time||"").replace(":","")}-${slug(b.cls||"")}`:"";
   const ppl=r?(r.people||[]).map(p=>{const sid="a"+p.aid,s=RO[sid]||{},bn=s.bn||{};
       const prev=Object.entries(bn).filter(([k,x])=>k<key&&k>=addDays(r.date,-21)&&EN(x).some(NE)).sort((x,y)=>y[0].localeCompare(x[0]))[0];
