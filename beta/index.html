@@ -623,6 +623,7 @@ h4 .mh{font-weight:500;opacity:.6;font-size:12px}
 .bf-tl{position:relative;display:flex;gap:3px;height:11px}.bf-tl i{border-radius:6px;background:var(--c);opacity:.35}.bf-tl i.cur{opacity:1;box-shadow:0 0 12px var(--c)}.bf-tl i.past{opacity:.8}
 .bf-tl .mk{position:absolute;top:-5px;width:3px;height:21px;border-radius:2px;background:var(--ink);right:0;transition:right 1s linear}
 .bf-leg{display:grid;gap:6px}.bf-leg button{display:flex;align-items:center;gap:10px;background:var(--s2);border-radius:12px;padding:8px 12px;text-align:right;font-size:14px}
+.bf-trn{font-size:12px;color:var(--muted);padding:0 12px}.bf-trn.cur{color:var(--ink);font-weight:700}.bf-tl i.tr{opacity:.9}.bf-skip{background:var(--hot);color:var(--navy);font-weight:800;border-radius:14px;padding:12px;font-size:15px}
 .bf-leg i{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}.bf-leg em{font-style:normal;color:var(--muted);font-size:12px;margin-inline-start:auto;direction:ltr}.bf-leg button.cur{outline:1.5px solid var(--c)}
 .bf-blk{display:flex;flex-direction:column;gap:10px;margin-top:12px;scroll-margin-top:70px}
 .bf-bh{display:flex;align-items:center;gap:12px}.bf-bh .k{flex:none;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:18px;color:var(--navy);background:var(--c)}
@@ -3459,8 +3460,8 @@ function exitCoachView(){ptLoaded=false;ptSel=null;fill(PT,{});fill(PTR,{});coac
 
 /* ---------- coach brief (in-app, from b/<date>-<type>) ---------- */
 const BRF={},BDONE={},BOPEN=new Set();let bfLoaded=false,bfLoading=false,bfSel=null,bfAll=false,bfT=0,bfRun=null,rsT=0,rsTot=0,rsRun=null,rsPause=false;
-const BPH={mob:"var(--pA)",core:"var(--pB)",mainA:"var(--pC)",main:"var(--pC)",mainB:"var(--pD)",met:"var(--pD)",buyout:"var(--hot)"};
-const BKEY={mob:"M",core:"C",mainA:"A",main:"A",mainB:"B",met:"X",buyout:"+"};
+const BPH={mob:"var(--pA)",core:"var(--pB)",mainA:"var(--pC)",main:"var(--pC)",mainB:"var(--pD)",met:"var(--pD)",metcon:"var(--pD)",buyout:"var(--hot)"};
+const BKEY={mob:"M",core:"C",mainA:"A",main:"A",mainB:"B",met:"X",metcon:"X",buyout:"+"};
 const mmss=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 async function loadBriefs(){if(!db||bfLoading)return;bfLoading=true;
   try{const s=await db.collection("b").where("date",">=",addDays(TODAY,-7)).get();fill(BRF,Object.fromEntries(s.docs.map(d=>[d.id,d.data()])));
@@ -3567,8 +3568,8 @@ function brief2(b,head){if(!wkLoaded&&!window._b2w&&db){window._b2w=1;db.collect
       ${wkForm(x)}${Array.from({length:n},(_,i)=>form(x.ents[i],i)).join("")}${n?`<button type="button" class="b2-rep b2-more" data-b2o="${esc(ok)}">+ עוד הערה</button>`:""}</div>`}):`<div class="b2-nk">${!stLoaded?"טוען…":"אין רשימת מתאמנים לשיעור הזה"}</div>`}</div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
-    <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
-    <div class="bf-leg">${tl.map(([id,l,s,e])=>`<button type="button" style="--c:${BPH[id]||"var(--hot)"}" data-bgo="${esc(id)}" data-s="${s}" data-e="${e}"><i></i>${esc(l)}<em>${s}–${e}</em></button>`).join("")}</div></section>
+    <button type="button" class="bf-skip" id="bfSkip" data-bskip hidden>מוכנים — מתחילים ⏭</button>
+    <div id="bfPl">${bfPlanHtml(b)}</div></section>
   ${(b.blocks||[]).map(x=>`<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${BPH[x.id]||"var(--hot)"}"><div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${esc(x.h||"")}</h2><small>${esc(x.f||"")}</small></div></div>
     <div class="b2-g">${[["מטרה",x.goal],["עדיפות",x.prio],["גירוי",x.stim],["לוגיסטיקה",x.logi]].filter(z=>z[1]).map(([k,t])=>`<div class="b2-r"><small>${k}</small><p>${esc(t)}</p></div>`).join("")}</div>
     <ul class="b2-x">${(x.x||[]).map(e=>`<li><div class="b2-n">${e.n||""}</div>${(e.v||[]).length?`<div class="b2-v">${e.v.map(([l,id])=>`<a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(l)}</a>`).join("")}</div>`:""}</li>`).join("")}</ul></section>`).join("")}
@@ -3639,8 +3640,8 @@ function renderBrief0(){const v=$("v-brief");
   <div class="sh"><h2>שעון שיעור</h2><span>לוחצים ▶ כשמתחילים</span></div>
   <section class="bf-clock"><div class="bf-crow"><span class="bf-t" id="bfT">${mmss(bfT).padStart(5,"0")}</span><div class="bf-now"><small>עכשיו</small><b id="bfNow"></b></div>
     <button type="button" class="bf-cb play" data-bclk>${bfRun?"❚❚":"▶"}</button><button type="button" class="bf-cb" data-brst>↺</button></div>
-    <div class="bf-tl" id="bfTl">${tl.map(([id,l,s,e])=>`<i style="flex:${e-s};--c:${BPH[id]||"var(--hot)"}" data-s="${s}" data-e="${e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
-    <div class="bf-leg">${tl.map(([id,l,s,e])=>`<button type="button" style="--c:${BPH[id]||"var(--hot)"}" data-bgo="${esc(id)}" data-s="${s}" data-e="${e}"><i></i>${esc(l)}<em>${s}–${e}</em></button>`).join("")}</div></section>
+    <button type="button" class="bf-skip" id="bfSkip" data-bskip hidden>מוכנים — מתחילים ⏭</button>
+    <div id="bfPl">${bfPlanHtml(b)}</div></section>
   ${blocks.map(x=>{const c=BPH[x.id]||"var(--hot)";return `<section class="bf-blk" id="bf-${esc(x.id)}" style="--c:${c}">
     <div class="bf-bh"><span class="k">${BKEY[x.id]||"•"}</span><div><h2>${x.h}</h2><small>${esc(x.f||"")}</small></div></div>
     <div class="bf-why">${x.w||""}</div>
@@ -3661,11 +3662,26 @@ function renderBrief0(){const v=$("v-brief");
   ${(b.logi||[]).map(([h,li])=>`<div class="card bf-lg"><b>${esc(h)}</b><ul>${li.map(t=>`<li>${t}</li>`).join("")}</ul></div>`).join("")}
   </div>`;
   bfDraw()}
-function bfDraw(){const T=$("bfT");if(!T)return;T.textContent=mmss(bfT).padStart(5,"0");const m=bfT/60,b=BRF[bfSel]||{},tl=b.tl||[],end=tl.length?tl[tl.length-1][3]:50;let cur=null;
-  document.querySelectorAll("#bfTl i").forEach((s,i)=>{const a=+s.dataset.s,e=+s.dataset.e,on=m>=a&&m<e;s.classList.toggle("cur",on);s.classList.toggle("past",m>=e);if(on)cur=tl[i]});
-  document.querySelectorAll(".bf-leg button").forEach(x=>x.classList.toggle("cur",m>=+x.dataset.s&&m<+x.dataset.e));
+/* class clock: mobility fixed 10', transitions capped (mob>core 2', core>main 4', main>B/metcon 4'); "מוכנים" ends a transition early and pulls the rest forward */
+const BTR={"mob>core":2,"core>main":4,"core>mainA":4,"main>mainB":4,"main>metcon":4,"main>met":4,"mainA>mainB":4,"mainA>metcon":4,"mainA>met":4},BSKIP={};let bfLast=-1;
+const bfShort=l=>String(l||"").split(" · ")[0];
+function bfPlan(b){const tl=(b&&b.tl)||[],sk=BSKIP[bfSel]||{},out=[];let t=0;
+  tl.forEach(([id,l,s,e],i)=>{if(i){const mx=BTR[tl[i-1][0]+">"+id]||0;if(mx){const d=sk[i]!=null?Math.min(sk[i],mx):mx;out.push({tr:1,i,mx,s:t,e:t+d,nx:l});t+=d}}
+    const d=id==="mob"?10:Math.max(1,(+e)-(+s));out.push({id,l,s:t,e:t+d});t+=d});return out}
+const bfM=x=>{const r=Math.round(x*10)/10;return String(r%1?r.toFixed(1):r)};
+function bfPlanHtml(b){const P=bfPlan(b);return `<div class="bf-tl" id="bfTl">${P.map(x=>`<i class="${x.tr?"tr":""}" style="flex:${Math.max(.01,x.e-x.s)};--c:${x.tr?"var(--line)":(BPH[x.id]||"var(--hot)")}" data-s="${x.s}" data-e="${x.e}"></i>`).join("")}<span class="mk" id="bfMk"></span></div>
+    <div class="bf-leg">${P.map(x=>x.tr?`<div class="bf-trn" data-s="${x.s}" data-e="${x.e}">↓ מעבר ל${esc(bfShort(x.nx))} · עד ${x.mx} דק׳</div>`:`<button type="button" style="--c:${BPH[x.id]||"var(--hot)"}" data-bgo="${esc(x.id)}" data-s="${x.s}" data-e="${x.e}"><i></i>${esc(x.l)}<em>${bfM(x.s)}–${bfM(x.e)}</em></button>`).join("")}</div>`}
+function bfDraw(){const T=$("bfT");if(!T)return;T.textContent=mmss(bfT).padStart(5,"0");const m=bfT/60,b=BRF[bfSel]||{},P=bfPlan(b),end=P.length?P[P.length-1].e:50;let ci=-1;
+  P.forEach((x,i)=>{if(m>=x.s&&m<x.e)ci=i});const cur=P[ci];
+  document.querySelectorAll("#bfTl i").forEach((s,i)=>{s.classList.toggle("cur",i===ci);s.classList.toggle("past",m>=P[i].e)});
+  document.querySelectorAll(".bf-leg [data-s]").forEach(x=>x.classList.toggle("cur",m>=+x.dataset.s&&m<+x.dataset.e));
   const mk=$("bfMk");if(mk)mk.style.right=Math.min(100,bfT/(end*60)*100)+"%";
-  $("bfNow").textContent=bfT===0?"לפני השיעור":cur?`${cur[1]} · נשארו ${mmss(cur[3]*60-bfT)}`:bfT>=end*60?"סוף השיעור":"מעבר"}
+  const sk=$("bfSkip");if(sk)sk.hidden=!(cur&&cur.tr&&bfT>0);
+  $("bfNow").textContent=bfT===0?"לפני השיעור":cur?(cur.tr?`מעבר ל${bfShort(cur.nx)} · עד ${mmss(Math.round(cur.e*60-bfT))}`:`${cur.l} · נשארו ${mmss(Math.round(cur.e*60-bfT))}`):bfT>=end*60?"סוף השיעור":"";
+  if(bfRun&&bfLast>=0&&ci!==bfLast&&ci>=0){toast(cur.tr?`נגמר ${bfShort(P[ci-1]&&P[ci-1].l)} — מעבר, עד ${cur.mx} דק׳`:`מתחילים ${bfShort(cur.l)}`);try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+  bfLast=ci}
+function bfSkipNow(){const b=BRF[bfSel]||{},P=bfPlan(b),m=bfT/60,cur=P.find(x=>m>=x.s&&m<x.e);if(!cur||!cur.tr)return;
+  const S=BSKIP[bfSel]=BSKIP[bfSel]||{};S[cur.i]=Math.max(0,m-cur.s);const pl=$("bfPl");if(pl)pl.innerHTML=bfPlanHtml(b);bfDraw()}
 function bfRestOpen(opts,nx){let o=$("bfRs");if(!o){o=document.createElement("div");o.id="bfRs";o.className="bf-rs";document.body.appendChild(o);
     o.addEventListener("click",ev=>{const t=ev.target;if(t===o||t.closest("[data-rsx]")){clearInterval(rsRun);rsRun=null;o.classList.remove("open");return}
       if(t.closest("[data-rsp]")){rsT+=15;rsTot=Math.max(rsTot,rsT);rsDraw();return}if(t.closest("[data-rspa]")){rsPause=!rsPause;t.textContent=rsPause?"המשך":"השהה";return}
@@ -3687,7 +3703,8 @@ $("v-brief").addEventListener("click",ev=>{const t=ev.target;
   const dn=t.closest("[data-bdone]");if(dn){const i=+dn.dataset.bdone,S=BDONE[bfSel]=BDONE[bfSel]||new Set();if(S.has(i))S.delete(i);else{S.add(i);BOPEN.delete(bfSel+"|"+i)}bdSave();render();
     const tot=(BRF[bfSel].blocks||[]).reduce((a,x)=>a+(x.x||[]).length,0);if(S.has(i))toast(S.size===tot?"מוכנים לשיעור 🔥":`${S.size} מתוך ${tot}`);return}
   if(t.closest("[data-bclk]")){if(bfRun){clearInterval(bfRun);bfRun=null}else{bfRun=setInterval(()=>{bfT++;if(tab==="brief")bfDraw()},1000);toast("השיעור התחיל ⏱")}const b=t.closest("[data-bclk]");b.textContent=bfRun?"❚❚":"▶";return}
-  if(t.closest("[data-brst]")){bfT=0;bfDraw();return}
+  if(t.closest("[data-brst]")){bfT=0;delete BSKIP[bfSel];bfLast=-1;const pl=$("bfPl");if(pl)pl.innerHTML=bfPlanHtml(BRF[bfSel]||{});bfDraw();return}
+  if(t.closest("[data-bskip]")){bfSkipNow();return}
   const g=t.closest("[data-bgo]");if(g){const el=$("bf-"+g.dataset.bgo);if(el)el.scrollIntoView({behavior:"smooth"});return}
   const r=t.closest("[data-brest]");if(r){bfRestOpen(r.dataset.brest.split(",").map(Number),r.dataset.bnx);return}});
 
